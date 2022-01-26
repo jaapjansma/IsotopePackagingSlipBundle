@@ -1,0 +1,59 @@
+<style>
+.barcode {
+    padding: 0;
+    margin: 0;
+    vertical-align: top;
+}
+.barcodecell {
+    text-align: left;
+    vertical-align: middle;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+</style>
+<div style="font-size: 62.5%; font-family: Arial, Helvetica, sans-serif">
+    <div style="font-size:14px; line-height: 18px;">
+        <table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+            <tr>
+                <td style="width:65%;font-size:34px;margin:0;padding:0;line-height:34px"><?php echo $this->packagingSlip->document_number; ?></td>
+                <td rowspan="2" style="width:40%"><?php echo nl2br(strip_tags($this->packagingSlip->generateAddress())); ?></td>
+            </tr>
+            <tr>
+                <td style="width:65%; margin:0;padding:0;text-align:left;">
+                    <div class="barcodecell"><barcode code="<?php echo $this->packagingSlip->document_number; ?>" type="C39" class="barcode"></div>
+                </td>
+        </table>
+
+    </div>
+
+<br><br>
+<strong><?php echo $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipping_id'][0]; ?></strong>: <?php echo $this->shipping->label; ?>
+
+<br><br>
+
+    <table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+        <tr>
+            <th style="width: 10%; text-align: left;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku']; ?></strong></th>
+            <th style="width: 80%; text-align: left;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName']; ?></strong></th>
+            <th style="width: 10%; text-align: right;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity']; ?></strong></th>
+        </tr>
+        <?php foreach($this->packagingSlip->getProducts() as $product_id => $item) { ?>
+            <tr>
+                <td style="width: 10%;"><?php echo $item['product']->getSku(); ?></td>
+                <td><?php echo $item['product']->getName(); ?></td>
+                <td style="width: 10%; text-align: right;"><?php echo $item['quantity']; ?></td>
+            </tr>
+        <?php } ?>
+    </table>
+
+    <?php if ($this->packagingSlip->notes) { ?>
+        <br><br>
+        <div style="font-size: 62.5%; font-family: Arial, Helvetica, sans-serif">
+            <div style="font-size:14px; line-height: 18px;">
+                <?php echo $this->packagingSlip->notes; ?>
+            </div>
+        </div>
+    <?php } ?>
+
+</div>

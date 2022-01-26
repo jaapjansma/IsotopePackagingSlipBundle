@@ -1,0 +1,19 @@
+<?php foreach($this->product_list as $store_id => $store) { ?>
+<?php if (count($store['products'])) { ?>
+    <h1><?php echo $store['label']; ?></h1>
+    <table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+        <tr>
+            <th style="width: 10%; text-align: left;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku']; ?></strong></th>
+            <th style="width: 80%; text-align: left;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName']; ?></strong></th>
+            <th style="width: 10%; text-align: right;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity']; ?></strong></th>
+        </tr>
+    <?php foreach($store['products'] as $product) { ?>
+        <tr>
+            <td style="width: 10%;"><?php echo $product['sku']; ?></td>
+            <td><?php echo $product['label']; ?></td>
+            <td style="width: 10%; text-align: right;"><?php echo $product['quantity']; ?> (<?php echo $product['available']; ?>)</td>
+        </tr>
+    <?php } ?>
+    </table>
+<?php } ?>
+<?php } ?>
