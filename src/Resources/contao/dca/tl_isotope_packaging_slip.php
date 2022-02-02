@@ -19,6 +19,7 @@
 use Contao\Environment;
 use Contao\Input;
 use Contao\Message;
+use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 
 \Contao\System::loadLanguageFile(\Isotope\Model\ProductCollection::getTable());
 \Contao\Controller::loadDataContainer(\Isotope\Model\ProductCollection::getTable());
@@ -43,6 +44,9 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     'onsubmit_callback' => array(
       array('tl_isotope_packaging_slip', 'onSubmit'),
     ),
+    'ondelete_callback' => array(
+      array('tl_isotope_packaging_slip', 'onDelete'),
+    )
   ),
 
   'select' => array(
@@ -152,7 +156,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'inputType'               => 'radio',
       'eval'                    => array('doNotCopy'=>true, 'tl_class' => 'w50'),
       'reference'               => $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'],
-      'options'                 => array('0', '1', '2'),
+      'options'                 => array('0', '1', '2', '-1'),
       'sql'                     => "int(10) signed NOT NULL default 0",
       'default'                 => '0',
     ),
@@ -320,7 +324,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     'city' => array
     (
       'exclude'               => true,
-      'filter'                => true,
+      'filter'                => false,
       'search'                => true,
       'sorting'               => true,
       'inputType'             => 'text',
@@ -485,6 +489,15 @@ class tl_isotope_packaging_slip {
       $packagingSlip = \Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel::findByPk($dc->id);
       $packagingSlip->updateStock();
     }
+    if ($dc->activeRecord->status == 0) {
+      PackagingSlipCheckAvailability::checkAvailabilityForPackagingSlips([$dc->id]);
+    }
+  }
+
+  public function onDelete(\Contao\DataContainer $dc, $id) {
+    $db = \Database::getInstance();
+    $db->prepare("DELETE FROM `tl_isotope_packaging_slip_order_collection` WHERE `pid` = ?")->execute($id);
+    $db->prepare("DELETE FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid` = ?")->execute($id);
   }
 
   public function selectButtonsCallback($arrButtons, \Contao\DataContainer $dc) {

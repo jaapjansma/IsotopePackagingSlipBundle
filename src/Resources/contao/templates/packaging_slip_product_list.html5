@@ -1,3 +1,4 @@
+<strong><?php echo $GLOBALS['TL_LANG']['MSC']['NumberOfPackageSlips']; ?></strong>: <?php echo $this->count; ?><br />
 <?php foreach($this->product_list as $store_id => $store) { ?>
 <?php if (count($store['products'])) { ?>
     <h1><?php echo $store['label']; ?></h1>

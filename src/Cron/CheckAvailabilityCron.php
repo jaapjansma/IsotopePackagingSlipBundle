@@ -16,10 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-$GLOBALS['TL_LANG']['MOD']['tl_isotope_packaging_slip'] = ['Packaging Slip', 'Manage packaging slips'];
-$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity'] = 'Quantity';
-$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName'] = 'Product';
-$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku'] = 'Product Number';
-$GLOBALS['TL_LANG']['MSC']['PackageSlipProductNotAvailable'] = '%s not enough in stock. ';
-$GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'] = '%s is not paid. ';
-$GLOBALS['TL_LANG']['MSC']['NumberOfPackageSlips'] = 'Number of package slips';
+namespace Krabo\IsotopePackagingSlipBundle\Cron;
+
+use Contao\CoreBundle\ServiceAnnotation\CronJob;
+use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
+
+/**
+ * @CronJob("hourly")
+ */
+class CheckAvailabilityCron {
+
+  public function __invoke(): void
+  {
+    PackagingSlipCheckAvailability::checkAllOpenForAvailability();
+  }
+
+}

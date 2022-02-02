@@ -21,42 +21,34 @@ use Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel;
 /**
  * Table tl_isotope_packaging_slip_order_collection
  */
-$GLOBALS['TL_DCA']['tl_isotope_packaging_slip_order_collection'] = array
-(
+$GLOBALS['TL_DCA']['tl_isotope_packaging_slip_order_collection'] = [
 
-    // Config
-    'config' => array
-    (
-        'sql' => array
-        (
-            'keys' => array
-            (
-                'id' => 'primary',
-                'pid' => 'index',
-                'order_id,pid' => 'index',
-            )
-        ),
-    ),
+  // Config
+  'config' => [
+    'ptable' => PackagingSlipModel::getTable(),
+    'sql' => [
+      'keys' => [
+        'id' => 'primary',
+        'pid' => 'index',
+        'order_id,pid' => 'index',
+      ],
+    ],
+  ],
 
-    'fields'                        => array
-    (
-        'id' => array
-        (
-            'sql'                   => "int(10) unsigned NOT NULL auto_increment",
-        ),
-        'pid' => array
-        (
-            'foreignKey'            => PackagingSlipModel::getTable().'.document_number',
-            'sql'                   => "int(10) unsigned NOT NULL default '0'",
-            'relation'              => array('type'=>'belongsTo', 'load'=>'lazy'),
-        ),
-        'tstamp' => array
-        (
-            'sql'                   => "int(10) unsigned NOT NULL default '0'",
-        ),
-        'order_id' => array
-        (
-            'sql'                   => "int(10) unsigned NOT NULL default '0'",
-        ),
-    )
-);
+  'fields' => [
+    'id' => [
+      'sql' => "int(10) unsigned NOT NULL auto_increment",
+    ],
+    'pid' => [
+      'foreignKey' => PackagingSlipModel::getTable() . '.document_number',
+      'sql' => "int(10) unsigned NOT NULL default '0'",
+      'relation' => ['type' => 'belongsTo', 'load' => 'lazy'],
+    ],
+    'tstamp' => [
+      'sql' => "int(10) unsigned NOT NULL default '0'",
+    ],
+    'order_id' => [
+      'sql' => "int(10) unsigned NOT NULL default '0'",
+    ],
+  ],
+];

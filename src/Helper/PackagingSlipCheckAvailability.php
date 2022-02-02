@@ -25,14 +25,32 @@ use Isotope\Model\ProductCollection\Order;
 class PackagingSlipCheckAvailability {
 
   public static function checkAvailability(\Contao\DataContainer $dc) {
-    $db = \Database::getInstance();
     /** @var Session $objSession */
     $objSession = System::getContainer()->get('session');
     // Get current IDs from session
     $session = $objSession->all();
     $ids = $session['CURRENT']['IDS'];
-    $strIds = implode(",", $ids);
+    static::checkAvailabilityForPackagingSlips($ids);
+  }
+
+  /**
+   * @return void
+   */
+  public static function checkAllOpenForAvailability() {
+    $db = \Database::getInstance();
+    $ids = $db->execute("SELECT `id` FROM `tl_isotope_packaging_slip` WHERE `status` = '0'")->fetchEach('id');
+    static::checkAvailabilityForPackagingSlips($ids);
+  }
+
+  /**
+   * @param array $ids
+   *
+   * @return void
+   */
+  public static function checkAvailabilityForPackagingSlips(array $ids) {
     if (count($ids)) {
+      $strIds = implode(",", $ids);
+      $db = \Database::getInstance();
       // Clear current state.
       $db->execute("UPDATE `tl_isotope_packaging_slip` SET `is_available` = '0', `availability_notes` = '' WHERE `id` IN ({$strIds})");
       $products = StockBookingHelper::generateProductListForPackagingSlips($ids);

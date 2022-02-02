@@ -18,10 +18,12 @@
 
 namespace Krabo\IsotopePackagingSlipBundle\EventListener;
 
+use Contao\MemberModel;
 use Isotope\Model\Config;
 use Isotope\Model\OrderStatus;
 use Isotope\Model\ProductCollection;
 use Isotope\Model\ProductCollection\Order;
+use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel;
 
 class ProductCollectionListener {
@@ -59,8 +61,13 @@ class ProductCollectionListener {
         $orderSettings = unserialize($order->settings);
         $packagingSlip = new PackagingSlipModel();
         $packagingSlip->date = time();
+        $packagingSlip->status = '0';
         if ($order->member) {
           $packagingSlip->member = $order->member;
+          $objMember = MemberModel::findByPk($order->member);
+          if ($objMember->isotope_packaging_slip_on_hold) {
+            $packagingSlip->status = '-1';
+          }
         }
         $packagingSlip->firstname = $order->getShippingAddress()->firstname;
         $packagingSlip->lastname = $order->getShippingAddress()->lastname;

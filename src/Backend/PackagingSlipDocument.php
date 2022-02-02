@@ -207,6 +207,7 @@ class PackagingSlipDocument extends \Backend {
     $objTemplate = new \Contao\FrontendTemplate($this->productListTpl);
     $objTemplate->setData($this->arrData);
     $objTemplate->product_list = StockBookingHelper::generateProductListForPackagingSlips($ids);
+    $objTemplate->count = count($ids);
     $objTemplate->dateFormat    = $GLOBALS['TL_CONFIG']['dateFormat'];
     $objTemplate->timeFormat    = $GLOBALS['TL_CONFIG']['timeFormat'];
     $objTemplate->datimFormat   = $GLOBALS['TL_CONFIG']['datimFormat'];

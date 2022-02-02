@@ -16,10 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-$GLOBALS['TL_LANG']['MOD']['tl_isotope_packaging_slip'] = ['Packaging Slip', 'Manage packaging slips'];
-$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity'] = 'Quantity';
-$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName'] = 'Product';
-$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku'] = 'Product Number';
-$GLOBALS['TL_LANG']['MSC']['PackageSlipProductNotAvailable'] = '%s not enough in stock. ';
-$GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'] = '%s is not paid. ';
-$GLOBALS['TL_LANG']['MSC']['NumberOfPackageSlips'] = 'Number of package slips';
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+
+$GLOBALS['TL_DCA']['tl_member']['fields']['isotope_packaging_slip_on_hold'] = array(
+  'filter'                  => true,
+  'inputType'               => 'checkbox',
+  'eval'                    => array('doNotCopy'=>true),
+  'sql'                     => "char(1) NOT NULL default ''",
+  'default'                 => '0',
+);
+
+PaletteManipulator::create()
+  ->addLegend('isotope_packaging_slip_legend', 'login_legend', PaletteManipulator::POSITION_AFTER)
+  ->addField('isotope_packaging_slip_on_hold', 'isotope_packaging_slip_legend', PaletteManipulator::POSITION_APPEND)
+  ->applyToPalette('default', 'tl_member');

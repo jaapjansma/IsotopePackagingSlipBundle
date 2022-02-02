@@ -132,58 +132,43 @@ class PackagingSlipModel extends Model {
    *
    * @return void
    */
-  public static function addOrder(int $id, $order_id) {
+  public static function addOrder(int $packaging_slip_id, $order_id) {
       $time = time();
-      \Database::getInstance()->query("INSERT INTO `tl_isotope_packaging_slip_order_collection` (`pid`,`tstamp`,`order_id`) VALUES ($id, $time, $order_id)");
-      self::$newOrders[$id] = [$order_id];
+      \Database::getInstance()->query("INSERT INTO `tl_isotope_packaging_slip_order_collection` (`pid`,`tstamp`,`order_id`) VALUES ($packaging_slip_id, $time, $order_id)");
+      self::$newOrders[$packaging_slip_id] = [$order_id];
   }
 
   /**
    * Save orders into this packaging slip.
    *
-   * @param int $id
+   * @param int $packaging_slip_id
    * @param array $products
    *   - key is the product id
    *   - value the quantity
    *
    * @return void
    */
-  public static function saveProducts(int $id, $products) {
-    if (!\is_array($products) || empty($products)) {
-      \Database::getInstance()->query("DELETE FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid`={$id}");
-    } else {
-      if (isset(self::$newOrders[$id]) && count(self::$newOrders[$id])) {
-        $strOrderIds = implode(",", self::$newOrders[$id]);
-        $newOrderProduct = \Database::getInstance()->execute("SELECT `product_id`, `quantity` FROM `tl_iso_product_collection_item` WHERE `pid` IN ({$strOrderIds})");
-        while ($newOrderProduct->next()) {
-          if (!isset($products[$newOrderProduct->product_id])) {
-            $products[$newOrderProduct->product_id] = 0;
-          }
-          $products[$newOrderProduct->product_id] = $products[$newOrderProduct->product_id] + $newOrderProduct->quantity;
+  public static function saveProducts(int $packaging_slip_id, $products) {
+    if (isset(self::$newOrders[$packaging_slip_id]) && count(self::$newOrders[$packaging_slip_id])) {
+      $strOrderIds = implode(",", self::$newOrders[$packaging_slip_id]);
+      $newOrderProduct = \Database::getInstance()->execute("SELECT `product_id`, `quantity` FROM `tl_iso_product_collection_item` WHERE `pid` IN ({$strOrderIds})");
+      while ($newOrderProduct->next()) {
+        if (!isset($products[$newOrderProduct->product_id])) {
+          $products[$newOrderProduct->product_id] = 0;
         }
+        $products[$newOrderProduct->product_id] = $products[$newOrderProduct->product_id] + $newOrderProduct->quantity;
       }
-      $arrDelete = [];
-      $oldProductQry = \Database::getInstance()->execute("SELECT `product_id`, `quantity` FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid`={$id}");
-      while($oldProductQry->next()) {
-        if (isset($products[$oldProductQry->product_id])) {
-          $arrDelete[] = $oldProductQry->product_id;
-        }
+    }
+    \Database::getInstance()->query("DELETE FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid`={$packaging_slip_id}");
+    if (!empty($products)) {
+      $time = time();
+      $insertQuery = "INSERT INTO `tl_isotope_packaging_slip_product_collection` (`pid`,`tstamp`,`product_id`, `quantity`) VALUES ";
+      $insertRows = [];
+      foreach ($products as $product_id => $quantity) {
+        $insertRows[] = " ({$packaging_slip_id}, {$time}, {$product_id}, {$quantity})";
       }
-
-      if (!empty($arrDelete)) {
-        \Database::getInstance()->query("DELETE FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid`={$id} AND `product_id` IN (" . implode(',', $arrDelete) . ")");
-      }
-
-      if (!empty($products)) {
-        $time = time();
-        $insertQuery = "INSERT INTO `tl_isotope_packaging_slip_product_collection` (`pid`,`tstamp`,`product_id`, `quantity`) VALUES ";
-        $insertRows = [];
-        foreach($products as $product_id => $quantity) {
-          $insertRows[] = " ({$id}, {$time}, {$product_id}, {$quantity})";
-        }
-        $insertQuery .= implode(", ", $insertRows);
-        \Database::getInstance()->query($insertQuery);
-      }
+      $insertQuery .= implode(", ", $insertRows);
+      \Database::getInstance()->query($insertQuery);
     }
   }
 
@@ -244,6 +229,17 @@ class PackagingSlipModel extends Model {
       $return[$result->order_id] = Order::findByPk($result->order_id);
     }
     return $return;
+  }
+
+  /**
+   * @return string
+   */
+  public function getOrderDocumentNumbers() {
+    $documenntNumbers = [];
+    foreach($this->getOrders() as $order) {
+      $documenntNumbers[] = $order->document_number;
+    }
+    return implode(", ", $documenntNumbers);
   }
 
   /**

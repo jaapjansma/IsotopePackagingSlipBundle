@@ -25,6 +25,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip_product_collection'] = [
 
   // Config
   'config' => [
+    'ptable' => PackagingSlipModel::getTable(),
     'sql' => [
       'keys' => [
         'id' => 'primary',

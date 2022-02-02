@@ -28,7 +28,8 @@
     </div>
 
 <br><br>
-<strong><?php echo $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipping_id'][0]; ?></strong>: <?php echo $this->shipping->label; ?>
+<strong><?php echo $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipping_id'][0]; ?></strong>: <?php echo $this->shipping->label; ?><br>
+<strong><?php echo $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['order_id'][0]; ?></strong>: <?php echo $this->packagingSlip->getOrderDocumentNumbers(); ?>
 
 <br><br>
 
