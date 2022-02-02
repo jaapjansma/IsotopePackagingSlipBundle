@@ -123,6 +123,7 @@ class CombinePackagingSlip extends Flat {
    */
   public function getOptionsForCombinedPackagingSlips($arrFields = []) {
     $validStatuses = [
+      '-1', // On hold
       '0', // Open
     ];
     /** @var PackagingSlipModel[] $objPackagingSlips */
