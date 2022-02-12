@@ -12,6 +12,7 @@
     padding: 0;
 }
 </style>
+<h1><?php echo $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['document_title']; ?></h1>
 <div style="font-size: 62.5%; font-family: Arial, Helvetica, sans-serif">
     <div style="font-size:14px; line-height: 18px;">
         <table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
@@ -33,19 +34,26 @@
 
 <br><br>
 
+    <?php $totalQuantity = 0; ?>
     <table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
         <tr>
             <th style="width: 10%; text-align: left;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku']; ?></strong></th>
             <th style="width: 80%; text-align: left;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName']; ?></strong></th>
             <th style="width: 10%; text-align: right;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity']; ?></strong></th>
         </tr>
-        <?php foreach($this->packagingSlip->getProducts() as $product_id => $item) { ?>
+        <?php foreach($this->packagingSlip->getProductsCombinedByProductId() as $product) { ?>
+            <?php $totalQuantity += $product->quantity; ?>
             <tr>
-                <td style="width: 10%;"><?php echo $item['product']->getSku(); ?></td>
-                <td><?php echo $item['product']->getName(); ?></td>
-                <td style="width: 10%; text-align: right;"><?php echo $item['quantity']; ?></td>
+                <td style="width: 10%;"><?php echo $product->getProduct()->getSku(); ?></td>
+                <td><?php echo $product->getProduct()->getName(); ?></td>
+                <td style="width: 10%; text-align: right;"><?php echo $product->quantity; ?></td>
             </tr>
         <?php } ?>
+        <tr>
+            <td style="width: 10%;"></td>
+            <td></td>
+            <td style="width: 10%; text-align: right; font-weight:bold; border-top: 1px solid black;"><?php echo $product->quantity; ?></td>
+        </tr>
     </table>
 
     <?php if ($this->packagingSlip->notes) { ?>

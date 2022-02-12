@@ -19,7 +19,7 @@
 namespace Krabo\IsotopePackagingSlipBundle\Helper;
 
 use Haste\Util\Format;
-use Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 
 class AddressHelper {
 
@@ -31,7 +31,7 @@ class AddressHelper {
    *
    * @return array
    */
-  public static function getAddressTokens(PackagingSlipModel $packagingSlipModel)
+  public static function getAddressTokens(IsotopePackagingSlipModel $packagingSlipModel)
   {
     $arrFields = [
       'firstname',
@@ -47,7 +47,7 @@ class AddressHelper {
     $arrTokens = array('outputFormat' => 'html');
 
     foreach ($arrFields as $strField) {
-      $arrTokens[$strField] = Format::dcaValue(PackagingSlipModel::getTable(), $strField, $packagingSlipModel->$strField);
+      $arrTokens[$strField] = Format::dcaValue(IsotopePackagingSlipModel::getTable(), $strField, $packagingSlipModel->$strField);
     }
     /**
      * Generate hCard fields

@@ -25,7 +25,7 @@ use Contao\System;
 use Haste\Util\StringUtil;
 use Isotope\Model\Shipping;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
-use Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class PackagingSlipDocument extends \Backend {
@@ -43,7 +43,7 @@ class PackagingSlipDocument extends \Backend {
    * @return string
    */
   public function printDocument(\DataContainer $dc) {
-    $packagingSlip = PackagingSlipModel::findByPk($dc->id);
+    $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
     $ids[] = $dc->id;
     $pdf = $this->createPdf($ids);
     $pdf->Output($this->prepareFileName($packagingSlip->document_number) . '.pdf', 'D');
@@ -70,15 +70,13 @@ class PackagingSlipDocument extends \Backend {
     $pdf->SetHTMLFooter('{PAGENO}');
     $pdf->AddPage('P', '', '1', '', '', '10', '10', '25', '20');
     $pdf->writeHTML($this->generateProductListTemplate($ids));
-    $pdf->setHTMLHeader('<h1>' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['document_title'] . '</h1>');
     foreach($ids as $id) {
-      $packagingSlip = PackagingSlipModel::findByPk($id);
+      $packagingSlip = IsotopePackagingSlipModel::findByPk($id);
       $pdf->AddPage('P', '', '1', '', '', '10', '10', '25', '20');
       $pdf->writeHTML($this->generateTemplate($packagingSlip));
       if ($packagingSlip->status < 1) {
         $packagingSlip->status = 1;
         $packagingSlip->save();
-        $packagingSlip->updateStock();
       }
     }
     return $pdf;
@@ -175,11 +173,11 @@ class PackagingSlipDocument extends \Backend {
   /**
    * Generate and return document template
    *
-   * @param PackagingSlipModel $packagingSlip
+   * @param IsotopePackagingSlipModel $packagingSlip
    *
    * @return string
    */
-  protected function generateTemplate(PackagingSlipModel $packagingSlip)
+  protected function generateTemplate(IsotopePackagingSlipModel $packagingSlip)
   {
     /** @var \Contao\FrontendTemplate|\stdClass $objTemplate */
     $objTemplate = new \Contao\FrontendTemplate($this->documentTpl);
@@ -197,7 +195,7 @@ class PackagingSlipDocument extends \Backend {
   /**
    * Generate and return document template
    *
-   * @param PackagingSlipModel $packagingSlip
+   * @param IsotopePackagingSlipModel $packagingSlip
    *
    * @return string
    */

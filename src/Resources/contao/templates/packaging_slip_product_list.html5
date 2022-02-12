@@ -7,12 +7,14 @@
             <th style="width: 10%; text-align: left;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku']; ?></strong></th>
             <th style="width: 80%; text-align: left;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName']; ?></strong></th>
             <th style="width: 10%; text-align: right;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity']; ?></strong></th>
+            <th style="width: 10%; text-align: right;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantityInStock']; ?></strong></th>
         </tr>
     <?php foreach($store['products'] as $product) { ?>
         <tr>
             <td style="width: 10%;"><?php echo $product['sku']; ?></td>
             <td><?php echo $product['label']; ?></td>
-            <td style="width: 10%; text-align: right;"><?php echo $product['quantity']; ?> (<?php echo $product['available']; ?>)</td>
+            <td style="width: 10%; text-align: right;"><?php echo $product['quantity']; ?></td>
+            <td style="width: 10%; text-align: right;"><?php echo $product['available']; ?></td>
         </tr>
     <?php } ?>
     </table>

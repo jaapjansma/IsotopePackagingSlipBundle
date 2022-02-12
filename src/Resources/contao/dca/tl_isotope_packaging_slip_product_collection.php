@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 
 /**
  * Table tl_isotope_packaging_slip_product_collection
@@ -25,7 +25,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip_product_collection'] = [
 
   // Config
   'config' => [
-    'ptable' => PackagingSlipModel::getTable(),
+    'ptable' => IsotopePackagingSlipModel::getTable(),
     'sql' => [
       'keys' => [
         'id' => 'primary',
@@ -40,7 +40,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip_product_collection'] = [
       'sql' => "int(10) unsigned NOT NULL auto_increment",
     ],
     'pid' => [
-      'foreignKey' => PackagingSlipModel::getTable() . '.document_number',
+      'foreignKey' => IsotopePackagingSlipModel::getTable() . '.document_number',
       'sql' => "int(10) unsigned NOT NULL default '0'",
       'relation' => ['type' => 'belongsTo', 'load' => 'lazy'],
     ],
@@ -53,5 +53,18 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip_product_collection'] = [
     'quantity' => [
       'sql' => "int(10) unsigned NOT NULL default '0'",
     ],
+    'value' => array
+    (
+      'inputType'               => 'text',
+      'eval'                    => array('mandatory'=>true, 'rgxp'=>'digit', 'tl_class' => 'clr'),
+      'sql'                     => "decimal(12,2) NOT NULL default '0.00'",
+    ),
+    'document_number' => array
+    (
+      'search'                  => true,
+      'inputType'               => 'text',
+      'eval'                    => array('disabled'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
+      'sql'                     => "varchar(255) NOT NULL default ''"
+    ),
   ],
 ];

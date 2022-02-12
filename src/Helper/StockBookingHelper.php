@@ -18,8 +18,11 @@
 
 namespace Krabo\IsotopePackagingSlipBundle\Helper;
 
+use Isotope\Model\Config;
 use Isotope\Model\Product;
-use Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel;
+use Isotope\Model\ProductCollection\Order;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
 use Krabo\IsotopeStockBundle\Helper\BookingHelper;
 use Krabo\IsotopeStockBundle\Helper\ProductHelper;
 use Krabo\IsotopeStockBundle\Model\AccountModel;
@@ -32,18 +35,16 @@ class StockBookingHelper {
   /**
    * Creates a new booking for a Product Collection Item
    *
-   * @param PackagingSlipModel $packagingSlipModel
+   * @param IsotopePackagingSlipModel $packagingSlipModel
    * @param int $quantity
-   * @param \Isotope\Model\ProductCollectionItem $item
-   * @param int $debit_account_id
-   * @param int $crebit_account_id
-   * @param int $bookingType
+   * @param Product $product
+   * @param string $documentNumber
    *
    * @return void
    */
-  public static function createBookingFromPackagingSlipAndProduct(PackagingSlipModel $packagingSlipModel, $quantity, Product $product) {
+  public static function createDeliveryBookingFromPackagingSlipAndProduct(IsotopePackagingSlipModel $packagingSlipModel, int $quantity, Product $product, string $documentNumber) {
     $bookingType = BookingModel::DELIVERY_TYPE;
-    self::clearBookingForPackagingSlipAndProduct($packagingSlipModel, $product->getId(), $bookingType);
+    self::clearBookingForPackagingSlipAndProduct($packagingSlipModel, $product->getId(), $bookingType, $documentNumber);
     $period = PeriodModel::getFirstActivePeriod();
     $booking = new BookingModel();
     $booking->description = $packagingSlipModel->document_number;
@@ -52,6 +53,10 @@ class StockBookingHelper {
     $booking->product_id = $product->getId();
     $booking->type = $bookingType;
     $booking->packaging_slip_id = $packagingSlipModel->id;
+    if ($documentNumber) {
+      $order = Order::findOneBy('document_number', $documentNumber);
+      $booking->order_id = $order->id;
+    }
     $booking->save();
     $debitBookingLine = new BookingLineModel();
     $debitBookingLine->debit = $quantity;
@@ -67,14 +72,66 @@ class StockBookingHelper {
   }
 
   /**
-   * @param PackagingSlipModel $packagingSlipModel
+   * Creates a new booking for a Product Collection Item
+   *
+   * @param IsotopePackagingSlipModel $packagingSlipModel
+   * @param IsotopePackagingSlipProductCollectionModel $product
+   *
+   * @return void
+   */
+  public static function createSalesBookingFromPackagingSlipAndProduct(IsotopePackagingSlipModel $packagingSlipModel, IsotopePackagingSlipProductCollectionModel $product) {
+    $bookingType = BookingModel::SALES_TYPE;
+    $documentNumber = $product->document_number;
+    $config = Config::findByPk($packagingSlipModel->config_id);
+    $debit_account = $config->isotopestock_order_debit_account;
+    $credit_account = $config->isotopestock_order_credit_account;
+    if ($product->getProduct()->isostock_preorder) {
+      $credit_account = $config->isotopestock_preorder_credit_account;
+    }
+    self::clearBookingForPackagingSlipAndProduct($packagingSlipModel, $product->product_id, $bookingType, $documentNumber);
+    $period = PeriodModel::getFirstActivePeriod();
+    $booking = new BookingModel();
+    $booking->description = $packagingSlipModel->document_number;
+    $booking->date = time();
+    $booking->period = $period->id;
+    $booking->product_id = $product->product_id;
+    $booking->type = $bookingType;
+    $booking->packaging_slip_id = $packagingSlipModel->id;
+    if ($documentNumber) {
+      $order = Order::findOneBy('document_number', $documentNumber);
+      $booking->order_id = $order->id;
+    }
+    $booking->save();
+    $debitBookingLine = new BookingLineModel();
+    $debitBookingLine->debit = $product->quantity;
+    $debitBookingLine->account = $debit_account;
+    $debitBookingLine->pid = $booking->id;
+    $debitBookingLine->save();
+    $creditBookingLine = new BookingLineModel();
+    $creditBookingLine->credit = $product->quantity;
+    $creditBookingLine->account = $credit_account;
+    $creditBookingLine->pid = $booking->id;
+    $creditBookingLine->save();
+    BookingHelper::updateBalanceStatusForBooking($booking->id);
+  }
+
+  /**
+   * @param IsotopePackagingSlipModel $packagingSlipModel
    * @param $product_id
    * @param int $type
+   * @param string $document_number
    */
-  public static function clearBookingForPackagingSlipAndProduct(PackagingSlipModel $packagingSlipModel, $product_id, int $bookingType) {
-    \Database::getInstance()
-      ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `product_id` = ? AND `type` = ?")
-      ->execute($packagingSlipModel->id, $product_id, $bookingType);
+  public static function clearBookingForPackagingSlipAndProduct(IsotopePackagingSlipModel $packagingSlipModel, $product_id, int $bookingType, string $document_number) {
+    if (empty($document_number)) {
+      \Database::getInstance()
+        ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `product_id` = ? AND `type` = ? AND `order_id` = 0")
+        ->execute($packagingSlipModel->id, $product_id, $bookingType);
+    } else {
+      $order = Order::findOneBy('document_number', $document_number);
+      \Database::getInstance()
+        ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `product_id` = ? AND `type` = ? AND `order_id` = ?")
+        ->execute($packagingSlipModel->id, $product_id, $bookingType, $order->id);
+    }
   }
 
   /**
@@ -87,7 +144,7 @@ class StockBookingHelper {
   public static function generateProductListForPackagingSlips(array $ids) {
     $return = [];
     foreach($ids as $id) {
-      $packagingSlipModel = PackagingSlipModel::findByPk($id);
+      $packagingSlipModel = IsotopePackagingSlipModel::findByPk($id);
       $account = AccountModel::findByPk($packagingSlipModel->credit_account);
       if (!isset($return[$account->id])) {
         $return[$account->id] = [
@@ -95,11 +152,11 @@ class StockBookingHelper {
           'products' => [],
         ];
       }
-      foreach($packagingSlipModel->getProducts() as $item) {
-        $product = $item['product'];
+      foreach($packagingSlipModel->getProductsCombinedByProductId() as $item) {
+        $product = $item->getProduct();
         if (!isset($return[$account->id]['products'][$product->id])) {
           $return[$account->id]['products'][$product->id] = [
-            'quantity' => $item['quantity'],
+            'quantity' => $item->quantity,
             'available' => ProductHelper::getProductCountPerAccount($product->id, $account->id),
             'sku' => $product->sku,
             'label' => $product->getName(),

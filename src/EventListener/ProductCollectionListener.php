@@ -19,12 +19,15 @@
 namespace Krabo\IsotopePackagingSlipBundle\EventListener;
 
 use Contao\MemberModel;
+use Contao\System;
 use Isotope\Model\Config;
 use Isotope\Model\OrderStatus;
 use Isotope\Model\ProductCollection;
 use Isotope\Model\ProductCollection\Order;
-use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
-use Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel;
+use Krabo\IsotopePackagingSlipBundle\Event\Events;
+use Krabo\IsotopePackagingSlipBundle\Event\PackagingSlipOrderEvent;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
 
 class ProductCollectionListener {
 
@@ -51,15 +54,16 @@ class ProductCollectionListener {
    * @return void
    */
   public function postOrderStatusUpdate(Order $order, $intOldStatus, OrderStatus $objNewStatus) {
-    if ($order->isLocked() && $order->isCheckoutComplete() && !PackagingSlipModel::doesOrderExists($order->id)) {
+    if ($order->isLocked() && $order->isCheckoutComplete() && !IsotopePackagingSlipModel::doesOrderExists($order)) {
       if (empty($order->combined_packaging_slip_id)) {
+        $eventName = Events::PACKAGING_SLIP_CREATED_FROM_ORDER;
         $config = Config::findByPk($order->config_id);
         $prefix = $order->getConfig()->packagingSlipPrefix;
         if (empty($prefix)) {
           $prefix = $order->getConfig()->orderPrefix;
         }
         $orderSettings = unserialize($order->settings);
-        $packagingSlip = new PackagingSlipModel();
+        $packagingSlip = new IsotopePackagingSlipModel();
         $packagingSlip->date = time();
         $packagingSlip->status = '0';
         if ($order->member) {
@@ -71,6 +75,8 @@ class ProductCollectionListener {
         }
         $packagingSlip->firstname = $order->getShippingAddress()->firstname;
         $packagingSlip->lastname = $order->getShippingAddress()->lastname;
+        $packagingSlip->email = $order->getShippingAddress()->email;
+        $packagingSlip->phone = $order->getShippingAddress()->phone;
         $packagingSlip->housenumber = $order->getShippingAddress()->housenumber;
         $packagingSlip->street_1 = $order->getShippingAddress()->street_1;
         $packagingSlip->street_2 = $order->getShippingAddress()->street_2;
@@ -89,16 +95,42 @@ class ProductCollectionListener {
         $packagingSlip->save();
         $orderDigits = (int) $order->getConfig()->orderDigits;
         $packagingSlip->generateDocumentNumber($prefix, $orderDigits);
+        $event = new PackagingSlipOrderEvent($packagingSlip, $order);
+        System::getContainer()->get('event_dispatcher')->dispatch($event, $eventName);
       } else {
-        $packagingSlip = PackagingSlipModel::findOneBy('document_number', $order->combined_packaging_slip_id);
+        $packagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $order->combined_packaging_slip_id);
       }
-      PackagingSlipModel::addOrder($packagingSlip->id, $order->id);
-      $products = [];
-      foreach($packagingSlip->getProducts() as $product_id => $item) {
-        $products[$product_id] = $item['quantity'];
-      }
-      PackagingSlipModel::saveProducts($packagingSlip->id, $products);
+      $products = $this->addProductsFromOrder($packagingSlip, $order);
+      IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
     }
+  }
+
+  /**
+   * Add Products from a specific order to the list of products.
+   *
+   * @param IsotopePackagingSlipModel $packagingSlip
+   * @param Order $order
+   *
+   * @return array
+   */
+  protected function addProductsFromOrder(IsotopePackagingSlipModel $packagingSlip, Order $order) {
+    $products = IsotopePackagingSlipProductCollectionModel::findBy('pid', $packagingSlip->id);
+    $db = \Database::getInstance();
+    $objResults = $db->prepare("
+        SELECT `product_id`, `quantity`, `price` 
+        FROM `tl_iso_product_collection_item` 
+        WHERE `pid` = ?
+    ")->execute($order->id);
+    while ($objResults->next()) {
+      $product = new IsotopePackagingSlipProductCollectionModel();
+      $product->pid = $packagingSlip->pid;
+      $product->product_id = $objResults->product_id;
+      $product->quantity = $objResults->quantity;
+      $product->document_number = $order->document_number;
+      $product->value = $objResults->quantity * $objResults->price;
+      $products[] = $product;
+    }
+    return $products;
   }
 
 }

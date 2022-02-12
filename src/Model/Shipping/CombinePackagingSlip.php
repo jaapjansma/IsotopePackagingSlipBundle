@@ -23,7 +23,7 @@ use Isotope\Isotope;
 use Isotope\Model\Address;
 use Isotope\Model\Shipping;
 use Isotope\Model\Shipping\Flat;
-use Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 
 class CombinePackagingSlip extends Flat {
   /**
@@ -50,7 +50,8 @@ class CombinePackagingSlip extends Flat {
     $combined_packaging_slip_id = Isotope::getCart()->combined_packaging_slip_id;
 
     if ($combined_packaging_slip_id) {
-      $objPackagingSlip = PackagingSlipModel::findOneBy('document_number', $combined_packaging_slip_id);
+      $objPackagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $combined_packaging_slip_id);
+      $address = $objPackagingSlip->generateAddress();
       $orderDocumentNumbers = [];
       foreach ($objPackagingSlip->getOrders() as $order) {
         $orderDocumentNumbers[] = $order->document_number;
@@ -64,10 +65,10 @@ class CombinePackagingSlip extends Flat {
   /**
    * Returns true when this Packaging Slip Model is available for this shipping method.
    *
-   * @param \Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel $packagingSlipModel
+   * @param \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel $packagingSlipModel
    * @return bool
    */
-  public function isAvailableForCombinedShipping(PackagingSlipModel $packagingSlipModel)
+  public function isAvailableForCombinedShipping(IsotopePackagingSlipModel $packagingSlipModel)
   {
     if (TL_MODE === 'BE') {
       return true;
@@ -126,8 +127,8 @@ class CombinePackagingSlip extends Flat {
       '-1', // On hold
       '0', // Open
     ];
-    /** @var PackagingSlipModel[] $objPackagingSlips */
-    $objPackagingSlips = PackagingSlipModel::findBy(
+    /** @var IsotopePackagingSlipModel[] $objPackagingSlips */
+    $objPackagingSlips = IsotopePackagingSlipModel::findBy(
       [
         'status IN (' . implode(", ", $validStatuses). ')',
         'member=?'
@@ -179,7 +180,7 @@ class CombinePackagingSlip extends Flat {
     }
     if (stripos($varValue, 'packaging_slip_') === 0) {
       $packagingSlipId = substr($varValue, 15);
-      $packagingSlipModel = PackagingSlipModel::findOneBy('id', $packagingSlipId);
+      $packagingSlipModel = IsotopePackagingSlipModel::findOneBy('id', $packagingSlipId);
       $objAddress = Address::createForProductCollection(Isotope::getCart(), Isotope::getConfig()->getShippingFields(), false, false);
       foreach(Isotope::getConfig()->getShippingFields() as $field) {
         if (isset($packagingSlipModel->$field)) {

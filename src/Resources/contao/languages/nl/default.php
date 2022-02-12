@@ -17,9 +17,13 @@
  */
 
 $GLOBALS['TL_LANG']['MOD']['tl_isotope_packaging_slip'] = ['Pakbon', 'Beheer pakbonnen'];
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductLookup']['SearchLabel'] = 'Zoek producten en bestellingen';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantityInStock'] = 'Voorraad';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity'] = 'Aantal';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName'] = 'Product';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku'] = 'Productnummer';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdValue'] = 'Waarde';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdDocumentNumber'] = 'Factuurnummer';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductNotAvailable'] = '%s niet op voorraad. ';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'] = '%s is niet betaald. ';
 $GLOBALS['TL_LANG']['MSC']['NumberOfPackageSlips'] = 'Aantal pakbonnen';

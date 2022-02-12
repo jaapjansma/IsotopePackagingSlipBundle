@@ -18,8 +18,8 @@
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
-\Contao\System::loadLanguageFile(\Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel::getTable());
-\Contao\Controller::loadDataContainer(\Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel::getTable());
+\Contao\System::loadLanguageFile(\Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::getTable());
+\Contao\Controller::loadDataContainer(\Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::getTable());
 
 $GLOBALS['TL_DCA']['tl_isotope_stock_booking']['fields']['packaging_slip_id'] = array
 (
@@ -32,12 +32,12 @@ $GLOBALS['TL_DCA']['tl_isotope_stock_booking']['fields']['packaging_slip_id'] = 
     'tl_class'                  => 'clr',
     'foreignTable'              => 'tl_isotope_packaging_slip',
     'fieldType'                 => 'radio',
-    'listFields'                => array(\Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel::getTable().'.document_number'),
+    'listFields'                => array(\Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::getTable().'.document_number'),
     'joins'                     => array(),
     'searchFields'              => array('document_number'),
     'customLabels'              => array
     (
-      $GLOBALS['TL_DCA'][\Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel::getTable()]['fields']['document_number']['label'][0],
+      $GLOBALS['TL_DCA'][\Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::getTable()]['fields']['document_number']['label'][0],
     ),
     'sqlWhere'                  => '',
     'searchLabel'               => 'Search Packaging Slip',

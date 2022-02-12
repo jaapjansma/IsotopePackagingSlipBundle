@@ -9,6 +9,8 @@
             <th class="head_<?php echo $k; ?> tl_folder_tlist <?php echo $arrColumnLabel['rowClass']; ?>"><?php echo $arrColumnLabel['label']; ?></th>
             <?php endforeach; ?>
             <th class="tl_folder_tlist"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity']; ?></th>
+            <th class="tl_folder_tlist"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdDocumentNumber']; ?></th>
+            <th class="tl_folder_tlist"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdValue']; ?></th>
             <?php if ($this->enableSorting): ?>
             <th class="tl_folder_tlist"></th>
             <?php endif; ?>
@@ -36,7 +38,7 @@
         <?php endif; ?>
 
         <tr class="search" style="display:none">
-            <td colspan="<?php echo $this->colspan + 2; ?>"><label for="ctrl_<?php echo $this->strId; ?>_search"><?php echo $this->searchLabel; ?>:</label>
+            <td colspan="<?php echo $this->colspan + 5; ?>"><label for="ctrl_<?php echo $this->strId; ?>_search"><?php echo $this->searchLabel; ?>:</label>
                 <input type="text" id="ctrl_<?php echo $this->strId; ?>_search" name="keywords" class="tl_text" autocomplete="off">
             </td>
         </tr>

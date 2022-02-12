@@ -17,7 +17,11 @@
  */
 
 $GLOBALS['TL_LANG']['MOD']['tl_isotope_packaging_slip'] = ['Packaging Slip', 'Manage packaging slips'];
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductLookup']['SearchLabel'] = 'Search Product and Orders';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity'] = 'Quantity';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantityInStock'] = 'In stock';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdValue'] = 'Value';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdDocumentNumber'] = 'Order number';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName'] = 'Product';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku'] = 'Product Number';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductNotAvailable'] = '%s not enough in stock. ';

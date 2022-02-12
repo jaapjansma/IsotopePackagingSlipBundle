@@ -17,7 +17,8 @@
  */
 
 use \Krabo\IsotopePackagingSlipBundle\EventListener\ProductCollectionListener;
-use \Krabo\IsotopePackagingSlipBundle\Model\PackagingSlipModel;
+use \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
+use \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
 
 array_insert($GLOBALS['BE_MOD']['isotope'], 2, array
 (
@@ -29,10 +30,12 @@ array_insert($GLOBALS['BE_MOD']['isotope'], 2, array
   ),
 ));
 
-$GLOBALS['TL_MODELS']['tl_isotope_packaging_slip'] = PackagingSlipModel::class;
+$GLOBALS['TL_MODELS']['tl_isotope_packaging_slip'] = IsotopePackagingSlipModel::class;
+$GLOBALS['TL_MODELS']['tl_isotope_packaging_slip_product_collection'] = IsotopePackagingSlipProductCollectionModel::class;
 
 $GLOBALS['ISO_HOOKS']['postOrderStatusUpdate'][] = [ProductCollectionListener::class, 'postOrderStatusUpdate'];
 $GLOBALS['ISO_HOOKS']['createFromProductCollection'][] = [ProductCollectionListener::class, 'createFromProductCollection'];
 
 \Isotope\Model\Shipping::registerModelType('combine_packaging_slip', 'Krabo\IsotopePackagingSlipBundle\Model\Shipping\CombinePackagingSlip');
 
+$GLOBALS['BE_FFL']['IsoPackagingSlipProductLookup'] = 'Krabo\IsotopePackagingSlipBundle\Widget\ProductLookupWizard';

@@ -64,10 +64,10 @@ class PackagingSlipCheckAvailability {
         }
       }
 
-      $result = $db->execute("SELECT `order_id`, `pid` FROM `tl_isotope_packaging_slip_order_collection` WHERE `pid` IN ($strIds)");
+      $result = $db->execute("SELECT `document_number`, `pid` FROM `tl_isotope_packaging_slip_product_collection` WHERE `document_number` != '' AND `pid` IN ($strIds) GROUP BY `document_number`, `pid`");
       while($result->next()) {
         /** @var Order $order */
-        $order = Order::findByPk($result->order_id);
+        $order = Order::findOneBy('document_number', $result->document_number);
         if (!$order->isPaid()) {
           $note = sprintf($GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'], $order->document_number);
           $strPackageSlipIds = $result->pid;
