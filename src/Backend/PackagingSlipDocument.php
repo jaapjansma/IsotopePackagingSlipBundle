@@ -68,11 +68,11 @@ class PackagingSlipDocument extends \Backend {
   protected function createPdf($ids) {
     $pdf        = $this->generatePDF();
     $pdf->SetHTMLFooter('{PAGENO}');
-    $pdf->AddPage('P', '', '1', '', '', '10', '10', '25', '20');
+    $pdf->AddPage('P', '', '1', '', '', '10', '10', '10', '10');
     $pdf->writeHTML($this->generateProductListTemplate($ids));
     foreach($ids as $id) {
       $packagingSlip = IsotopePackagingSlipModel::findByPk($id);
-      $pdf->AddPage('P', '', '1', '', '', '10', '10', '25', '20');
+      $pdf->AddPage('P', '', '1', '', '', '10', '10', '10', '10');
       $pdf->writeHTML($this->generateTemplate($packagingSlip));
       if ($packagingSlip->status < 1) {
         $packagingSlip->status = 1;
@@ -156,10 +156,6 @@ class PackagingSlipDocument extends \Backend {
       'fontdata' => $fontData,
       'format' => \defined('PDF_PAGE_FORMAT') ? PDF_PAGE_FORMAT : 'A4',
       'orientation' => \defined('PDF_PAGE_ORIENTATION') ? PDF_PAGE_ORIENTATION : 'P',
-      'margin_left' => \defined('PDF_MARGIN_LEFT') ? PDF_MARGIN_LEFT : 15,
-      'margin_right' => \defined('PDF_MARGIN_RIGHT') ? PDF_MARGIN_RIGHT : 15,
-      'margin_top' => \defined('PDF_MARGIN_TOP') ? PDF_MARGIN_TOP : 10,
-      'margin_bottom' => \defined('PDF_MARGIN_BOTTOM') ? PDF_MARGIN_BOTTOM : 10,
       'default_font_size' => \defined('PDF_FONT_SIZE_MAIN') ? PDF_FONT_SIZE_MAIN : 12,
       'default_font' => \defined('PDF_FONT_NAME_MAIN') ? PDF_FONT_NAME_MAIN : 'freeserif',
     ]);

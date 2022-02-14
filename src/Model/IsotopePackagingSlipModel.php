@@ -141,6 +141,13 @@ class IsotopePackagingSlipModel extends Model {
   }
 
   /**
+   * @return string
+   */
+  public function getStatusLabel() {
+    return $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'][$this->status];
+  }
+
+  /**
    * @return array
    */
   public function getProductsCombinedByProductId() {
