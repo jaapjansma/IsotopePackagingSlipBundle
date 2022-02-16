@@ -41,7 +41,8 @@ class IsotopePackagingSlipModel extends Model {
   const STATUS_OPEN = 0;
   const STATUS_PREPARE_FOR_SHIPPING = 1;
   const STATUS_SHIPPED = 2;
-  const STATUS_DELIVERED = 3;
+  const STATUS_READY_FOR_PICKUP = 3;
+  const STATUS_DELIVERED = 4;
   const STATUS_ONHOLD = -1;
 
   private $products;
@@ -162,8 +163,10 @@ class IsotopePackagingSlipModel extends Model {
   public function getTotalWeight(): int {
     $weight = 0.00;
     $products = IsotopePackagingSlipProductCollectionModel::findBy('pid', $this->id);
-    foreach($products as $product) {
-      $weight += $product->getWeightInKg();
+    if ($products) {
+      foreach ($products as $product) {
+        $weight += $product->getWeightInKg();
+      }
     }
     return (int) round($weight);
   }

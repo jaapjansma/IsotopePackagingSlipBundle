@@ -155,7 +155,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'inputType'               => 'radio',
       'eval'                    => array('doNotCopy'=>true, 'tl_class' => 'w50'),
       'reference'               => $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'],
-      'options'                 => array('0', '1', '2', '3', '-1'),
+      'options'                 => array('0', '1', '2', '3', '4', '-1'),
       'sql'                     => "int(10) signed NOT NULL default 0",
       'default'                 => '0',
     ),
