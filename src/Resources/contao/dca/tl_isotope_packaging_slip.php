@@ -68,7 +68,8 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     'label' => array
     (
       'showColumns'             => true,
-      'fields'                  => array('date', 'document_number', 'status', 'shipping_date', 'is_available', 'availability_notes'),
+      'fields'                  => array('date', 'document_number', 'country', 'status', 'shipping_id', 'shipping_date', 'is_available', 'availability_notes'),
+      'label_callback'          => ['tl_isotope_packaging_slip', 'labelCallback'],
     ),
     'global_operations' => array
     (
@@ -105,7 +106,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
   'palettes' => array
   (
     '__selector__'                => [],
-    'default'                     => 'document_number,config_id;status,is_available;availability_notes;date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes'
+    'default'                     => 'document_number,config_id;status,is_available;availability_notes;date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
   ),
 
   // Subpalettes
@@ -155,7 +156,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'inputType'               => 'radio',
       'eval'                    => array('doNotCopy'=>true, 'tl_class' => 'w50'),
       'reference'               => $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'],
-      'options'                 => array('0', '1', '2', '3', '4', '-1'),
+      'options'                 => array('0', '1', '2', '3', '4', '5', '-1'),
       'sql'                     => "int(10) signed NOT NULL default 0",
       'default'                 => '0',
     ),
@@ -322,6 +323,13 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'eval'                  => array('style'=>'height:80px;', 'tl_class' => 'clr'),
       'sql'                   => 'text NULL',
     ),
+    'internal_notes' => array
+    (
+      'exclude'               => true,
+      'inputType'             => 'textarea',
+      'eval'                  => array('style'=>'height:80px;', 'tl_class' => 'clr'),
+      'sql'                   => 'text NULL',
+    ),
     'credit_account' => array
     (
       'filter'                  => true,
@@ -346,6 +354,16 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
 class tl_isotope_packaging_slip {
 
   protected $currentStatus;
+
+  public function labelCallback($arrData, string $label, \Contao\DataContainer $dc, $labels) {
+    $fields = $GLOBALS['TL_DCA'][$dc->table]['list']['label']['fields'];
+    $shipping_id_key = array_search('shipping_id', $fields, true);
+    if ($labels[$shipping_id_key]) {
+      $shippingMethod = \Isotope\Model\Shipping::findByPk($labels[$shipping_id_key]);
+      $labels[$shipping_id_key] = $shippingMethod->name;
+    }
+    return $labels;
+  }
 
   public function onLoad(\Contao\DataContainer $dc) {
     if (Input::post('FORM_SUBMIT') == 'tl_select') {

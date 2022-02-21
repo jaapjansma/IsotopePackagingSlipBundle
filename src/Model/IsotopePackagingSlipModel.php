@@ -20,17 +20,25 @@ namespace Krabo\IsotopePackagingSlipBundle\Model;
 
 use Contao\Database;
 use Contao\Model;
+use Contao\StringUtil;
 use Contao\System;
 use Database\Result;
+use Haste\Util\Format;
+use Isotope\Model\Address;
+use Isotope\Model\Document;
 use Isotope\Model\Product;
 use Isotope\Isotope;
 use Isotope\Model\ProductCollection\Order;
+use Isotope\Model\Shipping;
+use Isotope\Template;
 use Krabo\IsotopePackagingSlipBundle\Event\Events;
 use Krabo\IsotopePackagingSlipBundle\Event\GenerateAddressEvent;
 use Krabo\IsotopePackagingSlipBundle\Event\StatusChangedEvent;
 use Krabo\IsotopePackagingSlipBundle\Helper\AddressHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
+use Krabo\IsotopePackagingSlipBundle\Helper\TemplateHelper;
 use Krabo\IsotopeStockBundle\Model\BookingModel;
+use NotificationCenter\Model\Notification;
 
 class IsotopePackagingSlipModel extends Model {
 
@@ -43,6 +51,7 @@ class IsotopePackagingSlipModel extends Model {
   const STATUS_SHIPPED = 2;
   const STATUS_READY_FOR_PICKUP = 3;
   const STATUS_DELIVERED = 4;
+  const STATUS_PICKED_UP = 5;
   const STATUS_ONHOLD = -1;
 
   private $products;
@@ -174,7 +183,7 @@ class IsotopePackagingSlipModel extends Model {
   /**
    * Get the list of orders in this packaging slip.
    *
-   * @return array
+   * @return \Isotope\Model\ProductCollection\Order[]
    */
   public function getOrders() {
     $result = \Database::getInstance()->prepare("SELECT `document_number` FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid`= ? AND `document_number` != '' GROUP BY `document_number`")->execute($this->id);
@@ -260,8 +269,65 @@ class IsotopePackagingSlipModel extends Model {
     if ($newStatus == self::STATUS_PREPARE_FOR_SHIPPING && $oldStatus != $newStatus) {
       $this->updateDeliveryStock();
     }
+
+    $objNotificationCollection = \NotificationCenter\Model\Notification::findByType('isotope_packaging_slip_status_'.$newStatus);
+    $arrTokens = $this->getNotificationTokens();
+    $arrTokens['old_status_id'] = $oldStatus;
+    $arrTokens['old_status'] = $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'][$oldStatus];
+    if (null !== $objNotificationCollection) {
+      $objNotificationCollection->reset();
+      while ($objNotificationCollection->next()) {
+        $objNotification = $objNotificationCollection->current();
+        $objNotification->send($arrTokens);
+      }
+    }
+
     $event = new StatusChangedEvent($this, $oldStatus, $newStatus);
     System::getContainer()->get('event_dispatcher')->dispatch($event, Events::STATUS_CHANGED_EVENT);
+  }
+
+  /**
+   * Retrieve the array of notification data for parsing simple tokens
+   *
+   * @return array
+   */
+  public function getNotificationTokens()
+  {
+    $objConfig = $this->getRelated('config_id') ?: Isotope::getConfig();
+    Isotope::setConfig($objConfig);
+
+    $arrTokens                    = $this->row();
+    $arrTokens['status_id']       = $this->status;
+    $arrTokens['status']          = $this->getStatusLabel();
+    $arrTokens['recipient_email'] = $this->getEmailRecipient();
+    $arrTokens['order_id']        = $this->id;
+    $arrTokens['document']        = TemplateHelper::generatePackagingSlipHTML($this, 'packaging_slip_document_compact');
+    // Add shipping method info
+    $objShipping = Shipping::findByPk($this->shipping_id);
+    $arrTokens['shipping_id']        = $objShipping->getId();
+    $arrTokens['shipping_label']     = $objShipping->getLabel();
+    $arrTokens['shipping_note']      = $objShipping->getNote();
+    return $arrTokens;
+  }
+
+  /**
+   * Return customer email address for the collection
+   *
+   * @return string
+   */
+  public function getEmailRecipient()
+  {
+    $strName  = $this->firstname . ' ' . $this->lastname;
+    $strEmail = $this->email;
+    if (trim($strName) != '') {
+      // Romanize friendly name to prevent email issues
+      $strName = html_entity_decode($strName, ENT_QUOTES, $GLOBALS['TL_CONFIG']['characterSet']);
+      $strName = strip_insert_tags($strName);
+      $strName = utf8_romanize($strName);
+      $strName = preg_replace('/[^A-Za-z0-9\.!#$%&\'*+-\/=?^_ `{\|}~]+/i', '_', $strName);
+      $strEmail = sprintf('"%s" <%s>', $strName, $strEmail);
+    }
+    return $strEmail;
   }
 
 

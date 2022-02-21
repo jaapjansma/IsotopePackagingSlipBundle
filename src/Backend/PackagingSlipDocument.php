@@ -23,8 +23,8 @@ use Contao\File;
 use Contao\FilesModel;
 use Contao\System;
 use Haste\Util\StringUtil;
-use Isotope\Model\Shipping;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
+use Krabo\IsotopePackagingSlipBundle\Helper\TemplateHelper;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -175,17 +175,7 @@ class PackagingSlipDocument extends \Backend {
    */
   protected function generateTemplate(IsotopePackagingSlipModel $packagingSlip)
   {
-    /** @var \Contao\FrontendTemplate|\stdClass $objTemplate */
-    $objTemplate = new \Contao\FrontendTemplate($this->documentTpl);
-    $objTemplate->setData($this->arrData);
-
-    $shippingMethod = Shipping::findByPk($packagingSlip->shipping_id);
-    $objTemplate->packagingSlip = $packagingSlip;
-    $objTemplate->shipping = $shippingMethod;
-    $objTemplate->dateFormat    = $GLOBALS['TL_CONFIG']['dateFormat'];
-    $objTemplate->timeFormat    = $GLOBALS['TL_CONFIG']['timeFormat'];
-    $objTemplate->datimFormat   = $GLOBALS['TL_CONFIG']['datimFormat'];
-    return $this->fixTemplateOutput($objTemplate->parse());
+    return $this->fixTemplateOutput(TemplateHelper::generatePackagingSlipHTML($packagingSlip, $this->documentTpl));
   }
 
   /**
