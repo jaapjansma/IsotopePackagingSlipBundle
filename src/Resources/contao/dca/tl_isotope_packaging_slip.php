@@ -68,7 +68,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     'label' => array
     (
       'showColumns'             => true,
-      'fields'                  => array('date', 'document_number', 'country', 'status', 'shipping_id', 'shipping_date', 'is_available', 'availability_notes'),
+      'fields'                  => array('date', 'document_number', 'country', 'status', 'shipping_id', 'shipping_date', 'is_available', 'availability_notes', 'order_id'),
       'label_callback'          => ['tl_isotope_packaging_slip', 'labelCallback'],
     ),
     'global_operations' => array
@@ -124,6 +124,10 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     'tstamp' => array
     (
       'sql'                     => "int(10) unsigned NOT NULL default 0"
+    ),
+    'order_id' => array
+    (
+      // Only present to show a label in the overview table.
     ),
     'config_id' => array
     (
@@ -356,11 +360,23 @@ class tl_isotope_packaging_slip {
   protected $currentStatus;
 
   public function labelCallback($arrData, string $label, \Contao\DataContainer $dc, $labels) {
+    /** @var \Symfony\Component\Routing\RouterInterface $router */
+    $router = \Contao\System::getContainer()->get('router');
+    $packagingSlip = IsotopePackagingSlipModel::findByPk($arrData['id']);
     $fields = $GLOBALS['TL_DCA'][$dc->table]['list']['label']['fields'];
     $shipping_id_key = array_search('shipping_id', $fields, true);
     if ($labels[$shipping_id_key]) {
       $shippingMethod = \Isotope\Model\Shipping::findByPk($labels[$shipping_id_key]);
       $labels[$shipping_id_key] = $shippingMethod->name;
+    }
+    $order_id_key = array_search('order_id', $fields, true);
+    $orders = [];
+    foreach($packagingSlip->getOrders() as $order) {
+      $order_url = $router->generate('contao_backend', ['act' => 'edit', 'do' => 'iso_orders', 'id' => $order->id, 'rt' => REQUEST_TOKEN]);
+      $orders[] = '<a href="' . $order_url . '">' . $order->document_number . '</a>';
+    }
+    if (count($orders)) {
+      $labels[$order_id_key] = implode(", ", $orders);
     }
     return $labels;
   }

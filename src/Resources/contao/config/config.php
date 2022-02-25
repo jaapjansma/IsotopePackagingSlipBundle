@@ -70,6 +70,8 @@ $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope_packaging_slip']['
   'shipping_id', // Shipping method ID
   'shipping_label', // Shipping method label
   'shipping_note', // Shipping method note
+  'shipping_method_*', // All shipping method fields
+  'packaging_slip_*', // All Packaging Slip method fields
 );
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope_packaging_slip']['isotope_packaging_slip_status_1']['email_subject'] = &$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope_packaging_slip']['isotope_packaging_slip_status_1']['email_text'];
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope_packaging_slip']['isotope_packaging_slip_status_1']['email_html'] = &$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope_packaging_slip']['isotope_packaging_slip_status_1']['email_text'];

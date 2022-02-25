@@ -19,6 +19,8 @@
 namespace Krabo\IsotopePackagingSlipBundle\Model;
 
 use Contao\Database;
+use Contao\Date;
+use Contao\MemberModel;
 use Contao\Model;
 use Contao\StringUtil;
 use Contao\System;
@@ -307,6 +309,17 @@ class IsotopePackagingSlipModel extends Model {
     $arrTokens['shipping_id']        = $objShipping->getId();
     $arrTokens['shipping_label']     = $objShipping->getLabel();
     $arrTokens['shipping_note']      = $objShipping->getNote();
+    foreach ($objShipping->row() as $k => $v) {
+      $arrTokens['shipping_method_' . $k] = $v;
+    }
+    foreach ($this->row() as $k => $v) {
+      $arrTokens['packaging_slip_' . $k] = $v;
+    }
+    if (!empty($arrTokens['shipping_date'])) {
+      $shippingDate = new \DateTime();
+      $shippingDate->setTimestamp($arrTokens['shipping_date']);
+      $arrTokens['shipping_date'] = $shippingDate->format(Date::getNumericDateFormat());
+    }
     return $arrTokens;
   }
 

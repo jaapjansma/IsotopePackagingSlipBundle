@@ -114,7 +114,7 @@ class ProductCollectionListener {
    * @return array
    */
   protected function addProductsFromOrder(IsotopePackagingSlipModel $packagingSlip, Order $order) {
-    $products = IsotopePackagingSlipProductCollectionModel::findBy('pid', $packagingSlip->id);
+    $products = IsotopePackagingSlipProductCollectionModel::findBy('pid', $packagingSlip->id)->getModels();
     $db = \Database::getInstance();
     $objResults = $db->prepare("
         SELECT `product_id`, `quantity`, `price` 
