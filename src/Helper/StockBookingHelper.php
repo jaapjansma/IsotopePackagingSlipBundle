@@ -154,6 +154,9 @@ class StockBookingHelper {
       }
       foreach($packagingSlipModel->getProductsCombinedByProductId() as $item) {
         $product = $item->getProduct();
+        if (!$product) {
+          continue;
+        }
         if (!isset($return[$account->id]['products'][$product->id])) {
           $return[$account->id]['products'][$product->id] = [
             'quantity' => $item->quantity,
@@ -163,9 +166,9 @@ class StockBookingHelper {
             'package_slip_ids' => [$id],
           ];
         } else {
-          $return[$account->id]['products'][$product->id]['quantity'] += $item['quantity'];
-          if (!in_array($id, $return[$account->id]['products'][$product->id]['quantity']['package_slip_ids'])) {
-            $return[$account->id]['products'][$product->id]['quantity']['package_slip_ids'][] = $id;
+          $return[$account->id]['products'][$product->id]['quantity'] += $item->quantity;
+          if (!in_array($id, $return[$account->id]['products'][$product->id]['package_slip_ids'])) {
+            $return[$account->id]['products'][$product->id]['package_slip_ids'][] = $id;
           }
         }
       }

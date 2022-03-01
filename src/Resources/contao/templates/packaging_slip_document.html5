@@ -42,17 +42,19 @@
             <th style="width: 10%; text-align: right;"><strong><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity']; ?></strong></th>
         </tr>
         <?php foreach($this->packagingSlip->getProductsCombinedByProductId() as $product) { ?>
-            <?php $totalQuantity += $product->quantity; ?>
-            <tr>
-                <td style="width: 10%;"><?php echo $product->getProduct()->getSku(); ?></td>
-                <td><?php echo $product->getProduct()->getName(); ?></td>
-                <td style="width: 10%; text-align: right;"><?php echo $product->quantity; ?></td>
-            </tr>
+            <?php if ($product->getProduct()) { ?>
+                <?php $totalQuantity += $product->quantity; ?>
+                <tr>
+                    <td style="width: 10%;"><?php echo $product->getProduct()->getSku(); ?></td>
+                    <td><?php echo $product->getProduct()->getName(); ?></td>
+                    <td style="width: 10%; text-align: right;"><?php echo $product->quantity; ?></td>
+                </tr>
+            <?php } ?>
         <?php } ?>
         <tr>
             <td style="width: 10%;"></td>
             <td></td>
-            <td style="width: 10%; text-align: right; font-weight:bold; border-top: 1px solid black;"><?php echo $product->quantity; ?></td>
+            <td style="width: 10%; text-align: right; font-weight:bold; border-top: 1px solid black;"><?php echo $totalQuantity; ?></td>
         </tr>
     </table>
 
