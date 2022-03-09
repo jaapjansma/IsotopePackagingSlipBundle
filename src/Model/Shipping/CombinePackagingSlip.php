@@ -46,20 +46,25 @@ class CombinePackagingSlip extends Flat {
    */
   public function getNote()
   {
-    $address = Isotope::getCart()->getShippingAddress()->generate(Isotope::getConfig()->getShippingFieldsConfig());
-    $combined_packaging_slip_id = Isotope::getCart()->combined_packaging_slip_id;
+    $cart = Isotope::getCart();
+    if ($cart) {
+      $address = $cart->getShippingAddress()->generate(Isotope::getConfig()
+        ->getShippingFieldsConfig());
+      $combined_packaging_slip_id = $cart->combined_packaging_slip_id;
 
-    if ($combined_packaging_slip_id) {
-      $objPackagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $combined_packaging_slip_id);
-      $address = $objPackagingSlip->generateAddress();
-      $orderDocumentNumbers = [];
-      foreach ($objPackagingSlip->getOrders() as $order) {
-        $orderDocumentNumbers[] = $order->document_number;
+      if ($combined_packaging_slip_id) {
+        $objPackagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $combined_packaging_slip_id);
+        $address = $objPackagingSlip->generateAddress();
+        $orderDocumentNumbers = [];
+        foreach ($objPackagingSlip->getOrders() as $order) {
+          $orderDocumentNumbers[] = $order->document_number;
+        }
+        return $this->note . '<div class="combined_packaging_slip_nr">' . implode('<br />', $orderDocumentNumbers) . '</div><br />' . $address;
       }
-      return $this->note . '<div class="combined_packaging_slip_nr">' . implode('<br />', $orderDocumentNumbers).'</div><br />' . $address;
-    }
 
-    return $this->note . $address;
+      return $this->note . $address;
+    }
+    return $this->note;
   }
 
   /**
