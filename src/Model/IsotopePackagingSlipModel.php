@@ -253,7 +253,7 @@ class IsotopePackagingSlipModel extends Model {
    */
   protected function postSave($intType)
   {
-    if ($this->status && $this->oldStatus && $this->status != $this->oldStatus) {
+    if ($this->status !== null && $this->oldStatus !== null && $this->status != $this->oldStatus) {
       $this->triggerStatusChangedEvent($this->oldStatus, $this->status);
     }
     parent::postSave($intType);

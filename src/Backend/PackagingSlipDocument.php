@@ -74,8 +74,12 @@ class PackagingSlipDocument extends \Backend {
       $packagingSlip = IsotopePackagingSlipModel::findByPk($id);
       $pdf->AddPage('P', '', '1', '', '', '10', '10', '10', '10');
       $pdf->writeHTML($this->generateTemplate($packagingSlip));
-      if ($packagingSlip->status < 1) {
-        $packagingSlip->status = 1;
+      $validOldStatusIds = [
+        IsotopePackagingSlipModel::STATUS_OPEN,
+        IsotopePackagingSlipModel::STATUS_ONHOLD
+      ];
+      if (in_array($packagingSlip->status, $validOldStatusIds)) {
+        $packagingSlip->status = IsotopePackagingSlipModel::STATUS_PREPARE_FOR_SHIPPING;
         $packagingSlip->save();
       }
     }
