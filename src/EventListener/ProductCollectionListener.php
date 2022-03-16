@@ -26,8 +26,10 @@ use Isotope\Model\ProductCollection;
 use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Event\Events;
 use Krabo\IsotopePackagingSlipBundle\Event\PackagingSlipOrderEvent;
+use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
+use Krabo\IsotopeStockBundle\Model\BookingModel;
 
 class ProductCollectionListener {
 
@@ -102,6 +104,7 @@ class ProductCollectionListener {
       }
       $products = $this->addProductsFromOrder($packagingSlip, $order);
       IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
+      StockBookingHelper::clearOrderBooking($order, BookingModel::SALES_TYPE);
     }
   }
 

@@ -132,6 +132,30 @@ class StockBookingHelper {
         ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `product_id` = ? AND `type` = ? AND `order_id` = ?")
         ->execute($packagingSlipModel->id, $product_id, $bookingType, $order->id);
     }
+    self::clearBookingLines();
+  }
+
+  /**
+   * @param IsotopePackagingSlipModel $packagingSlipModel
+   * @param Order $order
+   * @param int $type
+   */
+  public static function clearOrderBooking(Order $order, int $bookingType) {
+    \Database::getInstance()
+      ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = 0 AND `type` = ? AND `order_id` = ?")
+      ->execute($bookingType, $order->id);
+    self::clearBookingLines();
+  }
+
+  /**
+   * Clear the booking lines which are not connected to a booking
+   *
+   * @return void
+   */
+  public static function clearBookingLines() {
+    \Database::getInstance()
+      ->prepare("DELETE FROM `tl_isotope_stock_booking_line` WHERE `pid` NOT IN (SELECT `id` FROM `tl_isotope_stock_booking`)")
+      ->execute();
   }
 
   /**
