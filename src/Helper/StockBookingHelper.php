@@ -137,6 +137,19 @@ class StockBookingHelper {
 
   /**
    * @param IsotopePackagingSlipModel $packagingSlipModel
+   * @param $product_id
+   * @param int $type
+   * @param string $document_number
+   */
+  public static function clearBookingForPackagingSlip(IsotopePackagingSlipModel $packagingSlipModel, int $bookingType) {
+    \Database::getInstance()
+      ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `type` = ?")
+      ->execute($packagingSlipModel->id, $bookingType);
+    self::clearBookingLines();
+  }
+
+  /**
+   * @param IsotopePackagingSlipModel $packagingSlipModel
    * @param Order $order
    * @param int $type
    */

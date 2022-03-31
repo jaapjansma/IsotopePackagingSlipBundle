@@ -42,6 +42,7 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['is_available'] = ['Is availabl
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['availability_notes'] = ['Availability notes', 'Is automatically populated'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipping_legend'] = 'Shipping';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipping_id'] = ['Shipping Method', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipper_id'] = ['Shipper', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['stock_legend'] = 'Stock';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['product_legend'] = 'Products';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['notes_legend'] = 'Notes';

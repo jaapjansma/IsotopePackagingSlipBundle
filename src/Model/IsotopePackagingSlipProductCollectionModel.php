@@ -49,6 +49,7 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
     $db = \Database::getInstance();
     $objStmnt = $db->prepare("DELETE FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid` = ?");
     $objStmnt->execute($packagingSlip->id);
+    StockBookingHelper::clearBookingForPackagingSlip($packagingSlip, BookingModel::SALES_TYPE);
     foreach($products as $product) {
       // Make sure the product gets inserted by clearing the registry
       Registry::getInstance()->unregister($product);

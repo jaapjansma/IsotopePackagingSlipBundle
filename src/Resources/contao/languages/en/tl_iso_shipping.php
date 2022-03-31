@@ -19,4 +19,6 @@
 $GLOBALS['TL_LANG']['tl_iso_shipping']['isotopestock_store_account'] = ['Store Account', 'Select a specific store account for this shipping method. Use for example if you have stockage in a different location'];
 $GLOBALS['TL_LANG']['tl_iso_shipping']['isotopestock_override_store_account'] = ['Override Store Account', 'Override the store account with a custom store account for this shipping.'];
 $GLOBALS['TL_LANG']['tl_iso_shipping']['isotopestock_legend'] = 'Stock Account Settings';
+$GLOBALS['TL_LANG']['tl_iso_shipping']['shipper_legend'] = 'Shipper';
+$GLOBALS['TL_LANG']['tl_iso_shipping']['shipper_id'] = ['Shipper', ''];
 $GLOBALS['TL_LANG']['MODEL']['tl_iso_shipping']['combine_packaging_slip'] = ['Add to existing package slip', ''];

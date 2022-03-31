@@ -19,16 +19,28 @@
 namespace Krabo\IsotopePackagingSlipBundle\Cron;
 
 use Contao\CoreBundle\ServiceAnnotation\CronJob;
-use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 
 /**
- * @CronJob("* *\/10 * * *")
+ * @CronJob("minutely")
  */
-class CheckAvailabilityCron {
+class ProcessDelayedStatusChangedEventsCron {
 
   public function __invoke(): void
   {
-    PackagingSlipCheckAvailability::checkAllOpenForAvailability();
+    $t = IsotopePackagingSlipModel::getTable();
+    $options = [
+      'column' => array("$t.fire_status_changed_event_on_shipping_date=1", "$t.shipping_date!=''", "$t.shipping_date<=UNIX_TIMESTAMP()"),
+      'order'  => "$t.tstamp",
+      'limit'  => 50,
+    ];
+    $packagingSlips = IsotopePackagingSlipModel::findAll($options);
+    if ($packagingSlips && $packagingSlips->count()) {
+      foreach ($packagingSlips as $packagingSlip) {
+        /* @var IsotopePackagingSlipModel $packagingSlip */
+        $packagingSlip->triggerStatusChangedEvent($packagingSlip->old_status, $packagingSlip->new_status, TRUE);
+      }
+    }
   }
 
 }

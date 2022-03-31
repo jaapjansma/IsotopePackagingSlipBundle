@@ -41,6 +41,7 @@ use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\TemplateHelper;
 use Krabo\IsotopeStockBundle\Model\BookingModel;
 use NotificationCenter\Model\Notification;
+use NotificationCenter\Model\QueuedMessage;
 
 class IsotopePackagingSlipModel extends Model {
 
@@ -264,28 +265,51 @@ class IsotopePackagingSlipModel extends Model {
    *
    * @param int $oldStatus
    * @param int $newStatus
+   * @param bool $isDelayed
    *
    * @return void
    */
-  public function triggerStatusChangedEvent(int $oldStatus, int $newStatus) {
-    if ($newStatus == self::STATUS_PREPARE_FOR_SHIPPING && $oldStatus != $newStatus) {
+  public function triggerStatusChangedEvent(int $oldStatus, int $newStatus, $isDelayed=false) {
+    if ($newStatus == self::STATUS_PREPARE_FOR_SHIPPING && $oldStatus != $newStatus && !$isDelayed) {
       $this->updateDeliveryStock();
     }
 
-    $objNotificationCollection = \NotificationCenter\Model\Notification::findByType('isotope_packaging_slip_status_'.$newStatus);
-    $arrTokens = $this->getNotificationTokens();
-    $arrTokens['old_status_id'] = $oldStatus;
-    $arrTokens['old_status'] = $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'][$oldStatus];
-    if (null !== $objNotificationCollection) {
-      $objNotificationCollection->reset();
-      while ($objNotificationCollection->next()) {
-        $objNotification = $objNotificationCollection->current();
-        $objNotification->send($arrTokens);
+    $delay_status_change_event = false;
+    if ($this->shipping_date) {
+      $today = new \DateTime();
+      $shipping_date = new \DateTime();
+      $shipping_date->setTimestamp($this->shipping_date);
+      if ($shipping_date > $today) {
+        $delay_status_change_event = TRUE;
       }
     }
 
-    $event = new StatusChangedEvent($this, $oldStatus, $newStatus);
-    System::getContainer()->get('event_dispatcher')->dispatch($event, Events::STATUS_CHANGED_EVENT);
+    if (!$delay_status_change_event) {
+      $objNotificationCollection = \NotificationCenter\Model\Notification::findByType('isotope_packaging_slip_status_' . $newStatus);
+      $arrTokens = $this->getNotificationTokens();
+      $arrTokens['old_status_id'] = $oldStatus;
+      $arrTokens['old_status'] = $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'][$oldStatus];
+      if (NULL !== $objNotificationCollection) {
+        $objNotificationCollection->reset();
+        while ($objNotificationCollection->next()) {
+          $objNotification = $objNotificationCollection->current();
+          $objNotification->send($arrTokens);
+        }
+      }
+
+      $event = new StatusChangedEvent($this, $oldStatus, $newStatus);
+      System::getContainer()
+        ->get('event_dispatcher')
+        ->dispatch($event, Events::STATUS_CHANGED_EVENT);
+
+      $r = \Contao\Database::getInstance()
+        ->prepare("UPDATE `tl_isotope_packaging_slip` SET `fire_status_changed_event_on_shipping_date` = '0', `old_status` = NULL, `new_status` = NULL WHERE `id` = ?")
+        ->execute($this->id);
+    } else {
+      \Contao\Database::getInstance()
+        ->prepare("UPDATE `tl_isotope_packaging_slip` SET `fire_status_changed_event_on_shipping_date` = '1', `old_status` = ?, `new_status` = ? WHERE `id` = ?")
+        ->execute($oldStatus, $newStatus, $this->id);
+    }
   }
 
   /**

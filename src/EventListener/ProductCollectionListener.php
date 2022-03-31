@@ -57,6 +57,7 @@ class ProductCollectionListener {
    */
   public function postOrderStatusUpdate(Order $order, $intOldStatus, OrderStatus $objNewStatus) {
     if ($order->isLocked() && $order->isCheckoutComplete() && !IsotopePackagingSlipModel::doesOrderExists($order)) {
+      $orderSettings = unserialize($order->settings);
       if (empty($order->combined_packaging_slip_id)) {
         $eventName = Events::PACKAGING_SLIP_CREATED_FROM_ORDER;
         $config = Config::findByPk($order->config_id);
@@ -64,7 +65,6 @@ class ProductCollectionListener {
         if (empty($prefix)) {
           $prefix = $order->getConfig()->orderPrefix;
         }
-        $orderSettings = unserialize($order->settings);
         $packagingSlip = new IsotopePackagingSlipModel();
         $packagingSlip->date = time();
         $packagingSlip->status = '0';
@@ -86,13 +86,18 @@ class ProductCollectionListener {
         $packagingSlip->postal = $order->getShippingAddress()->postal;
         $packagingSlip->city = $order->getShippingAddress()->city;
         $packagingSlip->country = $order->getShippingAddress()->country;
-        $packagingSlip->notes = $orderSettings['email_data']['form_opmerking'];
+        if (!empty($orderSettings['email_data']['form_opmerking'])) {
+          $packagingSlip->notes = $order->document_number . ":\r\n" . $orderSettings['email_data']['form_opmerking'];
+        }
         $packagingSlip->shipping_id = $order->getShippingMethod()->getId();
         $packagingSlip->config_id = $order->config_id;
         $packagingSlip->debit_account = $config->isotopestock_order_credit_account;
         $packagingSlip->credit_account = $config->isotopestock_store_account;
         if ($order->getShippingMethod()->isotopestock_override_store_account) {
           $packagingSlip->credit_account = $order->getShippingMethod()->isotopestock_store_account;
+        }
+        if ($order->getShippingMethod()->shipper_id) {
+          $packagingSlip->shipper_id = $order->getShippingMethod()->shipper_id;
         }
         $packagingSlip->save();
         $orderDigits = (int) $order->getConfig()->orderDigits;
@@ -101,6 +106,10 @@ class ProductCollectionListener {
         System::getContainer()->get('event_dispatcher')->dispatch($event, $eventName);
       } else {
         $packagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $order->combined_packaging_slip_id);
+        if (!empty($orderSettings['email_data']['form_opmerking'])) {
+          $packagingSlip->notes .= "\r\n\r\n" . $order->document_number . ":\r\n" . $orderSettings['email_data']['form_opmerking'];
+          $packagingSlip->save();
+        }
       }
       $products = $this->addProductsFromOrder($packagingSlip, $order);
       IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
@@ -138,6 +147,33 @@ class ProductCollectionListener {
       $arrProducts[] = $product;
     }
     return $arrProducts;
+  }
+
+  /**
+   * Add the DHL Tracker Code
+   *
+   * @param \Isotope\Model\ProductCollection\Order $order
+   * @param $arrTokens
+   *
+   * @return mixed
+   */
+  public function getOrderNotificationTokens(ProductCollection\Order $order, &$arrTokens) {
+    $sql = "
+      SELECT `shipping_date`
+      FROM `tl_isotope_packaging_slip`
+      INNER JOIN `tl_isotope_packaging_slip_product_collection` ON `tl_isotope_packaging_slip_product_collection`.`pid` = `tl_isotope_packaging_slip`.`id`
+      WHERE `tl_isotope_packaging_slip_product_collection`.`document_number` = ?
+      AND `shipping_date` != ''
+      ORDER BY `tl_isotope_packaging_slip`.`tstamp` DESC
+      LIMIT 0, 1
+    ";
+    $result = \Database::getInstance()->prepare($sql)->execute($order->document_number);
+    if ($result) {
+      $shippingDate = new \DateTime();
+      $shippingDate->setTimestamp($result->shipping_date);
+      $arrTokens['packaging_slip_shipping_date'] = $shippingDate->format('d-m-Y');
+    }
+    return $arrTokens;
   }
 
 }

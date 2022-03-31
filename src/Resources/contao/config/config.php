@@ -18,6 +18,7 @@
 
 use \Krabo\IsotopePackagingSlipBundle\EventListener\ProductCollectionListener;
 use \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
+use \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipShipperModel;
 use \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
 
 array_insert($GLOBALS['BE_MOD']['isotope'], 2, array
@@ -30,16 +31,24 @@ array_insert($GLOBALS['BE_MOD']['isotope'], 2, array
   ),
 ));
 
+$GLOBALS['ISO_MOD']['checkout']['packaging_slip_shipper'] = [
+  'tables'        => array(IsotopePackagingSlipShipperModel::getTable()),
+  'icon'          => 'system/modules/isotope/assets/images/setup-shipping.png',
+];
+
 $GLOBALS['TL_MODELS']['tl_isotope_packaging_slip'] = IsotopePackagingSlipModel::class;
+$GLOBALS['TL_MODELS']['tl_isotope_packaging_slip_shipper'] = IsotopePackagingSlipShipperModel::class;
 $GLOBALS['TL_MODELS']['tl_isotope_packaging_slip_product_collection'] = IsotopePackagingSlipProductCollectionModel::class;
 
 $GLOBALS['ISO_HOOKS']['postOrderStatusUpdate'][] = [ProductCollectionListener::class, 'postOrderStatusUpdate'];
 $GLOBALS['ISO_HOOKS']['createFromProductCollection'][] = [ProductCollectionListener::class, 'createFromProductCollection'];
+$GLOBALS['ISO_HOOKS']['getOrderNotificationTokens'][] = [ProductCollectionListener::class, 'getOrderNotificationTokens'];
 
 \Isotope\Model\Shipping::registerModelType('combine_packaging_slip', 'Krabo\IsotopePackagingSlipBundle\Model\Shipping\CombinePackagingSlip');
 
 $GLOBALS['BE_FFL']['IsoPackagingSlipProductLookup'] = 'Krabo\IsotopePackagingSlipBundle\Widget\ProductLookupWizard';
 
+$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope']['iso_order_status_change']['email_text'][] = 'packaging_slip_shipping_date';
 /**
  * Notification Center notification types
  */

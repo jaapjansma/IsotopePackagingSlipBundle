@@ -17,6 +17,7 @@
  */
 
 $GLOBALS['TL_LANG']['MOD']['tl_isotope_packaging_slip'] = ['Pakbon', 'Beheer pakbonnen'];
+$GLOBALS['TL_LANG']['IMD']['packaging_slip_shipper'] = ['Vervoerder', 'Lijst met mogelijke vervoerdersbedrijven'];
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductLookup']['SearchLabel'] = 'Zoek producten en bestellingen';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantityInStock'] = 'Voorraad';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity'] = 'Aantal';

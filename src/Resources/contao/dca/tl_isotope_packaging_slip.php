@@ -18,6 +18,7 @@
 
 use Contao\Environment;
 use Contao\Input;
+use Isotope\Model\Config;
 use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 
@@ -68,7 +69,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     'label' => array
     (
       'showColumns'             => true,
-      'fields'                  => array('date', 'document_number', 'country', 'status', 'shipping_id', 'shipping_date', 'is_available', 'availability_notes', 'order_id'),
+      'fields'                  => array('date', 'document_number', 'name', 'country', 'status', 'shipping_id', 'shipper_id', 'is_available', 'availability_notes', 'order_id'),
       'label_callback'          => ['tl_isotope_packaging_slip', 'labelCallback'],
     ),
     'global_operations' => array
@@ -106,7 +107,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
   'palettes' => array
   (
     '__selector__'                => [],
-    'default'                     => 'document_number,config_id;status,is_available;availability_notes;date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
+    'default'                     => 'document_number,config_id;status,is_available;availability_notes;date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
   ),
 
   // Subpalettes
@@ -143,7 +144,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'inputType'             => 'tableLookup',
       'eval' => array
       (
-        'mandatory'                 => true,
+        'mandatory'                 => false,
         'doNotSaveEmpty'            => true,
         'tl_class'                  => 'clr',
         'foreignTable'              => 'tl_member',
@@ -158,7 +159,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     (
       'filter'                  => true,
       'inputType'               => 'radio',
-      'eval'                    => array('doNotCopy'=>true, 'tl_class' => 'w50'),
+      'eval'                    => array('tl_class' => 'w50'),
       'reference'               => $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'],
       'options'                 => array('0', '1', '2', '3', '4', '5', '-1'),
       'sql'                     => "int(10) signed NOT NULL default 0",
@@ -185,7 +186,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     (
       'search'                  => true,
       'inputType'               => 'text',
-      'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
+      'eval'                    => array('doNotCopy'=>true, 'readonly'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
       'sql'                     => "varchar(255) NOT NULL default ''"
     ),
     'date' => array
@@ -206,6 +207,29 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'eval'                    => array('mandatory'=>false, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
       'sql'                     => "varchar(10) NOT NULL default ''"
     ),
+    'fire_status_changed_event_on_shipping_date' => array(
+      'inputType' => 'checkbox',
+      'eval' => ['tl_class' => 'w50 clr', 'doNotCopy'=>true],
+      'sql' => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => '']
+    ),
+    'old_status' => array
+    (
+      'inputType'               => 'radio',
+      'eval'                    => array('doNotCopy'=>true, 'tl_class' => 'w50'),
+      'reference'               => $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'],
+      'options'                 => array('0', '1', '2', '3', '4', '5', '-1'),
+      'sql'                     => "int(10) signed NULL",
+      'default'                 => '0',
+    ),
+    'new_status' => array
+    (
+      'inputType'               => 'radio',
+      'eval'                    => array('doNotCopy'=>true, 'tl_class' => 'w50'),
+      'reference'               => $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'],
+      'options'                 => array('0', '1', '2', '3', '4', '5', '-1'),
+      'sql'                     => "int(10) signed NULL",
+      'default'                 => '0',
+    ),
     'product_id'     => array
     (
       'inputType'               => 'IsoPackagingSlipProductLookup',
@@ -216,6 +240,9 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
         'submitOnChange'            => false,
         'tl_class'                  => 'clr',
       ),
+    ),
+    'name' => array
+    (
     ),
     'firstname' => array
     (
@@ -320,6 +347,15 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'eval'                  => array('mandatory'=>true, 'tl_class'=>'w50', 'chosen'=>true),
       'relation'              => array('type'=>'hasOne', 'load'=>'lazy'),
     ),
+    'shipper_id' => array
+    (
+      'filter'                => true,
+      'inputType'             => 'select',
+      'foreignKey'            => \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipShipperModel::getTable().'.name',
+      'sql'                   => "int(10) unsigned NOT NULL default '0'",
+      'eval'                  => array('mandatory'=>false, 'tl_class'=>'w50', 'chosen'=>true, 'includeBlankOption' => true),
+      'relation'              => array('type'=>'hasOne', 'load'=>'lazy'),
+    ),
     'notes' => array
     (
       'exclude'               => true,
@@ -338,7 +374,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     (
       'filter'                  => true,
       'inputType'               => 'select',
-      'eval'                    => array('doNotCopy'=>true, 'tl_class' => 'w50'),
+      'eval'                    => array('tl_class' => 'w50'),
       'foreignKey'              => 'tl_isotope_stock_account.title',
       'sql'                     => "int(10) unsigned NOT NULL default 0",
       'default'                 => '0',
@@ -347,7 +383,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     (
       'filter'                  => true,
       'inputType'               => 'select',
-      'eval'                    => array('doNotCopy'=>true, 'tl_class' => 'w50'),
+      'eval'                    => array('tl_class' => 'w50'),
       'foreignKey'              => 'tl_isotope_stock_account.title',
       'sql'                     => "int(10) unsigned NOT NULL default 0",
       'default'                 => '0',
@@ -369,6 +405,11 @@ class tl_isotope_packaging_slip {
       $shippingMethod = \Isotope\Model\Shipping::findByPk($labels[$shipping_id_key]);
       $labels[$shipping_id_key] = $shippingMethod->name;
     }
+    $shipper_id_key = array_search('shipper_id', $fields, true);
+    if ($labels[$shipper_id_key]) {
+      $shipper = \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipShipperModel::findByPk($labels[$shipper_id_key]);
+      $labels[$shipper_id_key] = $shipper->name;
+    }
     $order_id_key = array_search('order_id', $fields, true);
     $orders = [];
     foreach($packagingSlip->getOrders() as $order) {
@@ -378,6 +419,8 @@ class tl_isotope_packaging_slip {
     if (count($orders)) {
       $labels[$order_id_key] = implode(", ", $orders);
     }
+    $name_id_key = array_search('name', $fields, true);
+    $labels[$name_id_key] =trim($arrData['firstname'] . ' '.$arrData['lastname']);
     return $labels;
   }
 
@@ -398,13 +441,22 @@ class tl_isotope_packaging_slip {
   }
 
   public function onSubmit(\Contao\DataContainer $dc) {
+    $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
+    $config = Config::findByPk($packagingSlip->config_id);
+    if (empty($packagingSlip->document_number) && $config) {
+      $prefix = $config->packagingSlipPrefix;
+      if (empty($prefix)) {
+        $prefix = $config->orderPrefix;
+      }
+      $packagingSlip->generateDocumentNumber($prefix, $config->orderDigits);
+    }
     if ($dc->activeRecord->status != $this->currentStatus) {
-      $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
       $packagingSlip->triggerStatusChangedEvent($this->currentStatus, $dc->activeRecord->status);
     }
     if ($dc->activeRecord->status == IsotopePackagingSlipModel::STATUS_OPEN) {
       PackagingSlipCheckAvailability::checkAvailabilityForPackagingSlips([$dc->id]);
     }
+
   }
 
   public function onDelete(\Contao\DataContainer $dc, $id) {

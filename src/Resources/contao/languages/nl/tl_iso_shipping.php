@@ -19,4 +19,6 @@
 $GLOBALS['TL_LANG']['tl_iso_shipping']['isotopestock_store_account'] = ['Magazijnrekening', 'Selecteer een specifieke magazijnrekening voor deze verzend methode. Bijv. als je een afhaalmagazijn in de winkel hebt.'];
 $GLOBALS['TL_LANG']['tl_iso_shipping']['isotopestock_override_store_account'] = ['Overschrijf Magazijnrekening', 'Overschrijf de magazijnrekening met een specifieke voor deze verzendmethode.'];
 $GLOBALS['TL_LANG']['tl_iso_shipping']['isotopestock_legend'] = 'Voorraadrekening instelling';
+$GLOBALS['TL_LANG']['tl_iso_shipping']['shipper_legend'] = 'Vervoerder';
+$GLOBALS['TL_LANG']['tl_iso_shipping']['shipper_id'] = ['Vervoerder', ''];
 $GLOBALS['TL_LANG']['MODEL']['tl_iso_shipping']['combine_packaging_slip'] = ['Voeg toe aan bestaande pakbon', ''];

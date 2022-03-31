@@ -16,19 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Krabo\IsotopePackagingSlipBundle\Cron;
-
-use Contao\CoreBundle\ServiceAnnotation\CronJob;
-use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
-
-/**
- * @CronJob("* *\/10 * * *")
- */
-class CheckAvailabilityCron {
-
-  public function __invoke(): void
-  {
-    PackagingSlipCheckAvailability::checkAllOpenForAvailability();
-  }
-
-}
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['deleteConfirm'] = 'Weet je zeker dat je deze vervoerder wilt verwijderen?';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['name'] = ['Vervoerder', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['handle_only_paid'] = ['Verwerk indien betaald', ''];

@@ -51,6 +51,14 @@ class PackagingSlipCheckAvailability {
     if (count($ids)) {
       $strIds = implode(",", $ids);
       $db = \Database::getInstance();
+      $needsPayment = $db->prepare("
+        SELECT 
+           `tl_isotope_packaging_slip`.`id`, 
+            `tl_isotope_packaging_slip_shipper`.`handle_only_paid` 
+        FROM `tl_isotope_packaging_slip`
+        LEFT JOIN `tl_isotope_packaging_slip_shipper` ON `tl_isotope_packaging_slip_shipper`.`id` = `tl_isotope_packaging_slip`.`shipper_id`
+        WHERE `handle_only_paid` = '1'"
+      )->execute()->fetchEach('handle_only_paid');
       // Clear current state.
       $db->execute("UPDATE `tl_isotope_packaging_slip` SET `is_available` = '0', `availability_notes` = '' WHERE `id` IN ({$strIds})");
       $products = StockBookingHelper::generateProductListForPackagingSlips($ids);
@@ -64,14 +72,18 @@ class PackagingSlipCheckAvailability {
         }
       }
 
-      $result = $db->execute("SELECT `document_number`, `pid` FROM `tl_isotope_packaging_slip_product_collection` WHERE `document_number` != '' AND `pid` IN ($strIds) GROUP BY `document_number`, `pid`");
-      while($result->next()) {
-        /** @var Order $order */
-        $order = Order::findOneBy('document_number', $result->document_number);
-        if (!$order->isPaid()) {
-          $note = sprintf($GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'], $order->document_number);
-          $strPackageSlipIds = $result->pid;
-          $db->prepare("UPDATE `tl_isotope_packaging_slip` SET `is_available` = '-1', `availability_notes` = TRIM(CONCAT(COALESCE(`availability_notes`), ' ', ?)) WHERE `id` IN ({$strPackageSlipIds})")->execute([$note]);
+      $strIdsForPaymentCheck = implode(",", array_keys($needsPayment));
+      if (strlen($strIdsForPaymentCheck)) {
+        $result = $db->execute("SELECT `document_number`, `pid` FROM `tl_isotope_packaging_slip_product_collection` WHERE `document_number` != '' AND `pid` IN ($strIdsForPaymentCheck) GROUP BY `document_number`, `pid`");
+        while ($result->next()) {
+          /** @var Order $order */
+          $order = Order::findOneBy('document_number', $result->document_number);
+          if (!$order->isPaid()) {
+            $note = sprintf($GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'], $order->document_number);
+            $strPackageSlipIds = $result->pid;
+            $db->prepare("UPDATE `tl_isotope_packaging_slip` SET `is_available` = '-1', `availability_notes` = TRIM(CONCAT(COALESCE(`availability_notes`), ' ', ?)) WHERE `id` IN ({$strPackageSlipIds})")
+              ->execute([$note]);
+          }
         }
       }
 

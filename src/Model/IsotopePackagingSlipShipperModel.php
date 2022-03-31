@@ -16,19 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Krabo\IsotopePackagingSlipBundle\Cron;
+namespace Krabo\IsotopePackagingSlipBundle\Model;
 
-use Contao\CoreBundle\ServiceAnnotation\CronJob;
-use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
+use Contao\Model;
 
-/**
- * @CronJob("* *\/10 * * *")
- */
-class CheckAvailabilityCron {
+class IsotopePackagingSlipShipperModel extends Model {
 
-  public function __invoke(): void
-  {
-    PackagingSlipCheckAvailability::checkAllOpenForAvailability();
-  }
+  protected static $strTable = 'tl_isotope_packaging_slip_shipper';
 
 }

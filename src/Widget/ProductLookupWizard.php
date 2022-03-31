@@ -72,6 +72,8 @@ class ProductLookupWizard extends \TableLookupWizard {
     $this->customTpl = 'be_widget_isopackagingslip_productlookup';
     $this->customContentTpl = 'be_widget_isopackagingslip_productlookup_content';
     $this->fieldType = 'checkbox';
+    $this->blnEnableSorting = false;
+    $this->intLimit = 5;
   }
 
   /**
@@ -83,6 +85,11 @@ class ProductLookupWizard extends \TableLookupWizard {
   {
     $arrResults = [];
     if ($this->blnIsAjaxRequest && \Input::get('keywords')) {
+      $strKeys = [];
+      if (\Input::get($this->strName)) {
+        $strKeys = \Input::get($this->strName);
+      }
+
       $objStatement = \Database::getInstance()
         ->prepare(implode(' ', $this->arrQueryProcedure));
       // Apply the limit only for the search results and not the current values
@@ -94,12 +101,13 @@ class ProductLookupWizard extends \TableLookupWizard {
       while ($objResults->next()) {
         $arrRow = $objResults->row();
         $strKeyWithoutOrder = $arrRow[$this->foreignTable . '_id'] . '_';
-
-        $arrResults[$strKeyWithoutOrder]['rowId'] = $arrRow[$this->foreignTable . '_id'];
-        $arrResults[$strKeyWithoutOrder]['rawData'] = $arrRow;
-        $arrResults[$strKeyWithoutOrder]['rawData']['quantity'] = 1;
-        $arrResults[$strKeyWithoutOrder]['rawData']['value'] = '';
-        $arrResults[$strKeyWithoutOrder]['rawData']['document_number'] = '';
+        if (!in_array($strKeyWithoutOrder, $strKeys)) {
+          $arrResults[$strKeyWithoutOrder]['rowId'] = $arrRow[$this->foreignTable . '_id'];
+          $arrResults[$strKeyWithoutOrder]['rawData'] = $arrRow;
+          $arrResults[$strKeyWithoutOrder]['rawData']['quantity'] = 1;
+          $arrResults[$strKeyWithoutOrder]['rawData']['value'] = '';
+          $arrResults[$strKeyWithoutOrder]['rawData']['document_number'] = '';
+        }
 
         $strKey = $arrRow[$this->foreignTable . '_id'] . '_' . $arrRow['tl_iso_product_collection_document_number'];
         if ($strKey != $strKeyWithoutOrder) {
@@ -113,7 +121,9 @@ class ProductLookupWizard extends \TableLookupWizard {
         foreach ($this->arrListFields as $strField) {
           [$strTable, $strColumn] = explode('.', $strField);
           $strFieldKey = str_replace('.', '_', $strField);
-          $arrResults[$strKeyWithoutOrder]['formattedData'][$strFieldKey] = \Haste\Util\Format::dcaValue($strTable, $strColumn, $arrRow[$strFieldKey]);
+          if (isset($arrResults[$strKeyWithoutOrder])) {
+            $arrResults[$strKeyWithoutOrder]['formattedData'][$strFieldKey] = \Haste\Util\Format::dcaValue($strTable, $strColumn, $arrRow[$strFieldKey]);
+          }
           if ($strKey != $strKeyWithoutOrder) {
             $arrResults[$strKey]['formattedData'][$strFieldKey] = \Haste\Util\Format::dcaValue($strTable, $strColumn, $arrRow[$strFieldKey]);
           }
@@ -204,6 +214,16 @@ class ProductLookupWizard extends \TableLookupWizard {
     // If custom WHERE is set, add it to the statement
     if ($this->sqlWhere) {
       $this->arrWhereProcedure[] = $this->sqlWhere;
+    }
+
+    if (\Input::get($this->strName)) {
+      $strKeys = \Input::get($this->strName);
+      foreach($strKeys as $strKey) {
+        [$product_id, $document_number] = explode("_", $strKey, 2);
+        $this->arrWhereProcedure[] = "NOT (" . Product::getTable() . ".id = ? AND " . ProductCollection\Order::getTable() . ".document_number = ?)";
+        $this->arrWhereValues[] = $product_id;
+        $this->arrWhereValues[] = $document_number;
+      }
     }
 
     if (!empty($this->arrWhereProcedure)) {
