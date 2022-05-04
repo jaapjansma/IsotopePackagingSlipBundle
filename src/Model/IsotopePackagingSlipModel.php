@@ -22,6 +22,7 @@ use Contao\Database;
 use Contao\Date;
 use Contao\MemberModel;
 use Contao\Model;
+use Contao\Model\Collection;
 use Contao\StringUtil;
 use Contao\System;
 use Database\Result;
@@ -40,8 +41,12 @@ use Krabo\IsotopePackagingSlipBundle\Helper\AddressHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\TemplateHelper;
 use Krabo\IsotopeStockBundle\Model\BookingModel;
+use Money\Currencies;
+use Money\Formatter\IntlMoneyFormatter;
+use Money\Money;
 use NotificationCenter\Model\Notification;
 use NotificationCenter\Model\QueuedMessage;
+
 
 class IsotopePackagingSlipModel extends Model {
 
@@ -134,6 +139,20 @@ class IsotopePackagingSlipModel extends Model {
   }
 
   /**
+   * @param \Isotope\Model\ProductCollection\Order $order
+   *
+   * @return Collection|null The model collection or null if there are no records
+   */
+  public static function findPackagingSlipsByOrder(Order $order) {
+    $db = Database::getInstance();
+    $pids = $db
+      ->prepare("SELECT `pid` FROM `tl_isotope_packaging_slip_product_collection` WHERE `document_number` = ? GROUP BY `pid`")
+      ->execute($order->document_number)
+      ->fetchEach('pid');
+    return static::findMultipleByIds($pids);
+  }
+
+  /**
    * Return formatted address (hCard)
    *
    * @return string
@@ -151,6 +170,30 @@ class IsotopePackagingSlipModel extends Model {
     $event = new GenerateAddressEvent($this, $strAddress);
     System::getContainer()->get('event_dispatcher')->dispatch($event, Events::GENERATE_ADDRESS);
     return $event->getGeneratedAddress();
+  }
+
+  /**
+   * @return string
+   */
+  public function getAmountToPaid(): string {
+    $amountToPaid = null;
+    foreach($this->getOrders() as $order) {
+      if (!$order->isPaid()) {
+        $orderTotal = new Money((int) ($order->total*100), new \Money\Currency($order->currency));
+        if ($amountToPaid===null) {
+          $amountToPaid = $orderTotal;
+        } else {
+          $amountToPaid->add($orderTotal);
+        }
+      }
+    }
+    if ($amountToPaid) {
+      $currencies = new Currencies\ISOCurrencies();
+      $numberFormatter = new \NumberFormatter('', \NumberFormatter::CURRENCY);
+      $moneyFormatter = new IntlMoneyFormatter($numberFormatter, $currencies);
+      return $moneyFormatter->format($amountToPaid);
+    }
+    return '';
   }
 
   /**

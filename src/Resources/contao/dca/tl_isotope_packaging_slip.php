@@ -18,9 +18,13 @@
 
 use Contao\Environment;
 use Contao\Input;
+use Contao\System;
 use Isotope\Model\Config;
 use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
+use Model\Registry;
+use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
 
 \Contao\System::loadLanguageFile(\Isotope\Model\ProductCollection::getTable());
 \Contao\Controller::loadDataContainer(\Isotope\Model\ProductCollection::getTable());
@@ -47,7 +51,10 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     ),
     'ondelete_callback' => array(
       array('tl_isotope_packaging_slip', 'onDelete'),
-    )
+    ),
+    'oncopy_callback' => array(
+      array('tl_isotope_packaging_slip', 'onCopy'),
+    ),
   ),
 
   'select' => array(
@@ -61,9 +68,9 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
   (
     'sorting' => array
     (
-      'mode'                    => 1,
-      'fields'                  => array('date','tstamp'),
-      'flag'                    => 12,
+      'mode'                    => 2,
+      'fields'                  => array('document_number'),
+      'flag'                    => 11,
       'panelLayout'             => 'sort,filter,search,limit'
     ),
     'label' => array
@@ -161,7 +168,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'inputType'               => 'radio',
       'eval'                    => array('tl_class' => 'w50'),
       'reference'               => $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'],
-      'options'                 => array('0', '1', '2', '3', '4', '5', '-1'),
+      'options'                 => array('0', '1', '2', '3', '4', '5', '-1', '-2'),
       'sql'                     => "int(10) signed NOT NULL default 0",
       'default'                 => '0',
     ),
@@ -184,6 +191,8 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     ),
     'document_number' => array
     (
+      'sorting'                 => true,
+      'flag'                    => 12,
       'search'                  => true,
       'inputType'               => 'text',
       'eval'                    => array('doNotCopy'=>true, 'readonly'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
@@ -193,6 +202,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     (
       'filter'                  => true,
       'inputType'               => 'text',
+      'sorting'                 => true,
       'flag'                    => 8,
       'default'                 => time(),
       'eval'                    => array('mandatory'=>true, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
@@ -204,7 +214,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'inputType'               => 'text',
       'flag'                    => 8,
       'default'                 => time(),
-      'eval'                    => array('mandatory'=>false, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+      'eval'                    => array('mandatory'=>false, 'rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
       'sql'                     => "varchar(10) NOT NULL default ''"
     ),
     'fire_status_changed_event_on_shipping_date' => array(
@@ -217,7 +227,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'inputType'               => 'radio',
       'eval'                    => array('doNotCopy'=>true, 'tl_class' => 'w50'),
       'reference'               => $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'],
-      'options'                 => array('0', '1', '2', '3', '4', '5', '-1'),
+      'options'                 => array('0', '1', '2', '3', '4', '5', '-1', '-2'),
       'sql'                     => "int(10) signed NULL",
       'default'                 => '0',
     ),
@@ -226,7 +236,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'inputType'               => 'radio',
       'eval'                    => array('doNotCopy'=>true, 'tl_class' => 'w50'),
       'reference'               => $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status_options'],
-      'options'                 => array('0', '1', '2', '3', '4', '5', '-1'),
+      'options'                 => array('0', '1', '2', '3', '4', '5', '-1', '-2'),
       'sql'                     => "int(10) signed NULL",
       'default'                 => '0',
     ),
@@ -438,6 +448,22 @@ class tl_isotope_packaging_slip {
     }
     $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
     $this->currentStatus = $packagingSlip->status;
+    if (Input::get('order_id') && $dc instanceof \Contao\DC_Table) {
+      /** @var AttributeBagInterface $objSessionBag */
+      $objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
+      $session = $objSessionBag->all();
+      unset($session['search']['tl_isotope_packaging_slip']);
+      $objSessionBag->replace($session);
+
+      // Retrieve ids of the package slips attached to the order.
+      $ids = [];
+      $order = \Isotope\Model\ProductCollection\Order::findByPk(Input::get('order_id'));
+      $packagingSlips = \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::findPackagingSlipsByOrder($order);
+      foreach ($packagingSlips as $packagingSlip) {
+        $ids[] = $packagingSlip->id;
+      }
+      $dc->root = $ids;
+    }
   }
 
   public function onSubmit(\Contao\DataContainer $dc) {
@@ -462,6 +488,20 @@ class tl_isotope_packaging_slip {
   public function onDelete(\Contao\DataContainer $dc, $id) {
     $db = \Database::getInstance();
     $db->prepare("DELETE FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid` = ?")->execute($id);
+  }
+
+  public function onCopy($newId, \Contao\DataContainer $dc) {
+    $oldId = $dc->id;
+    $products = IsotopePackagingSlipProductCollectionModel::findBy('pid', $oldId);
+    if ($products) {
+      foreach($products as $product) {
+        Registry::getInstance()->reset();
+        $newProduct = clone $product;
+        unset($newProduct->id);
+        $newProduct->pid = $newId;
+        $newProduct->save();
+      }
+    }
   }
 
   public function selectButtonsCallback($arrButtons, \Contao\DataContainer $dc) {

@@ -87,7 +87,7 @@ class ProductCollectionListener {
         $packagingSlip->city = $order->getShippingAddress()->city;
         $packagingSlip->country = $order->getShippingAddress()->country;
         if (!empty($orderSettings['email_data']['form_opmerking'])) {
-          $packagingSlip->notes = $order->document_number . ":\r\n" . $orderSettings['email_data']['form_opmerking'];
+          $packagingSlip->notes = $orderSettings['email_data']['form_opmerking'];
         }
         $packagingSlip->shipping_id = $order->getShippingMethod()->getId();
         $packagingSlip->config_id = $order->config_id;
@@ -107,7 +107,7 @@ class ProductCollectionListener {
       } else {
         $packagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $order->combined_packaging_slip_id);
         if (!empty($orderSettings['email_data']['form_opmerking'])) {
-          $packagingSlip->notes .= "\r\n\r\n" . $order->document_number . ":\r\n" . $orderSettings['email_data']['form_opmerking'];
+          $packagingSlip->notes .= "\r\n\r\n" . $orderSettings['email_data']['form_opmerking'];
           $packagingSlip->save();
         }
       }

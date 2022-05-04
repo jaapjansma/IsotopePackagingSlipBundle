@@ -53,6 +53,7 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
     foreach($products as $product) {
       // Make sure the product gets inserted by clearing the registry
       Registry::getInstance()->unregister($product);
+      $newProduct = clone $product;
       $product->pid = $packagingSlip->id;
       $product->tstamp = time();
 

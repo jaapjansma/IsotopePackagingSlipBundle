@@ -16,6 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use Contao\Image;
+use Contao\StringUtil;
+
+$GLOBALS['TL_DCA']['tl_iso_product_collection']['list']['operations']['packaging_slips'] = [
+  'label'             => &$GLOBALS['TL_LANG']['tl_iso_product_collection']['packaging_slips'],
+  'href'              => 'href=' . \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::getTable(),
+  'icon'              => 'bundles/isotopepackagingslip/price-tag.png',
+  'button_callback'   => ['tl_iso_product_collection_packaging_slip', 'packagingSlipButton'],
+];
+
 $GLOBALS['TL_DCA']['tl_iso_product_collection']['fields']['combined_packaging_slip_id'] = array(
   'exclude'       => true,
   'search'        => true,
@@ -24,3 +34,25 @@ $GLOBALS['TL_DCA']['tl_iso_product_collection']['fields']['combined_packaging_sl
   'eval'          => array( 'mandatory'=>false, 'tl_class'=>'w50 clr' ),
   'sql'           => "varchar(64) NOT NULL default ''",
 );
+
+class tl_iso_product_collection_packaging_slip {
+
+  public function packagingSlipButton($arrData, $href, $strLabel, $strTitle, $strIcon, $strHtmlAttrs, $strTable, $rootIds, $childIds, $isCircular, $prevLabel, $nextLabel, \Contao\DataContainer $dc) {
+    $packagingSlipDocumentNumbers = [];
+    $order = \Isotope\Model\ProductCollection\Order::findByPk($arrData['id']);
+    $url = \Contao\Backend::addToUrl($href);
+    if ($order) {
+      $packagingSlips = \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::findPackagingSlipsByOrder($order);
+      if ($packagingSlips) {
+        foreach ($packagingSlips as $packagingSlip) {
+          $packagingSlipDocumentNumbers[] = $packagingSlip->document_number;
+        }
+        $strTitle = sprintf($GLOBALS['TL_LANG']['tl_iso_product_collection']['packaging_slips'][1], implode(", ", $packagingSlipDocumentNumbers));
+        $url = \Contao\Backend::addToUrl($href . '&amp;do=tl_isotope_packaging_slip&amp;order_id=' . $arrData['id']);
+        return '<a href="' . $url . '" title="' . StringUtil::specialchars($strTitle) . '">' . Image::getHtml($strIcon, $strTitle, 'style="width: 16px; height: 16px;"') . '</a> ';
+      }
+    }
+    return '';
+  }
+
+}

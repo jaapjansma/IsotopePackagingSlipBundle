@@ -17,3 +17,4 @@
  */
 
 $GLOBALS['TL_LANG']['tl_iso_config']['combined_packaging_slip_id'] = ['Combineer met pakbon', ''];
+$GLOBALS['TL_LANG']['tl_iso_product_collection']['packaging_slips'] = ['Bekijk pakbonnen', 'Bekijk pakbonnen (%s)'];

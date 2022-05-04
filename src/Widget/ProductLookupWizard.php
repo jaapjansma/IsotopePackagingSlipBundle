@@ -133,8 +133,8 @@ class ProductLookupWizard extends \TableLookupWizard {
       $objResults = \Database::getInstance()->prepare("
         SELECT 
             tl_isotope_packaging_slip_product_collection.product_id as product_id,   
-            tl_isotope_packaging_slip_product_collection.quantity as quantity,
-            tl_isotope_packaging_slip_product_collection.value as `value`,
+            SUM(tl_isotope_packaging_slip_product_collection.quantity) as quantity,
+            SUM(tl_isotope_packaging_slip_product_collection.value) as `value`,
             tl_isotope_packaging_slip_product_collection.document_number as document_number,
             tl_iso_product.sku as tl_iso_product_sku,
             tl_iso_product.name as tl_iso_product_name,
@@ -142,9 +142,10 @@ class ProductLookupWizard extends \TableLookupWizard {
         FROM `tl_isotope_packaging_slip_product_collection`
         INNER JOIN `tl_iso_product` ON tl_iso_product.id = tl_isotope_packaging_slip_product_collection.product_id AND tl_iso_product.pid = 0
         LEFT JOIN `tl_iso_producttype` ON tl_iso_producttype.id = tl_iso_product.type
-        LEFT JOIN `tl_iso_product_collection_item` ON tl_iso_product_collection_item.product_id = tl_iso_product.id
-        LEFT JOIN `tl_iso_product_collection` ON tl_iso_product_collection.id = tl_iso_product_collection_item.pid AND tl_iso_product_collection.document_number = tl_isotope_packaging_slip_product_collection.document_number 
-        WHERE `tl_isotope_packaging_slip_product_collection`.`pid` = ?")
+        LEFT JOIN `tl_iso_product_collection` ON tl_iso_product_collection.document_number = tl_isotope_packaging_slip_product_collection.document_number AND LENGTH(tl_iso_product_collection.document_number) > 0
+        LEFT JOIN `tl_iso_product_collection_item` ON tl_iso_product_collection_item.product_id = tl_iso_product.id AND `tl_iso_product_collection`.`id` = `tl_iso_product_collection_item`.`pid` 
+        WHERE `tl_isotope_packaging_slip_product_collection`.`pid` = ?
+        GROUP BY `tl_isotope_packaging_slip_product_collection`.`product_id`, `tl_isotope_packaging_slip_product_collection`.`document_number`")
         ->execute($this->activeRecord->id);
       while ($objResults->next()) {
         $arrRow = $objResults->row();
@@ -270,6 +271,7 @@ class ProductLookupWizard extends \TableLookupWizard {
     } else {
       $arrNew = StringUtil::deserialize($this->value);
     }
+    $arrNew = array_unique($arrNew);
     $products = [];
     $packagingSlip = IsotopePackagingSlipModel::findByPk($this->activeRecord->id);
     foreach($arrNew as $strKey) {

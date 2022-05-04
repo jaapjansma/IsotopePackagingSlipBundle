@@ -67,4 +67,13 @@
         </div>
     <?php } ?>
 
+    <?php if ($this->packagingSlip->getAmountToPaid()) { ?>
+        <br><br>
+        <div style="font-size: 62.5%; font-family: Arial, Helvetica, sans-serif; color: red;">
+            <div style="font-size: 14px; line-height: 18px;">
+                <?php echo sprintf($GLOBALS['TL_LANG']['MSC']['PackageSlipAmountToPaid'], $this->packagingSlip->getAmountToPaid()); ?>
+            </ddiv>
+        </div>
+    <?php } ?>
+
 </div>

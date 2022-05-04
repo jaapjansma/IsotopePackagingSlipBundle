@@ -3,12 +3,13 @@
   "description":"Isotope Packaging Slip.",
   "type": "contao-bundle",
   "license":"AGPL-3.0-or-later",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "require": {
     "contao/core-bundle": "^4.9",
     "isotope/isotope-core": "^2.6",
     "krabo/isotope-stock-bundle": "^1.0",
-    "mpdf/mpdf": "^8.0"
+    "mpdf/mpdf": "^8.0",
+    "moneyphp/money": "*"
   },
   "extra": {
     "contao-manager-plugin": "Krabo\\IsotopePackagingSlipBundle\\ContaoManager\\Plugin"
