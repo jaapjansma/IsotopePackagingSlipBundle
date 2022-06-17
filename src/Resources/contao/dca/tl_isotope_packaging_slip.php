@@ -20,6 +20,7 @@ use Contao\Environment;
 use Contao\Input;
 use Contao\System;
 use Isotope\Model\Config;
+use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Model\Registry;
@@ -408,7 +409,6 @@ class tl_isotope_packaging_slip {
   public function labelCallback($arrData, string $label, \Contao\DataContainer $dc, $labels) {
     /** @var \Symfony\Component\Routing\RouterInterface $router */
     $router = \Contao\System::getContainer()->get('router');
-    $packagingSlip = IsotopePackagingSlipModel::findByPk($arrData['id']);
     $fields = $GLOBALS['TL_DCA'][$dc->table]['list']['label']['fields'];
     $shipping_id_key = array_search('shipping_id', $fields, true);
     if ($labels[$shipping_id_key]) {
@@ -421,11 +421,18 @@ class tl_isotope_packaging_slip {
       $labels[$shipper_id_key] = $shipper->name;
     }
     $order_id_key = array_search('order_id', $fields, true);
+    $order = \Database::getInstance()->prepare("
+        SELECT `o`.`document_number`, `o`.`id` 
+        FROM `tl_isotope_packaging_slip_product_collection` `p`
+        INNER JOIN `tl_iso_product_collection` `o` ON `o`.`type` = 'order' AND `o`.`document_number` = `p`.`document_number`                                       
+        WHERE `p`.`pid`= ? AND `p`.`document_number` != '' 
+        GROUP BY `o`.`id`")->execute($arrData['id']);
     $orders = [];
-    foreach($packagingSlip->getOrders() as $order) {
+    while($order->next()) {
       $order_url = $router->generate('contao_backend', ['act' => 'edit', 'do' => 'iso_orders', 'id' => $order->id, 'rt' => REQUEST_TOKEN]);
       $orders[] = '<a href="' . $order_url . '">' . $order->document_number . '</a>';
     }
+
     if (count($orders)) {
       $labels[$order_id_key] = implode(", ", $orders);
     }
