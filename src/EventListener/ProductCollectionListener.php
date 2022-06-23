@@ -66,6 +66,7 @@ class ProductCollectionListener {
           $prefix = $order->getConfig()->orderPrefix;
         }
         $packagingSlip = new IsotopePackagingSlipModel();
+        $packagingSlip->tstamp = time();
         $packagingSlip->date = time();
         $packagingSlip->status = '0';
         if ($order->member) {
@@ -102,6 +103,10 @@ class ProductCollectionListener {
         $packagingSlip->save();
         $orderDigits = (int) $order->getConfig()->orderDigits;
         $packagingSlip->generateDocumentNumber($prefix, $orderDigits);
+
+        $products = $this->addProductsFromOrder($packagingSlip, $order);
+        IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
+
         $event = new PackagingSlipOrderEvent($packagingSlip, $order);
         System::getContainer()->get('event_dispatcher')->dispatch($event, $eventName);
       } else {
@@ -110,11 +115,12 @@ class ProductCollectionListener {
           $packagingSlip->notes .= "\r\n\r\n" . $orderSettings['email_data']['form_opmerking'];
           $packagingSlip->save();
         }
+        $products = $this->addProductsFromOrder($packagingSlip, $order);
+        IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
       }
-      $products = $this->addProductsFromOrder($packagingSlip, $order);
-      IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
-      StockBookingHelper::clearOrderBooking($order, BookingModel::SALES_TYPE);
     }
+
+    StockBookingHelper::clearOrderBooking($order, BookingModel::SALES_TYPE);
   }
 
   /**
