@@ -19,6 +19,7 @@
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['deleteConfirm'] = 'Are you sure you want to delete this packaging slip?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['print_document'] = ['Print packaging slip', 'Print packaging slip'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'] = ['Check availability', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_shipping_date'] = ['Scheduled Shipping Date', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipping_date'] = ['Shipping Date', 'Expected shipping date.'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['date'] = ['Date', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['document_number'] = ['Document Number', 'When empty a document number will be generated upon save'];

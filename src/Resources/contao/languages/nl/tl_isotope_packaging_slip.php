@@ -19,6 +19,7 @@
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['deleteConfirm'] = 'Weet je zeker dat je deze pakbon wilt verwijderen?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['print_document'] = ['Print pakbon', 'Print pakbon'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'] = ['Controleer beschikbaarheid', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_shipping_date'] = ['Geplande Verzenddatum', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipping_date'] = ['Verzenddatum', 'Verwachte verzenddatum.'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['date'] = ['Datum', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['document_number'] = ['Documentnummer', 'Indien leeg dan wordt er een documentnummer aangemaakt tijdens het opslaan.'];

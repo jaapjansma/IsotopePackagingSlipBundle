@@ -115,7 +115,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
   'palettes' => array
   (
     '__selector__'                => [],
-    'default'                     => 'document_number,config_id;status,is_available;availability_notes;date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
+    'default'                     => 'document_number,config_id;status,is_available;availability_notes;date,scheduled_shipping_date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
   ),
 
   // Subpalettes
@@ -207,6 +207,15 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'flag'                    => 8,
       'default'                 => time(),
       'eval'                    => array('mandatory'=>true, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+      'sql'                     => "varchar(10) NOT NULL default ''"
+    ),
+    'scheduled_shipping_date' => array
+    (
+      'filter'                  => true,
+      'inputType'               => 'text',
+      'flag'                    => 8,
+      'default'                 => time(),
+      'eval'                    => array('mandatory'=>false, 'rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
       'sql'                     => "varchar(10) NOT NULL default ''"
     ),
     'shipping_date' => array
