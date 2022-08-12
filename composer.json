@@ -7,7 +7,7 @@
   "require": {
     "contao/core-bundle": "^4.9",
     "isotope/isotope-core": "^2.6",
-    "krabo/isotope-stock-bundle": "^1.0",
+    "krabo/isotope-stock-bundle": "^1.0.5",
     "mpdf/mpdf": "^8.0",
     "moneyphp/money": "*"
   },

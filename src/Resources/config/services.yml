@@ -4,4 +4,6 @@ services:
     autoconfigure: true
 
   Krabo\IsotopePackagingSlipBundle\Cron\CheckAvailabilityCron: ~
+  Krabo\IsotopePackagingSlipBundle\Cron\CheckProductAvailabilityCron: ~
   Krabo\IsotopePackagingSlipBundle\Cron\ProcessDelayedStatusChangedEventsCron: ~
+  Krabo\IsotopePackagingSlipBundle\EventListener\IsotopeStockListener: ~

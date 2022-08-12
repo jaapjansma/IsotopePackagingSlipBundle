@@ -40,6 +40,7 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['country'] = ['Country', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['member'] = ['Member', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status'] = ['Status', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['is_available'] = ['Is available', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'] = ['Check Availability', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['availability_notes'] = ['Availability notes', 'Is automatically populated'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipping_legend'] = 'Shipping';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipping_id'] = ['Shipping Method', ''];

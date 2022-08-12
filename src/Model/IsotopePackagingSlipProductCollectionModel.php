@@ -22,6 +22,7 @@ use Contao\Model;
 use Haste\Units\Mass\Unit;
 use Haste\Units\Mass\WeightAggregate;
 use Isotope\Model\Product;
+use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopeStockBundle\Model\BookingModel;
 use Model\Registry;
@@ -60,6 +61,7 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
       StockBookingHelper::createSalesBookingFromPackagingSlipAndProduct($packagingSlip, $product);
       $product->save();
     }
+    PackagingSlipCheckAvailability::resetAvailabilityStatus([$packagingSlip->id]);
   }
 
   /**

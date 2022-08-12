@@ -66,5 +66,14 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip_product_collection'] = [
       'eval'                    => array('disabled'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
       'sql'                     => "varchar(255) NOT NULL default ''"
     ),
+    'is_available' => array
+    (
+      'filter'                  => true,
+      'inputType'               => 'radio',
+      'eval'                    => array('tl_class' => 'w50'),
+      'options'                 => array('0', '1', '-1'),
+      'sql'                     => "int(10) signed NOT NULL default 0",
+      'default'                 => '0',
+    ),
   ],
 ];

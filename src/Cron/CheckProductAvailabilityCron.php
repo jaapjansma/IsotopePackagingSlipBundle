@@ -25,7 +25,7 @@ use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 /**
  * @CronJob("*\/10 * * * *")
  */
-class CheckAvailabilityCron {
+class CheckProductAvailabilityCron {
 
   /**
    * @param \Contao\CoreBundle\Framework\ContaoFramework $contaoFramework
@@ -36,6 +36,7 @@ class CheckAvailabilityCron {
 
   public function __invoke(): void
   {
+    PackagingSlipCheckAvailability::checkProductAvailability();
     PackagingSlipCheckAvailability::checkPackagingSlips();
   }
 

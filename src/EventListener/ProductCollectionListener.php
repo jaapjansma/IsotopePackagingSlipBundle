@@ -115,6 +115,7 @@ class ProductCollectionListener {
           $packagingSlip->notes .= "\r\n\r\n" . $orderSettings['email_data']['form_opmerking'];
           $packagingSlip->save();
         }
+
         $products = $this->addProductsFromOrder($packagingSlip, $order);
         IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
       }

@@ -115,7 +115,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
   'palettes' => array
   (
     '__selector__'                => [],
-    'default'                     => 'document_number,config_id;status,is_available;availability_notes;date,scheduled_shipping_date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
+    'default'                     => 'document_number,config_id;status,is_available;availability_notes,check_availability;date,scheduled_shipping_date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
   ),
 
   // Subpalettes
@@ -183,6 +183,13 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'sql'                     => "int(10) signed NOT NULL default 0",
       'default'                 => '0',
     ),
+    'check_availability' => array
+    (
+      'filter'                  => true,
+      'inputType'               => 'checkbox',
+      'eval'                    => array('doNotCopy'=>true),
+      'sql'                     => "char(1) NOT NULL default '0'"
+    ),
     'availability_notes' => array
     (
       'exclude'               => true,
@@ -215,7 +222,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'inputType'               => 'text',
       'flag'                    => 8,
       'default'                 => time(),
-      'eval'                    => array('mandatory'=>false, 'rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+      'eval'                    => array('mandatory'=>false, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
       'sql'                     => "varchar(10) NOT NULL default ''"
     ),
     'shipping_date' => array
@@ -458,7 +465,7 @@ class tl_isotope_packaging_slip {
       }
       if (isset($_POST['checkAvailability']))
       {
-        \Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability::checkAvailability($dc);
+        PackagingSlipCheckAvailability::checkAvailability();
         $dc->redirect(Environment::get('request'));
       }
     }
@@ -495,10 +502,9 @@ class tl_isotope_packaging_slip {
     if ($dc->activeRecord->status != $this->currentStatus) {
       $packagingSlip->triggerStatusChangedEvent($this->currentStatus, $dc->activeRecord->status);
     }
-    if ($dc->activeRecord->status == IsotopePackagingSlipModel::STATUS_OPEN) {
-      PackagingSlipCheckAvailability::checkAvailabilityForPackagingSlips([$dc->id]);
+    if ($dc->activeRecord->check_availability) {
+      PackagingSlipCheckAvailability::resetAvailabilityStatus([$dc->id]);
     }
-
   }
 
   public function onDelete(\Contao\DataContainer $dc, $id) {

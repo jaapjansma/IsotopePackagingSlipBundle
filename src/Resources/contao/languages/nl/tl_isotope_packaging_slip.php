@@ -40,6 +40,7 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['city'] = ['Plaats', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['country'] = ['Land', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['member'] = ['Lid', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['status'] = ['Status', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'] = ['Controleer beschikbaarheid', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['is_available'] = ['Is beschikbaar', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['availability_notes'] = ['Beschikbaarheid notities', 'Wordt automatisch gevuld'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['shipping_legend'] = 'Verzending';
