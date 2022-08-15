@@ -23,7 +23,7 @@ use Contao\CoreBundle\ServiceAnnotation\CronJob;
 use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 
 /**
- * @CronJob("*\/1 * * * *")
+ * @CronJob("minutely")
  */
 class CheckAvailabilityCron {
 
