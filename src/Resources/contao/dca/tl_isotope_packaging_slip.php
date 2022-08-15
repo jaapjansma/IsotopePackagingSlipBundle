@@ -454,6 +454,11 @@ class tl_isotope_packaging_slip {
     }
     $name_id_key = array_search('name', $fields, true);
     $labels[$name_id_key] =trim($arrData['firstname'] . ' '.$arrData['lastname']);
+    $document_number_key = array_search('document_number', $fields, true);
+    if (!empty($arrData['check_availability'])) {
+      $toCheckIcon = Contao\Image::getHtml('important.gif', $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0], 'title="'.$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0].'"');
+      $labels[$document_number_key] = $toCheckIcon.'&nbsp;' . $labels[$document_number_key];
+    }
     return $labels;
   }
 

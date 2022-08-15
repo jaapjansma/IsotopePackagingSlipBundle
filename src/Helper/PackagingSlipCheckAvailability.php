@@ -69,8 +69,8 @@ class PackagingSlipCheckAvailability {
         AND `packaging_slip`.`status` = '0' AND `packaging_slip`.`check_availability` = '1' AND (`packaging_slip`.`scheduled_shipping_date` = '' OR `packaging_slip`.`scheduled_shipping_date` <= ?)";
     $objResult = $db->prepare($productSql)->execute($today->getTimestamp(), $maximumNumberOfProductsToCheck);
     while ($objResult->next()) {
-      $stock = ProductHelper::getProductStockPerAccountType($objResult->product_id);
-      if ($stock[AccountModel::STOCK_TYPE]['balance']) {
+      $stock = ProductHelper::getProductCountPerAccount($objResult->product_id, $objResult->credit_account);
+      if ($stock >= 0) {
         // Product is available.
         $db->prepare($updateProductSql)->execute('1', $objResult->product_id, $objResult->credit_account, $objResult->debit_account, $today->getTimestamp());
       } else {
