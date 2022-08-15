@@ -24,6 +24,8 @@ use Contao\Database;
 use Contao\System;
 use DateTime;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
+use Krabo\IsotopeStockBundle\Helper\ProductHelper;
+use Krabo\IsotopeStockBundle\Model\AccountModel;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class PackagingSlipCheckAvailability {
@@ -67,11 +69,9 @@ class PackagingSlipCheckAvailability {
         AND `packaging_slip`.`status` = '0' AND `packaging_slip`.`check_availability` = '1' AND (`packaging_slip`.`scheduled_shipping_date` = '' OR `packaging_slip`.`scheduled_shipping_date` <= ?)";
     $objResult = $db->prepare($productSql)->execute($today->getTimestamp(), $maximumNumberOfProductsToCheck);
     while ($objResult->next()) {
-      // How much are available in the credit account (Magazijn)
-      $creditCount = ProductStockHelper::getProductCountPerAccount($objResult->product_id, $objResult->credit_account);
-      $debitCount = ProductStockHelper::getProductCountPerAccountAndPackagingSlipStatus($objResult->product_id, $objResult->debit_account, IsotopePackagingSlipModel::STATUS_PREPARE_FOR_SHIPPING);
-      if ($creditCount - $debitCount >= 0) {
-        // Product is available, there are more in stock then there are reserved for prepared for shipping
+      $stock = ProductHelper::getProductStockPerAccountType($objResult->product_id);
+      if ($stock[AccountModel::STOCK_TYPE]['balance']) {
+        // Product is available.
         $db->prepare($updateProductSql)->execute('1', $objResult->product_id, $objResult->credit_account, $objResult->debit_account, $today->getTimestamp());
       } else {
         // Product is not available.

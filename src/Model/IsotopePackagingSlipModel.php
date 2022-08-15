@@ -236,7 +236,9 @@ class IsotopePackagingSlipModel extends Model {
     $return = [];
     while($result->next()) {
       $order = Order::findOneBY('document_number', $result->document_number);
-      $return[$order->id] = $order;
+      if ($order) {
+        $return[$order->id] = $order;
+      }
     }
     return $return;
   }
