@@ -23,6 +23,8 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
 use Contao\System;
 use DateTime;
+use Krabo\IsotopePackagingSlipBundle\Event\CheckAvailabilityEvent;
+use Krabo\IsotopePackagingSlipBundle\Event\Events;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopeStockBundle\Helper\ProductHelper;
 use Krabo\IsotopeStockBundle\Model\AccountModel;
@@ -154,15 +156,6 @@ class PackagingSlipCheckAvailability {
     $note = $GLOBALS['TL_LANG']['MSC']['PackageSlipProductNotAvailable'];
     $db->prepare($updateNotInStockSql)->execute($note);
 
-    $updatePackagingSlipSqlWithNoCheckForPayment = "
-      UPDATE `tl_isotope_packaging_slip`
-      LEFT JOIN `tl_isotope_packaging_slip_shipper` ON `tl_isotope_packaging_slip_shipper`.`id` = `tl_isotope_packaging_slip`.`shipper_id`
-      SET `tl_isotope_packaging_slip`.`check_availability` = '0', `tl_isotope_packaging_slip`.`is_available` = '1', `tl_isotope_packaging_slip`.`availability_notes` = ''
-      WHERE `tl_isotope_packaging_slip`.`id` NOT IN (SELECT `pid` FROM `tl_isotope_packaging_slip_product_collection` WHERE `tl_isotope_packaging_slip_product_collection`.`is_available` IN ('0', '-1'))
-      AND `status` = '0' AND `check_availability` = '1' AND (`tl_isotope_packaging_slip_shipper`.`id` IS NULL OR `tl_isotope_packaging_slip_shipper`.`handle_only_paid` = '0')
-    ";
-    $db->prepare($updatePackagingSlipSqlWithNoCheckForPayment)->execute();
-
     $packagingSlipSql = "
       SELECT `tl_isotope_packaging_slip`.`id`, `tl_isotope_packaging_slip_shipper`.`handle_only_paid`
       FROM `tl_isotope_packaging_slip`
@@ -175,24 +168,23 @@ class PackagingSlipCheckAvailability {
 
     $objResult = $db->prepare($packagingSlipSql)->execute($maximumNumberOfPackagingSlipsToCheck);
     while($objResult->next()) {
+      $event = new CheckAvailabilityEvent();
+      $event->packagingSlipId = $objResult->id;
+      $event->isAvailable = '1';
       $isPaid = true;
       if ($objResult->handle_only_paid) {
         $packagingSlip = IsotopePackagingSlipModel::findByPk($objResult->id);
         foreach($packagingSlip->getOrders() as $order) {
           if (!$order->isPaid()) {
-            $isPaid = false;
+            $event->isAvailable = '-1';
+            $event->notes = $GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'];
             break;
           }
         }
       }
-      if ($isPaid) {
-        $updateNotInStockSql = "UPDATE `tl_isotope_packaging_slip` SET `check_availability` = '0', `is_available` = '1', `availability_notes` = '' WHERE `id` = ?";
-        $db->prepare($updateNotInStockSql)->execute($objResult->id);
-      } else {
-        $updateNotInStockSql = "UPDATE `tl_isotope_packaging_slip` SET `check_availability` = '0', `is_available` = '-1', `availability_notes` = ? WHERE `id` = ?";
-        $notPaidNote = $GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'];
-        $db->prepare($updateNotInStockSql)->execute($objResult->id, $notPaidNote);
-      }
+      System::getContainer()->get('event_dispatcher')->dispatch($event, Events::CHECK_AVAILABILITY);
+      $updateSql = "UPDATE `tl_isotope_packaging_slip` SET `check_availability` = '0', `is_available` = ?, `availability_notes` = ? WHERE `id` = ?";
+      $db->prepare($updateSql)->execute($event->isAvailable, $event->notes, $objResult->id);
     }
   }
 

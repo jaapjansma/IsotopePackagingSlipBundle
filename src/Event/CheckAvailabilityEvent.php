@@ -18,14 +18,21 @@
 
 namespace Krabo\IsotopePackagingSlipBundle\Event;
 
-class Events {
+class CheckAvailabilityEvent {
 
-  const STATUS_CHANGED_EVENT = 'krabo.isotope_packaging_slip.status_changed';
+  /**
+   * @var int
+   */
+  public $packagingSlipId;
 
-  const PACKAGING_SLIP_CREATED_FROM_ORDER = 'krabo.isotope_packaging_slip.created_from_order';
+  /**
+   * @var int
+   */
+  public $isAvailable;
 
-  const GENERATE_ADDRESS = 'krabo.isotope_packaging_slip.generate_address';
-
-  const CHECK_AVAILABILITY = 'krabo.isotope_packaging_slip.check_availability';
+  /**
+   * @var string
+   */
+  public $notes = "";
 
 }

@@ -288,7 +288,7 @@ class ProductLookupWizard extends \TableLookupWizard {
       $product->value = $value;
       $products[] = $product;
     }
-    IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
+    IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products, false);
     return '';
   }
 

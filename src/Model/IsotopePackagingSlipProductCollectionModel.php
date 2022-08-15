@@ -43,10 +43,11 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
    *
    * @param IsotopePackagingSlipModel $packagingSlip
    * @param PackagingSlipProductModel[] $products
+   * @param bool $resetAvailabilityStatus
    *
    * @return void
    */
-  public static function saveProducts(IsotopePackagingSlipModel $packagingSlip, array $products) {
+  public static function saveProducts(IsotopePackagingSlipModel $packagingSlip, array $products, bool $resetAvailabilityStatus=true) {
     $db = \Database::getInstance();
     $objStmnt = $db->prepare("DELETE FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid` = ?");
     $objStmnt->execute($packagingSlip->id);
@@ -61,7 +62,9 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
       StockBookingHelper::createSalesBookingFromPackagingSlipAndProduct($packagingSlip, $product);
       $product->save();
     }
-    PackagingSlipCheckAvailability::resetAvailabilityStatus([$packagingSlip->id]);
+    if ($resetAvailabilityStatus) {
+      PackagingSlipCheckAvailability::resetAvailabilityStatus([$packagingSlip->id]);
+    }
   }
 
   /**
