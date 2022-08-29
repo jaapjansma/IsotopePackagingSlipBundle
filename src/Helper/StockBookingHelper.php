@@ -18,11 +18,14 @@
 
 namespace Krabo\IsotopePackagingSlipBundle\Helper;
 
+use Contao\System;
 use Isotope\Model\Config;
 use Isotope\Model\Product;
 use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
+use Krabo\IsotopeStockBundle\Event\BookingEvent;
+use Krabo\IsotopeStockBundle\Event\Events;
 use Krabo\IsotopeStockBundle\Helper\BookingHelper;
 use Krabo\IsotopeStockBundle\Helper\ProductHelper;
 use Krabo\IsotopeStockBundle\Model\AccountModel;
@@ -69,6 +72,10 @@ class StockBookingHelper {
     $creditBookingLine->pid = $booking->id;
     $creditBookingLine->save();
     BookingHelper::updateBalanceStatusForBooking($booking->id);
+    $event = new BookingEvent($booking);
+    System::getContainer()
+      ->get('event_dispatcher')
+      ->dispatch($event, Events::BOOKING_EVENT);
   }
 
   /**
@@ -113,6 +120,10 @@ class StockBookingHelper {
     $creditBookingLine->pid = $booking->id;
     $creditBookingLine->save();
     BookingHelper::updateBalanceStatusForBooking($booking->id);
+    $event = new BookingEvent($booking);
+    System::getContainer()
+      ->get('event_dispatcher')
+      ->dispatch($event, Events::BOOKING_EVENT);
   }
 
   /**
