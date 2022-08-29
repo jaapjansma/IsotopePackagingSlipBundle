@@ -1,0 +1,3 @@
+isotope-packaging-slip-bundle.controller:
+  resource: '@IsotopePackagingSlipBundle/Controller'
+  type: annotation

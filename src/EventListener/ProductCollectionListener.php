@@ -68,6 +68,7 @@ class ProductCollectionListener {
         $packagingSlip = new IsotopePackagingSlipModel();
         $packagingSlip->tstamp = time();
         $packagingSlip->date = time();
+        $packagingSlip->scheduled_shipping_date = $this->getScheduledShippingDate($order);
         $packagingSlip->status = '0';
         if ($order->member) {
           $packagingSlip->member = $order->member;
@@ -110,9 +111,18 @@ class ProductCollectionListener {
         $event = new PackagingSlipOrderEvent($packagingSlip, $order);
         System::getContainer()->get('event_dispatcher')->dispatch($event, $eventName);
       } else {
+        $updatePackagingSlip = false;
         $packagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $order->combined_packaging_slip_id);
         if (!empty($orderSettings['email_data']['form_opmerking'])) {
           $packagingSlip->notes .= "\r\n\r\n" . $orderSettings['email_data']['form_opmerking'];
+          $updatePackagingSlip = true;
+        }
+        $scheduledShippingDate = $this->getScheduledShippingDate($order);
+        if (!$packagingSlip->scheduled_shipping_date || $scheduledShippingDate > $packagingSlip->scheduled_shipping_date) {
+          $packagingSlip->scheduled_shipping_date = $scheduledShippingDate;
+          $updatePackagingSlip = true;
+        }
+        if ($updatePackagingSlip) {
           $packagingSlip->save();
         }
 
@@ -154,6 +164,22 @@ class ProductCollectionListener {
       $arrProducts[] = $product;
     }
     return $arrProducts;
+  }
+
+  /**
+   * @param \Isotope\Model\ProductCollection\Order $order
+   *
+   * @return int|mixed|null
+   */
+  protected function getScheduledShippingDate(Order $order) {
+    $scheduledDate = time();
+    foreach($order->getItems() as $objItem) {
+      $objProduct = $objItem->getProduct();
+      if ($objProduct && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
+        $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
+      }
+    }
+    return $scheduledDate;
   }
 
   /**

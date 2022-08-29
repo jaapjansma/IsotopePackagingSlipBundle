@@ -1,0 +1,8 @@
+{% for item in reportData %}
+    <h3>{{ item.shipper }}</h3>
+    <p>{{ 'tl_isotope_packaging_slip.report_quantity'|trans({}, 'contao_tl_isotope_packaging_slip') }}: <strong>{{ item.total }}</strong></p>
+    <p>{{ 'tl_isotope_packaging_slip.report_quantity_1'|trans({}, 'contao_tl_isotope_packaging_slip') }}: <strong>{{ item.1 }}</strong></p>
+    <p>{{ 'tl_isotope_packaging_slip.report_quantity_2'|trans({}, 'contao_tl_isotope_packaging_slip') }}: <strong>{{ item.2 }}</strong></p>
+    <p>{{ 'tl_isotope_packaging_slip.report_quantity_3'|trans({}, 'contao_tl_isotope_packaging_slip') }}: <strong>{{ item.3 }}</strong></p>
+    <p>{{ 'tl_isotope_packaging_slip.report_quantity_4'|trans({}, 'contao_tl_isotope_packaging_slip') }}: <strong>{{ item.4 }}</strong></p>
+{% endfor %}

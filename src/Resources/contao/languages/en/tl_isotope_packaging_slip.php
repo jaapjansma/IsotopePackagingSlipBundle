@@ -64,3 +64,6 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['document_title'] = 'Packaging 
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['is_available_options']['0'] = 'Unknown';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['is_available_options']['-1'] = 'Not available';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['is_available_options']['1'] = 'Available';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_shipping_date_start'] = 'From Scheduled Shipping Date';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_shipping_date_end'] = 'Up to Scheduled Shipping Date';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['viewReport'] = ['View Report', 'View report for order picking'];
