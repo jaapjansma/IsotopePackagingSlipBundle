@@ -3,11 +3,11 @@
   "description":"Isotope Packaging Slip.",
   "type": "contao-bundle",
   "license":"AGPL-3.0-or-later",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "require": {
     "contao/core-bundle": "^4.9",
     "isotope/isotope-core": "^2.6",
-    "krabo/isotope-stock-bundle": "^1.0.5",
+    "krabo/isotope-stock-bundle": "^1.0.6",
     "mpdf/mpdf": "^8.0",
     "moneyphp/money": "*"
   },

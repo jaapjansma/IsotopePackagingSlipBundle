@@ -7,3 +7,4 @@ services:
   Krabo\IsotopePackagingSlipBundle\Cron\CheckProductAvailabilityCron: ~
   Krabo\IsotopePackagingSlipBundle\Cron\ProcessDelayedStatusChangedEventsCron: ~
   Krabo\IsotopePackagingSlipBundle\EventListener\IsotopeStockListener: ~
+  Krabo\IsotopePackagingSlipBundle\EventListener\PackagingSlipStatusChangedListener: ~

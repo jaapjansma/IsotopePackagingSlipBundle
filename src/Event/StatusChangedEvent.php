@@ -37,10 +37,16 @@ class StatusChangedEvent {
    */
   private $newStatus;
 
-  public function __construct(IsotopePackagingSlipModel $packagingSlipModel, int $oldStatus, int $newStatus) {
+  /**
+   * @var bool
+   */
+  private $isDelayed;
+
+  public function __construct(IsotopePackagingSlipModel $packagingSlipModel, int $oldStatus, int $newStatus, bool $isDelayed) {
     $this->packagingSlipModel = $packagingSlipModel;
     $this->oldStatus = $oldStatus;
     $this->newStatus = $newStatus;
+    $this->isDelayed = $isDelayed;
   }
 
   /**
@@ -62,6 +68,10 @@ class StatusChangedEvent {
    */
   public function getNewStatus() {
     return $this->newStatus;
+  }
+
+  public function isDelayed() {
+    return $this->isDelayed ? true : false;
   }
 
 }

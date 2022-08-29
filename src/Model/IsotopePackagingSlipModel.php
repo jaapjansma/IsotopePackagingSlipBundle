@@ -61,6 +61,7 @@ class IsotopePackagingSlipModel extends Model {
   const STATUS_DELIVERED = 4;
   const STATUS_PICKED_UP = 5;
   const STATUS_ONHOLD = -1;
+  const STATUS_CANCELLED = -2;
 
   private $products;
 
@@ -315,10 +316,6 @@ class IsotopePackagingSlipModel extends Model {
    * @return void
    */
   public function triggerStatusChangedEvent(int $oldStatus, int $newStatus, $isDelayed=false) {
-    if ($newStatus == self::STATUS_PREPARE_FOR_SHIPPING && $oldStatus != $newStatus && !$isDelayed) {
-      $this->updateDeliveryStock();
-    }
-
     $delay_status_change_event = false;
     if ($this->shipping_date) {
       $today = new \DateTime();
@@ -342,7 +339,7 @@ class IsotopePackagingSlipModel extends Model {
         }
       }
 
-      $event = new StatusChangedEvent($this, $oldStatus, $newStatus);
+      $event = new StatusChangedEvent($this, $oldStatus, $newStatus, $isDelayed);
       System::getContainer()
         ->get('event_dispatcher')
         ->dispatch($event, Events::STATUS_CHANGED_EVENT);
