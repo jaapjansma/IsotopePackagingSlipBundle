@@ -496,6 +496,11 @@ class tl_isotope_packaging_slip {
 
   public function onSubmit(\Contao\DataContainer $dc) {
     $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
+
+    if ($this->currentStatus === null) {
+      $this->currentStatus = $packagingSlip->status;
+    }
+
     $config = Config::findByPk($packagingSlip->config_id);
     if (empty($packagingSlip->document_number) && $config) {
       $prefix = $config->packagingSlipPrefix;
