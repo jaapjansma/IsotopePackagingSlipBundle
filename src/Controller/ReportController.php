@@ -70,8 +70,8 @@ class ReportController extends AbstractController {
     $defaultData = [];
     $formBuilder = $this->createFormBuilder($defaultData);
 
-    $formBuilder->add('scheduled_shipping_date_start', DateType::class, [
-      'label' => $GLOBALS['TL_LANG'][IsotopePackagingSlipModel::getTable()]['scheduled_shipping_date_start'],
+    $formBuilder->add('scheduled_picking_date_start', DateType::class, [
+      'label' => $GLOBALS['TL_LANG'][IsotopePackagingSlipModel::getTable()]['scheduled_picking_date_start'],
       'widget' => 'single_text',
       'input_format' => 'y-m-d',
       'html5' => true,
@@ -83,8 +83,8 @@ class ReportController extends AbstractController {
       ]
     ]);
 
-    $formBuilder->add('scheduled_shipping_date_end', DateType::class, [
-      'label' => $GLOBALS['TL_LANG'][IsotopePackagingSlipModel::getTable()]['scheduled_shipping_date_end'],
+    $formBuilder->add('scheduled_picking_date_end', DateType::class, [
+      'label' => $GLOBALS['TL_LANG'][IsotopePackagingSlipModel::getTable()]['scheduled_picking_date_end'],
       'widget' => 'single_text',
       'input_format' => 'y-m-d',
       'html5' => true,
@@ -111,9 +111,9 @@ class ReportController extends AbstractController {
     $report = '';
     if ($form->isSubmitted() && $form->isValid()) {
       $data = $form->getData();
-      $startDate = $data['scheduled_shipping_date_start'];
+      $startDate = $data['scheduled_picking_date_start'];
       $startDate->setTime(0, 0);
-      $endDate = $data['scheduled_shipping_date_end'];
+      $endDate = $data['scheduled_picking_date_end'];
       $endDate->setTime(0, 0);
       $report = $this->generateReport($startDate->getTimestamp(), $endDate->getTimestamp());
     }
@@ -138,9 +138,9 @@ class ReportController extends AbstractController {
       $includeEmpty = true;
     }
 
-    $timeStampWhere = "((`tl_isotope_packaging_slip`.`scheduled_shipping_date` >= ? AND `tl_isotope_packaging_slip`.`scheduled_shipping_date` <= ?)";
+    $timeStampWhere = "((`tl_isotope_packaging_slip`.`scheduled_picking_date` >= ? AND `tl_isotope_packaging_slip`.`scheduled_picking_date` <= ?)";
     if ($includeEmpty) {
-      $timeStampWhere .= " OR (`tl_isotope_packaging_slip`.`scheduled_shipping_date` = '') OR (`tl_isotope_packaging_slip`.`scheduled_shipping_date` IS NULL)";
+      $timeStampWhere .= " OR (`tl_isotope_packaging_slip`.`scheduled_picking_date` = '') OR (`tl_isotope_packaging_slip`.`scheduled_picking_date` IS NULL)";
     }
     $timeStampWhere .= ")";
 

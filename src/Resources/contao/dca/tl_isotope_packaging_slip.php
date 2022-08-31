@@ -81,7 +81,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
     'label' => array
     (
       'showColumns'             => true,
-      'fields'                  => array('date', 'document_number', 'name', 'country', 'status', 'shipping_id', 'shipper_id', 'is_available', 'availability_notes', 'order_id'),
+      'fields'                  => array('date', 'document_number', 'name', 'country', 'status', 'shipping_id', 'shipper_id', 'is_available', 'availability_notes', 'order_id', 'scheduled_picking_date'),
       'label_callback'          => ['tl_isotope_packaging_slip', 'labelCallback'],
     ),
     'global_operations' => array
@@ -127,7 +127,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
   'palettes' => array
   (
     '__selector__'                => [],
-    'default'                     => 'document_number,config_id;status,is_available;availability_notes,check_availability;date,scheduled_shipping_date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
+    'default'                     => 'document_number,config_id;status,is_available;availability_notes,check_availability;date,scheduled_picking_date,scheduled_shipping_date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
   ),
 
   // Subpalettes
@@ -226,6 +226,15 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'flag'                    => 8,
       'default'                 => time(),
       'eval'                    => array('mandatory'=>true, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+      'sql'                     => "varchar(10) NOT NULL default ''"
+    ),
+    'scheduled_picking_date' => array
+    (
+      'filter'                  => true,
+      'inputType'               => 'text',
+      'flag'                    => 8,
+      'default'                 => time(),
+      'eval'                    => array('mandatory'=>false, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
       'sql'                     => "varchar(10) NOT NULL default ''"
     ),
     'scheduled_shipping_date' => array
@@ -468,8 +477,11 @@ class tl_isotope_packaging_slip {
     $labels[$name_id_key] =trim($arrData['firstname'] . ' '.$arrData['lastname']);
     $document_number_key = array_search('document_number', $fields, true);
     if (!empty($arrData['check_availability'])) {
-      $toCheckIcon = Contao\Image::getHtml('important.gif', $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0], 'title="'.$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0].'"');
-      $labels[$document_number_key] = $toCheckIcon.'&nbsp;' . $labels[$document_number_key];
+      $today = strtotime('today 23:59');
+      if (empty($arrData['scheduled_picking_date']) || $arrData['scheduled_picking_date'] < $today) {
+        $toCheckIcon = Contao\Image::getHtml('important.gif', $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0], 'title="' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0] . '"');
+        $labels[$document_number_key] = $toCheckIcon . '&nbsp;' . $labels[$document_number_key];
+      }
     }
     return $labels;
   }

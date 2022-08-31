@@ -27,3 +27,12 @@ $GLOBALS['TL_DCA']['tl_iso_product']['fields']['isotope_packaging_slip_scheduled
   'sql'                     => "varchar(10) NOT NULL default ''",
   'attributes'            => array( 'legend'=>'isostock_legend' ),
 ];
+$GLOBALS['TL_DCA']['tl_iso_product']['fields']['isotope_packaging_slip_scheduled_picking_date'] = [
+  'filter'                  => true,
+  'inputType'               => 'text',
+  'flag'                    => 8,
+  'default'                 => time(),
+  'eval'                    => array('mandatory'=>false, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+  'sql'                     => "varchar(10) NOT NULL default ''",
+  'attributes'            => array( 'legend'=>'isostock_legend' ),
+];

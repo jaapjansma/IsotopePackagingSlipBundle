@@ -69,6 +69,7 @@ class ProductCollectionListener {
         $packagingSlip->tstamp = time();
         $packagingSlip->date = time();
         $packagingSlip->scheduled_shipping_date = $this->getScheduledShippingDate($order);
+        $packagingSlip->scheduled_picking_date = $this->getScheduledPickingDate($order);
         $packagingSlip->status = '0';
         if ($order->member) {
           $packagingSlip->member = $order->member;
@@ -118,8 +119,13 @@ class ProductCollectionListener {
           $updatePackagingSlip = true;
         }
         $scheduledShippingDate = $this->getScheduledShippingDate($order);
+        $scheduledPickingDate = $this->getScheduledPickingDate($order);
         if (!$packagingSlip->scheduled_shipping_date || $scheduledShippingDate > $packagingSlip->scheduled_shipping_date) {
           $packagingSlip->scheduled_shipping_date = $scheduledShippingDate;
+          $updatePackagingSlip = true;
+        }
+        if (!$packagingSlip->scheduled_picking_date || $scheduledPickingDate > $packagingSlip->scheduled_picking_date) {
+          $packagingSlip->scheduled_picking_date = $scheduledPickingDate;
           $updatePackagingSlip = true;
         }
         if ($updatePackagingSlip) {
@@ -172,11 +178,27 @@ class ProductCollectionListener {
    * @return int|mixed|null
    */
   protected function getScheduledShippingDate(Order $order) {
+    $scheduledDate = strtotime('+1 day');
+    foreach($order->getItems() as $objItem) {
+      $objProduct = $objItem->getProduct();
+      if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
+        $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
+      }
+    }
+    return $scheduledDate;
+  }
+
+  /**
+   * @param \Isotope\Model\ProductCollection\Order $order
+   *
+   * @return int|mixed|null
+   */
+  protected function getScheduledPickingDate(Order $order) {
     $scheduledDate = time();
     foreach($order->getItems() as $objItem) {
       $objProduct = $objItem->getProduct();
-      if ($objProduct && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
-        $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
+      if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_picking_date && $objProduct->isotope_packaging_slip_scheduled_picking_date > $scheduledDate) {
+        $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_picking_date;
       }
     }
     return $scheduledDate;

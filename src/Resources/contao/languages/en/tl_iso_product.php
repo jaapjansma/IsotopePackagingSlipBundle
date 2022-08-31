@@ -17,3 +17,4 @@
  */
 
 $GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_scheduled_shipping_date'] = ['Product Scheduled Shipping Date', 'Set the scheduled shipping date (use this for pre-order products).'];
+$GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_scheduled_picking_date'] = ['Product Scheduled Packaging Date', 'Set the scheduled packaging date (use this for pre-order products).'];

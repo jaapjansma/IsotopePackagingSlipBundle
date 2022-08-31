@@ -16,4 +16,5 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-$GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_scheduled_shipping_date'] = ['Product Verwachte Verzend Datum', 'Stel de verwachte verzenddatum in (gebruik dit voor pre order producten).'];
+$GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_scheduled_shipping_date'] = ['Product Verwachte Verzenddatum', 'Stel de verwachte verzenddatum in (gebruik dit voor pre order producten).'];
+$GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_scheduled_picking_date'] = ['Product Verwachte Inpakdatum', 'Stel de verwachte inpakdatum in (gebruik dit voor pre order producten).'];
