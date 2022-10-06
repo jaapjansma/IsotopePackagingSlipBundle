@@ -167,9 +167,6 @@ class ProductCollectionListener {
         PackagingSlipCheckAvailability::resetAvailabilityStatus($arrIds);
       }
     }
-    /*var_dump($order->isPaid());
-    var_dump($this->currentOrderPaidStatus);
-    var_dump($order->isLocked()); var_dump($order->isCheckoutComplete()); exit();*/
 
     StockBookingHelper::clearOrderBooking($order, BookingModel::SALES_TYPE);
   }
