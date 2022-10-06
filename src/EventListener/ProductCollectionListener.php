@@ -26,12 +26,18 @@ use Isotope\Model\ProductCollection;
 use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Event\Events;
 use Krabo\IsotopePackagingSlipBundle\Event\PackagingSlipOrderEvent;
+use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
 use Krabo\IsotopeStockBundle\Model\BookingModel;
 
 class ProductCollectionListener {
+
+  /**
+   * @var null|bool
+   */
+  protected $currentOrderPaidStatus = null;
 
   /**
    * Copy the combined packaging slip from the source to the new cart.
@@ -44,6 +50,20 @@ class ProductCollectionListener {
    */
   public function createFromProductCollection(ProductCollection $objCollection, ProductCollection $objSource, $arrItemIds) {
     $objCollection->combined_packaging_slip_id = $objSource->combined_packaging_slip_id;
+  }
+
+  /**
+   * @param \Isotope\Model\ProductCollection\Order $order
+   * @param \Isotope\Model\OrderStatus $newStatus
+   * @param $changes
+   *
+   * @return void
+   */
+  public function preOrderStatusUpdate(Order $order, OrderStatus $newStatus, $changes) {
+    $this->currentOrderPaidStatus = null;
+    if ($order->isLocked() && $order->isCheckoutComplete()) {
+      $this->currentOrderPaidStatus = $order->isPaid();
+    }
   }
 
   /**
@@ -135,7 +155,21 @@ class ProductCollectionListener {
         $products = $this->addProductsFromOrder($packagingSlip, $order);
         IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
       }
+    } elseif ($order->isLocked() && $order->isCheckoutComplete() && $this->currentOrderPaidStatus !== null && $this->currentOrderPaidStatus != $order->isPaid()) {
+      $packagingSlips = IsotopePackagingSlipModel::findPackagingSlipsByOrder($order);
+      $arrIds = [];
+      foreach($packagingSlips as $packagingSlip) {
+        if ($packagingSlip->status == 0) {
+          $arrIds[] = $packagingSlip->id;
+        }
+      }
+      if (count($arrIds)) {
+        PackagingSlipCheckAvailability::resetAvailabilityStatus($arrIds);
+      }
     }
+    /*var_dump($order->isPaid());
+    var_dump($this->currentOrderPaidStatus);
+    var_dump($order->isLocked()); var_dump($order->isCheckoutComplete()); exit();*/
 
     StockBookingHelper::clearOrderBooking($order, BookingModel::SALES_TYPE);
   }

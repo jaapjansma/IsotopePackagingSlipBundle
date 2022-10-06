@@ -40,6 +40,7 @@ $GLOBALS['TL_MODELS']['tl_isotope_packaging_slip'] = IsotopePackagingSlipModel::
 $GLOBALS['TL_MODELS']['tl_isotope_packaging_slip_shipper'] = IsotopePackagingSlipShipperModel::class;
 $GLOBALS['TL_MODELS']['tl_isotope_packaging_slip_product_collection'] = IsotopePackagingSlipProductCollectionModel::class;
 
+$GLOBALS['ISO_HOOKS']['preOrderStatusUpdate'][] = [ProductCollectionListener::class, 'preOrderStatusUpdate'];
 $GLOBALS['ISO_HOOKS']['postOrderStatusUpdate'][] = [ProductCollectionListener::class, 'postOrderStatusUpdate'];
 $GLOBALS['ISO_HOOKS']['createFromProductCollection'][] = [ProductCollectionListener::class, 'createFromProductCollection'];
 $GLOBALS['ISO_HOOKS']['getOrderNotificationTokens'][] = [ProductCollectionListener::class, 'getOrderNotificationTokens'];
