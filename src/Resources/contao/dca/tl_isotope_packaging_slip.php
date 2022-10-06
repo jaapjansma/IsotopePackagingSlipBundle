@@ -233,7 +233,6 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'filter'                  => true,
       'inputType'               => 'text',
       'flag'                    => 8,
-      'default'                 => time(),
       'eval'                    => array('mandatory'=>false, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
       'sql'                     => "varchar(10) NOT NULL default ''"
     ),
@@ -242,7 +241,6 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'filter'                  => true,
       'inputType'               => 'text',
       'flag'                    => 8,
-      'default'                 => time(),
       'eval'                    => array('mandatory'=>false, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
       'sql'                     => "varchar(10) NOT NULL default ''"
     ),
@@ -251,7 +249,6 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'filter'                  => true,
       'inputType'               => 'text',
       'flag'                    => 8,
-      'default'                 => time(),
       'eval'                    => array('mandatory'=>false, 'rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
       'sql'                     => "varchar(10) NOT NULL default ''"
     ),
@@ -559,7 +556,11 @@ class tl_isotope_packaging_slip {
       $this->currentStatus = $packagingSlip->status;
     }
 
+    $defaultConfig = \Isotope\Isotope::getConfig();
     $config = Config::findByPk($packagingSlip->config_id);
+    if (empty($config)) {
+      $config = $defaultConfig;
+    }
     if (empty($packagingSlip->document_number) && $config) {
       $prefix = $config->packagingSlipPrefix;
       if (empty($prefix)) {
