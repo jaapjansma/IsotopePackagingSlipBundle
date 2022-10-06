@@ -19,3 +19,5 @@
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['deleteConfirm'] = 'Are you sure you want to delete this shipper?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['name'] = ['Shipper', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['handle_only_paid'] = ['Handle only when paid', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['isotope_packaging_slip_scheduled_picking_date'] = ['Next picking date', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['isotope_packaging_slip_scheduled_shipping_date'] = ['Next shipping date', ''];

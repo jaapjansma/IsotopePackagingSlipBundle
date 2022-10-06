@@ -19,3 +19,5 @@
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['deleteConfirm'] = 'Weet je zeker dat je deze vervoerder wilt verwijderen?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['name'] = ['Vervoerder', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['handle_only_paid'] = ['Verwerk indien betaald', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['isotope_packaging_slip_scheduled_picking_date'] = ['Eerstvolgende inpakdatum', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['isotope_packaging_slip_scheduled_shipping_date'] = ['Eerstvolgende verzenddatum', ''];

@@ -30,6 +30,7 @@ use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipShipperModel;
 use Krabo\IsotopeStockBundle\Model\BookingModel;
 
 class ProductCollectionListener {
@@ -210,6 +211,12 @@ class ProductCollectionListener {
    */
   protected function getScheduledShippingDate(Order $order) {
     $scheduledDate = strtotime('+1 day');
+    if ($order->getShippingMethod()->shipper_id) {
+      $shipper = IsotopePackagingSlipShipperModel::findByPk($order->getShippingMethod()->shipper_id);
+      if ($shipper->isotope_packaging_slip_scheduled_shipping_date && $shipper->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
+        $scheduledDate = $shipper->isotope_packaging_slip_scheduled_shipping_date;
+      }
+    }
     foreach($order->getItems() as $objItem) {
       $objProduct = $objItem->getProduct();
       if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
@@ -226,6 +233,12 @@ class ProductCollectionListener {
    */
   protected function getScheduledPickingDate(Order $order) {
     $scheduledDate = time();
+    if ($order->getShippingMethod()->shipper_id) {
+      $shipper = IsotopePackagingSlipShipperModel::findByPk($order->getShippingMethod()->shipper_id);
+      if ($shipper->isotope_packaging_slip_scheduled_picking_date && $shipper->isotope_packaging_slip_scheduled_picking_date > $scheduledDate) {
+        $scheduledDate = $shipper->isotope_packaging_slip_scheduled_picking_date;
+      }
+    }
     foreach($order->getItems() as $objItem) {
       $objProduct = $objItem->getProduct();
       if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_picking_date && $objProduct->isotope_packaging_slip_scheduled_picking_date > $scheduledDate) {
