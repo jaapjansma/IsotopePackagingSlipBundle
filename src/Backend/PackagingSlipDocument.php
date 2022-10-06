@@ -26,6 +26,7 @@ use Haste\Util\StringUtil;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\TemplateHelper;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
+use Model\Registry;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class PackagingSlipDocument extends \Backend {

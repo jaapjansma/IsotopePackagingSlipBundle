@@ -22,6 +22,7 @@ use Contao\Model;
 use Haste\Units\Mass\Unit;
 use Haste\Units\Mass\WeightAggregate;
 use Isotope\Model\Product;
+use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopeStockBundle\Model\BookingModel;
@@ -37,6 +38,15 @@ use Model\Registry;
 class IsotopePackagingSlipProductCollectionModel extends Model {
 
   protected static $strTable = 'tl_isotope_packaging_slip_product_collection';
+
+  /**
+   * @var string
+   */
+  private $language;
+
+  public function setLanguage($language) {
+    $this->language = $language;
+  }
 
   /**
    * Save orders into this packaging slip.
@@ -85,6 +95,12 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
     {
       $objProduct = new IsotopePackagingSlipProductCollectionModel();
       $objProduct->setRow($objResult->row());
+      if ($objResult->document_number) {
+        $order = Order::findOneBy('document_number', $objResult->document_number);
+        $objProduct->setLanguage($order->language);
+        \Contao\System::loadLanguageFile('tl_isotope_packaging_slip', $order->language);
+        \Contao\System::loadLanguageFile('default', $order->language);
+      }
       if (isset($arrProducts[$objProduct->product_id])) {
         $arrProducts[$objProduct->product_id]->quantity += $objProduct->quantity;
         $arrProducts[$objProduct->product_id]->value += $objProduct->value;
@@ -115,7 +131,14 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
    * @return \Isotope\Model\Product
    */
   public function getProduct() {
-    return Product::findByPk($this->product_id);
+    $oldLanguage = $GLOBALS['TL_LANGUAGE'];
+    if ($this->language) {
+      $GLOBALS['TL_LANGUAGE'] = $this->language;
+    }
+
+    $product = Product::findByPk($this->product_id);
+    $GLOBALS['TL_LANGUAGE'] = $oldLanguage;
+    return $product;
   }
 
 }
