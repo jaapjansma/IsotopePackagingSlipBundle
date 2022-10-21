@@ -556,6 +556,8 @@ class tl_isotope_packaging_slip {
       $this->currentStatus = $packagingSlip->status;
     }
 
+    // Zorg ervoor dat er een document nummer is.
+    $packagingSlip->getDocumentNumber();
     if ($dc->activeRecord->status != $this->currentStatus) {
       $packagingSlip->triggerStatusChangedEvent($this->currentStatus, $dc->activeRecord->status);
     }
