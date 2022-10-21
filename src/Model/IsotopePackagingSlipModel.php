@@ -38,6 +38,7 @@ use Krabo\IsotopePackagingSlipBundle\Event\Events;
 use Krabo\IsotopePackagingSlipBundle\Event\GenerateAddressEvent;
 use Krabo\IsotopePackagingSlipBundle\Event\StatusChangedEvent;
 use Krabo\IsotopePackagingSlipBundle\Helper\AddressHelper;
+use Krabo\IsotopePackagingSlipBundle\Helper\IsotopeHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\TemplateHelper;
 use Krabo\IsotopeStockBundle\Model\BookingModel;
@@ -125,6 +126,22 @@ class IsotopePackagingSlipModel extends Model {
     }
 
     return $this->arrData['document_number'];
+  }
+
+  /**
+   * @return string
+   * @throws \Exception
+   */
+  public function getDocumentNumber() {
+    if (empty($this->document_number)) {
+      $config = IsotopeHelper::getConfig($this);
+      $prefix = $config->packagingSlipPrefix;
+      if (empty($prefix)) {
+        $prefix = $config->orderPrefix;
+      }
+      $this->generateDocumentNumber($prefix, $config->orderDigits);
+    }
+    return $this->document_number;
   }
 
   /**

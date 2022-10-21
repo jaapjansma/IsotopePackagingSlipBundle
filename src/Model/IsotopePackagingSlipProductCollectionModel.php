@@ -84,6 +84,9 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
    * @return array
    */
   public static function getCombinedProductsByPackagingSlip(IsotopePackagingSlipModel $packagingSlip): array {
+    \Contao\System::loadLanguageFile('tl_isotope_packaging_slip');
+    \Contao\System::loadLanguageFile('default');
+
     $strTable = static::$strTable;
     $db = \Database::getInstance();
     $objStmnt = $db->prepare("SELECT * FROM `" . $strTable . "` WHERE `pid` = ? ORDER BY `product_id`");

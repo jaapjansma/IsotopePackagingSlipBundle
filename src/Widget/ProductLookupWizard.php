@@ -19,6 +19,7 @@
 namespace Krabo\IsotopePackagingSlipBundle\Widget;
 
 use Contao\Model\Collection;
+use Contao\Model\Registry;
 use Contao\StringUtil;
 use Isotope\Model\Product;
 use Isotope\Model\ProductType;

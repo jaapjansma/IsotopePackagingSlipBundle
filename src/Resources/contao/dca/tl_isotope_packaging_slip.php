@@ -556,18 +556,6 @@ class tl_isotope_packaging_slip {
       $this->currentStatus = $packagingSlip->status;
     }
 
-    $defaultConfig = \Isotope\Isotope::getConfig();
-    $config = Config::findByPk($packagingSlip->config_id);
-    if (empty($config)) {
-      $config = $defaultConfig;
-    }
-    if (empty($packagingSlip->document_number) && $config) {
-      $prefix = $config->packagingSlipPrefix;
-      if (empty($prefix)) {
-        $prefix = $config->orderPrefix;
-      }
-      $packagingSlip->generateDocumentNumber($prefix, $config->orderDigits);
-    }
     if ($dc->activeRecord->status != $this->currentStatus) {
       $packagingSlip->triggerStatusChangedEvent($this->currentStatus, $dc->activeRecord->status);
     }

@@ -50,7 +50,7 @@ class StockBookingHelper {
     self::clearBookingForPackagingSlipAndProduct($packagingSlipModel, $product->getId(), $bookingType, $documentNumber);
     $period = PeriodModel::getFirstActivePeriod();
     $booking = new BookingModel();
-    $booking->description = $packagingSlipModel->document_number;
+    $booking->description = $packagingSlipModel->getDocumentNumber();
     $booking->date = time();
     $booking->period = $period->id;
     $booking->product_id = $product->getId();
@@ -89,7 +89,7 @@ class StockBookingHelper {
   public static function createSalesBookingFromPackagingSlipAndProduct(IsotopePackagingSlipModel $packagingSlipModel, IsotopePackagingSlipProductCollectionModel $product) {
     $bookingType = BookingModel::SALES_TYPE;
     $documentNumber = $product->document_number;
-    $config = Config::findByPk($packagingSlipModel->config_id);
+    $config = IsotopeHelper::getConfig($packagingSlipModel);
     $debit_account = $config->isotopestock_order_debit_account;
     $credit_account = $config->isotopestock_order_credit_account;
     if ($product->getProduct()->isostock_preorder) {
@@ -98,7 +98,7 @@ class StockBookingHelper {
     self::clearBookingForPackagingSlipAndProduct($packagingSlipModel, $product->product_id, $bookingType, $documentNumber);
     $period = PeriodModel::getFirstActivePeriod();
     $booking = new BookingModel();
-    $booking->description = $packagingSlipModel->document_number;
+    $booking->description = $packagingSlipModel->getDocumentNumber();
     $booking->date = time();
     $booking->period = $period->id;
     $booking->product_id = $product->product_id;

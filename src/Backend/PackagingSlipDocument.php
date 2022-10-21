@@ -47,7 +47,7 @@ class PackagingSlipDocument extends \Backend {
     $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
     $ids[] = $dc->id;
     $pdf = $this->createPdf($ids);
-    $pdf->Output($this->prepareFileName($packagingSlip->document_number) . '.pdf', 'D');
+    $pdf->Output($this->prepareFileName($packagingSlip->getDocumentNumber()) . '.pdf', 'D');
   }
 
   public function printMultipleDocuments(\Contao\DataContainer $dc) {
