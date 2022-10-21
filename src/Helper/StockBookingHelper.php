@@ -46,6 +46,12 @@ class StockBookingHelper {
    * @return void
    */
   public static function createDeliveryBookingFromPackagingSlipAndProduct(IsotopePackagingSlipModel $packagingSlipModel, int $quantity, Product $product, string $documentNumber) {
+    $config = IsotopeHelper::getConfig($packagingSlipModel);
+    $debit_account = $config->isotopestock_order_credit_account;
+    if ($product->isostock_preorder) {
+      $debit_account = $config->isotopestock_preorder_credit_account;
+    }
+
     $bookingType = BookingModel::DELIVERY_TYPE;
     self::clearBookingForPackagingSlipAndProduct($packagingSlipModel, $product->getId(), $bookingType, $documentNumber);
     $period = PeriodModel::getFirstActivePeriod();
@@ -63,7 +69,7 @@ class StockBookingHelper {
     $booking->save();
     $debitBookingLine = new BookingLineModel();
     $debitBookingLine->debit = $quantity;
-    $debitBookingLine->account = $packagingSlipModel->debit_account;
+    $debitBookingLine->account = $debit_account;
     $debitBookingLine->pid = $booking->id;
     $debitBookingLine->save();
     $creditBookingLine = new BookingLineModel();
