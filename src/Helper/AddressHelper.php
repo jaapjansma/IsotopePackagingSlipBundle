@@ -59,6 +59,7 @@ class AddressHelper {
       'hcard_honorific_prefix' => '',
       'hcard_tel'              => '',
       'hcard_email'            => '',
+      'hcard_region_abbr'      => '',
       'hcard_fn'               => $fn ? '<span class="fn">' . $fn . '</span>' : '',
       'hcard_n'                => ($arrTokens['firstname'] || $arrTokens['lastname']) ? '1' : '',
       'hcard_given_name'       => $arrTokens['firstname'] ? '<span class="given-name">' . $arrTokens['firstname'] . '</span>' : '',
