@@ -32,6 +32,7 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['phone'] = ['Telefoon', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['name'] = ['Naam', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['firstname'] = ['Voornaam', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['lastname'] = ['Achternaam', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['company'] = ['Bedrijf', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['housenumber'] = ['Huisnummer', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['street_1'] = ['Adresregel 1', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['street_2'] = ['Adresregel 2', ''];

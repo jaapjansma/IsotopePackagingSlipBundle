@@ -64,6 +64,7 @@ class AddressHelper {
       'hcard_n'                => ($arrTokens['firstname'] || $arrTokens['lastname']) ? '1' : '',
       'hcard_given_name'       => $arrTokens['firstname'] ? '<span class="given-name">' . $arrTokens['firstname'] . '</span>' : '',
       'hcard_family_name'      => $arrTokens['lastname'] ? '<span class="family-name">' . $arrTokens['lastname'] . '</span>' : '',
+      'hcard_org'              => $arrTokens['company'] ? '<div class="org' . $fnCompany . '">' . $arrTokens['company'] . '</div>' : '',
       'hcard_adr'              => ($street || $arrTokens['city'] || $arrTokens['postal'] || $arrTokens['country']) ? '1' : '',
       'hcard_street_address'   => $street ? '<div class="street-address">' . $street . '</div>' : '',
       'hcard_locality'         => $arrTokens['city'] ? '<span class="locality">' . $arrTokens['city'] . '</span>' : '',

@@ -31,6 +31,7 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['email'] = ['E-mail', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['phone'] = ['Phone', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['firstname'] = ['First name', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['lastname'] = ['Last name', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['company'] = ['Company', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['housenumber'] = ['Housenumber', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['street_1'] = ['Address line 1', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['street_2'] = ['Address line 2', ''];

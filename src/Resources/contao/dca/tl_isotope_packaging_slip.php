@@ -127,7 +127,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
   'palettes' => array
   (
     '__selector__'                => [],
-    'default'                     => 'document_number,config_id;status,is_available;availability_notes,check_availability;date,scheduled_picking_date,scheduled_shipping_date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
+    'default'                     => 'document_number,config_id;status,is_available;availability_notes,check_availability;date,scheduled_picking_date,scheduled_shipping_date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,company,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
   ),
 
   // Subpalettes
@@ -305,6 +305,16 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'flag'                  => 1,
       'inputType'             => 'text',
       'eval'                  => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
+      'sql'                   => "varchar(255) NOT NULL default ''",
+    ),
+    'company' => array
+    (
+      'exclude'               => true,
+      'search'                => true,
+      'sorting'               => true,
+      'flag'                  => 1,
+      'inputType'             => 'text',
+      'eval'                  => array('mandatory'=>false, 'maxlength'=>255, 'tl_class'=>'w50'),
       'sql'                   => "varchar(255) NOT NULL default ''",
     ),
     'email' => array

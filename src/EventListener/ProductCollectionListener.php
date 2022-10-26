@@ -101,6 +101,7 @@ class ProductCollectionListener {
         }
         $packagingSlip->firstname = $order->getShippingAddress()->firstname;
         $packagingSlip->lastname = $order->getShippingAddress()->lastname;
+        $packagingSlip->company = $order->getShippingAddress()->company;
         $packagingSlip->email = $order->getShippingAddress()->email;
         $packagingSlip->phone = $order->getShippingAddress()->phone;
         $packagingSlip->housenumber = $order->getShippingAddress()->housenumber;
