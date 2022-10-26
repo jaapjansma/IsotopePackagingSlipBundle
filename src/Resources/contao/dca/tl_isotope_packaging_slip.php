@@ -571,7 +571,7 @@ class tl_isotope_packaging_slip {
     if ($dc->activeRecord->status != $this->currentStatus) {
       $packagingSlip->triggerStatusChangedEvent($this->currentStatus, $dc->activeRecord->status);
     }
-    if ($dc->activeRecord->status = IsotopePackagingSlipModel::STATUS_OPEN) {
+    if ($dc->activeRecord->status == IsotopePackagingSlipModel::STATUS_OPEN) {
       PackagingSlipCheckAvailability::resetAvailabilityStatus([$dc->id]);
     }
   }

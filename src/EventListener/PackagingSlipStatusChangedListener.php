@@ -68,6 +68,7 @@ class PackagingSlipStatusChangedListener implements EventSubscriberInterface {
       $this->updateDeliveryStock($event->getPackagingSlip());
     } elseif ($newStatus == IsotopePackagingSlipModel::STATUS_CANCELLED && $oldStatus != $newStatus) {
       $this->cancelDeliveryStock($event->getPackagingSlip());
+      $this->cancelSalesStock($event->getPackagingSlip());
       $this->cancelRelatedOrders($event->getPackagingSlip());
     }
   }
@@ -96,6 +97,16 @@ class PackagingSlipStatusChangedListener implements EventSubscriberInterface {
    */
   private function cancelDeliveryStock(IsotopePackagingSlipModel $packagingSlipModel) {
     StockBookingHelper::clearBookingForPackagingSlip($packagingSlipModel,BookingModel::DELIVERY_TYPE);
+  }
+
+  /**
+   * Update the stock booking.
+   *
+   * @param IsotopePackagingSlipModel $packagingSlipModel
+   * @return void
+   */
+  private function cancelSalesStock(IsotopePackagingSlipModel $packagingSlipModel) {
+    StockBookingHelper::clearBookingForPackagingSlip($packagingSlipModel,BookingModel::SALES_TYPE);
   }
 
   /**

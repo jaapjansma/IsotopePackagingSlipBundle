@@ -51,15 +51,10 @@ class IsotopeStockListener implements EventSubscriberInterface {
   public static function getSubscribedEvents(): array {
     return [
       Events::MANUAL_BOOKING_EVENT => 'onManualBooking',
-      Events::BOOKING_EVENT => 'onBooking',
     ];
   }
 
   public function onManualBooking(ManualBookingEvent $event) {
-    PackagingSlipCheckAvailability::resetAvailabilityStatusPerProduct($event->bookingModel->product_id);
-  }
-
-  public function onBooking(BookingEvent $event) {
     PackagingSlipCheckAvailability::resetAvailabilityStatusPerProduct($event->bookingModel->product_id);
   }
 }
