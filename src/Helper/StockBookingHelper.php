@@ -25,6 +25,7 @@ use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
 use Krabo\IsotopeStockBundle\Event\BookingEvent;
+use Krabo\IsotopeStockBundle\Event\ClearBookingEvent;
 use Krabo\IsotopeStockBundle\Event\Events;
 use Krabo\IsotopeStockBundle\Helper\BookingHelper;
 use Krabo\IsotopeStockBundle\Helper\ProductHelper;
@@ -139,16 +140,24 @@ class StockBookingHelper {
    * @param string $document_number
    */
   public static function clearBookingForPackagingSlipAndProduct(IsotopePackagingSlipModel $packagingSlipModel, $product_id, int $bookingType, string $document_number) {
+    $orderId = null;
     if (empty($document_number)) {
       \Database::getInstance()
         ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `product_id` = ? AND `type` = ? AND `order_id` = 0")
         ->execute($packagingSlipModel->id, $product_id, $bookingType);
     } else {
       $order = Order::findOneBy('document_number', $document_number);
+      $orderId = $order->id;
       \Database::getInstance()
         ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `product_id` = ? AND `type` = ? AND `order_id` = ?")
         ->execute($packagingSlipModel->id, $product_id, $bookingType, $order->id);
     }
+
+    $event = new ClearBookingEvent($product_id, $bookingType, $orderId, ['packaging_slip_id' => $packagingSlipModel->id]);
+    System::getContainer()
+      ->get('event_dispatcher')
+      ->dispatch($event, Events::CLEAR_BOOKING_EVENT);
+
     self::clearBookingLines();
   }
 
@@ -162,6 +171,12 @@ class StockBookingHelper {
     \Database::getInstance()
       ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `type` = ?")
       ->execute($packagingSlipModel->id, $bookingType);
+
+    $event = new ClearBookingEvent(null, $bookingType, null, ['packaging_slip_id' => $packagingSlipModel->id]);
+    System::getContainer()
+      ->get('event_dispatcher')
+      ->dispatch($event, Events::CLEAR_BOOKING_EVENT);
+
     self::clearBookingLines();
   }
 
@@ -174,6 +189,12 @@ class StockBookingHelper {
     \Database::getInstance()
       ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = 0 AND `type` = ? AND `order_id` = ?")
       ->execute($bookingType, $order->id);
+
+    $event = new ClearBookingEvent(null, $bookingType, $order->id);
+    System::getContainer()
+      ->get('event_dispatcher')
+      ->dispatch($event, Events::CLEAR_BOOKING_EVENT);
+
     self::clearBookingLines();
   }
 
