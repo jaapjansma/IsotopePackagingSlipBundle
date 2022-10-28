@@ -163,14 +163,17 @@ class StockBookingHelper {
 
   /**
    * @param IsotopePackagingSlipModel $packagingSlipModel
-   * @param $product_id
-   * @param int $type
-   * @param string $document_number
+   * @param int $bookingType
    */
   public static function clearBookingForPackagingSlip(IsotopePackagingSlipModel $packagingSlipModel, int $bookingType) {
-    \Database::getInstance()
-      ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `type` = ?")
-      ->execute($packagingSlipModel->id, $bookingType);
+    foreach($packagingSlipModel->getProductsCombinedByProductId() as $product) {
+      $config = IsotopeHelper::getConfig($packagingSlipModel);
+      $credit_account = $config->isotopestock_order_credit_account;
+      if ($product->getProduct()->isostock_preorder) {
+        $credit_account = $config->isotopestock_preorder_credit_account;
+      }
+      self::clearBookingForPackagingSlipAndProductAndAccount($packagingSlipModel, $bookingType, $product->product_id, $credit_account);
+    }
 
     $event = new ClearBookingEvent(null, $bookingType, null, ['packaging_slip_id' => $packagingSlipModel->id]);
     System::getContainer()
@@ -178,6 +181,25 @@ class StockBookingHelper {
       ->dispatch($event, Events::CLEAR_BOOKING_EVENT);
 
     self::clearBookingLines();
+  }
+
+  /**
+   * @param IsotopePackagingSlipModel $packagingSlipModel
+   * @param int $bookingType
+   * @param int $productId
+   * @param int $accountId
+   */
+  protected static function clearBookingForPackagingSlipAndProductAndAccount(IsotopePackagingSlipModel $packagingSlipModel, int $bookingType, int $productId, int $accountId) {
+    \Database::getInstance()
+      ->prepare("
+            DELETE `tl_isotope_stock_booking` FROM `tl_isotope_stock_booking` 
+            INNER JOIN `tl_isotope_stock_booking_line` ON `tl_isotope_stock_booking_line`.`pid` = `tl_isotope_stock_booking`.`id`         
+            WHERE `tl_isotope_stock_booking`.`packaging_slip_id` = ? 
+            AND `tl_isotope_stock_booking`.`type` = ?
+            AND `tl_isotope_stock_booking`.`product_id` = ? 
+            AND `tl_isotope_stock_booking_line`.`account` = ?
+      ")
+      ->execute($packagingSlipModel->id, $bookingType, $productId, $accountId);
   }
 
   /**

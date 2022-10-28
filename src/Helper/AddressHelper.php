@@ -36,6 +36,7 @@ class AddressHelper {
     $arrFields = [
       'firstname',
       'lastname',
+      'company',
       'street_1',
       'housenumber',
       'street_2',
@@ -49,12 +50,19 @@ class AddressHelper {
     foreach ($arrFields as $strField) {
       $arrTokens[$strField] = Format::dcaValue(IsotopePackagingSlipModel::getTable(), $strField, $packagingSlipModel->$strField);
     }
+    // Set "fn" (full name) to company if no first- and lastname is given
+    if ($arrTokens['company'] != '') {
+      $fn        = $arrTokens['company'];
+      $fnCompany = ' fn';
+    } else {
+      $fn        = trim($arrTokens['firstname'] . ' ' . $arrTokens['lastname']);
+      $fnCompany = '';
+    }
+    $street = implode('<br>', array_filter([$packagingSlipModel->street_1, $packagingSlipModel->street_2, $packagingSlipModel->street_3]));
     /**
      * Generate hCard fields
      * See http://microformats.org/wiki/hcard
      */
-    $fn        = trim($arrTokens['firstname'] . ' ' . $arrTokens['lastname']);
-    $street = implode('<br>', array_filter([$packagingSlipModel->street_1, $packagingSlipModel->street_2, $packagingSlipModel->street_3]));
     $arrTokens += [
       'hcard_honorific_prefix' => '',
       'hcard_tel'              => '',

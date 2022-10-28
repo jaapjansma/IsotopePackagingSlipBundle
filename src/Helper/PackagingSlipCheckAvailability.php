@@ -55,29 +55,29 @@ class PackagingSlipCheckAvailability {
     $db = System::importStatic('Database');
     $today = new DateTime();
     $productSql = "
-        SELECT `packaging_slip_product`.`product_id`, SUM(`packaging_slip_product`.`quantity`) AS `quantity`, `packaging_slip`.`credit_account`, `packaging_slip`.`debit_account` 
+        SELECT `packaging_slip_product`.`product_id`, SUM(`packaging_slip_product`.`quantity`) AS `quantity`, `packaging_slip`.`credit_account` 
         FROM `tl_isotope_packaging_slip_product_collection` `packaging_slip_product`
         INNER JOIN `tl_isotope_packaging_slip` `packaging_slip` ON `packaging_slip_product`.`pid` = `packaging_slip`.`id`
         WHERE  `packaging_slip`.`status` = '0' AND (`packaging_slip`.`scheduled_picking_date` = '' OR `packaging_slip`.`scheduled_picking_date` <= ?)
-        AND `packaging_slip_product`.`is_available` = '0'
-        GROUP BY `product_id`, `packaging_slip`.`credit_account`, `packaging_slip`.`debit_account`
+        AND `packaging_slip_product`.`product_id` IN (SELECT `packaging_slip_product2`.`product_id` FROM `tl_isotope_packaging_slip_product_collection` `packaging_slip_product2` WHERE `packaging_slip_product2`.`is_available` = '0')
+        GROUP BY `product_id`, `packaging_slip`.`credit_account`
         ORDER BY `product_id` ASC, `quantity` ASC
         LIMIT 0, ?";
     $updateProductSql = "
         UPDATE `tl_isotope_packaging_slip_product_collection` `packaging_slip_product`
         INNER JOIN `tl_isotope_packaging_slip` `packaging_slip` ON `packaging_slip_product`.`pid` = `packaging_slip`.`id`
         SET `packaging_slip_product`.`is_available` = ?
-        WHERE `packaging_slip_product`.`product_id` = ? AND `packaging_slip`.`credit_account` = ? AND `packaging_slip`.`debit_account` = ? 
+        WHERE `packaging_slip_product`.`product_id` = ? AND `packaging_slip`.`credit_account` = ? 
         AND `packaging_slip`.`status` = '0' AND `packaging_slip`.`check_availability` = '1' AND (`packaging_slip`.`scheduled_picking_date` = '' OR `packaging_slip`.`scheduled_picking_date` <= ?)";
     $objResult = $db->prepare($productSql)->execute($today->getTimestamp(), $maximumNumberOfProductsToCheck);
     while ($objResult->next()) {
       $stock = ProductHelper::getProductCountPerAccount($objResult->product_id, $objResult->credit_account);
       if ($stock >= $objResult->quantity) {
         // Product is available.
-        $db->prepare($updateProductSql)->execute('1', $objResult->product_id, $objResult->credit_account, $objResult->debit_account, $today->getTimestamp());
+        $db->prepare($updateProductSql)->execute('1', $objResult->product_id, $objResult->credit_account, $today->getTimestamp());
       } else {
         // Product is not available.
-        $db->prepare($updateProductSql)->execute('-1', $objResult->product_id, $objResult->credit_account, $objResult->debit_account, $today->getTimestamp());
+        $db->prepare($updateProductSql)->execute('-1', $objResult->product_id, $objResult->credit_account, $today->getTimestamp());
       }
     }
   }

@@ -127,7 +127,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
   'palettes' => array
   (
     '__selector__'                => [],
-    'default'                     => 'document_number,config_id;status,is_available;availability_notes;date,scheduled_picking_date,scheduled_shipping_date,shipping_date;{stock_legend},credit_account,debit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,company,email,phone,street_1,housenumber,street_2,street_3,postal,city,country;{notes_legend},notes,internal_notes'
+    'default'                     => 'document_number,config_id;status,is_available;availability_notes;date,scheduled_picking_date,scheduled_shipping_date,shipping_date;{stock_legend},credit_account;{product_legend},product_id;{shipping_legend},shipping_id,shipper_id;{address_legend},member,firstname,lastname,company;email,phone;street_1,housenumber;street_2,street_3;postal,city,country;{notes_legend},notes,internal_notes'
   ),
 
   // Subpalettes
@@ -426,15 +426,6 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'sql'                   => 'text NULL',
     ),
     'credit_account' => array
-    (
-      'filter'                  => true,
-      'inputType'               => 'select',
-      'eval'                    => array('tl_class' => 'w50'),
-      'foreignKey'              => 'tl_isotope_stock_account.title',
-      'sql'                     => "int(10) unsigned NOT NULL default 0",
-      'default'                 => '0',
-    ),
-    'debit_account' => array
     (
       'filter'                  => true,
       'inputType'               => 'select',

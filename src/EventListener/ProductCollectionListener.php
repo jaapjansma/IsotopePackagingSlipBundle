@@ -116,7 +116,6 @@ class ProductCollectionListener {
         }
         $packagingSlip->shipping_id = $order->getShippingMethod()->getId();
         $packagingSlip->config_id = $order->config_id;
-        $packagingSlip->debit_account = $config->isotopestock_order_credit_account;
         $packagingSlip->credit_account = $config->isotopestock_store_account;
         if ($order->getShippingMethod()->isotopestock_override_store_account) {
           $packagingSlip->credit_account = $order->getShippingMethod()->isotopestock_store_account;

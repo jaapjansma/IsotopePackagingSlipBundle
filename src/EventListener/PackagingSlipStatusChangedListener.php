@@ -23,6 +23,7 @@ use Isotope\Model\Product;
 use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Event\Events;
 use Krabo\IsotopePackagingSlipBundle\Event\StatusChangedEvent;
+use Krabo\IsotopePackagingSlipBundle\Helper\IsotopeHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopeStockBundle\Model\BookingModel;
@@ -67,8 +68,9 @@ class PackagingSlipStatusChangedListener implements EventSubscriberInterface {
     if ($newStatus == IsotopePackagingSlipModel::STATUS_PREPARE_FOR_SHIPPING && $oldStatus != $newStatus && !$isDelayed) {
       $this->updateDeliveryStock($event->getPackagingSlip());
     } elseif ($newStatus == IsotopePackagingSlipModel::STATUS_CANCELLED && $oldStatus != $newStatus) {
-      $this->cancelDeliveryStock($event->getPackagingSlip());
-      $this->cancelSalesStock($event->getPackagingSlip());
+      $packagingSlip = $event->getPackagingSlip();
+      $this->cancelDeliveryStock($packagingSlip);
+      $this->cancelSalesStock($packagingSlip);
       $this->cancelRelatedOrders($event->getPackagingSlip());
     }
   }
