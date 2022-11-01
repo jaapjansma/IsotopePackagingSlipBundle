@@ -210,7 +210,7 @@ class ProductCollectionListener {
    * @return int|mixed|null
    */
   protected function getScheduledShippingDate(Order $order) {
-    $scheduledDate = strtotime('+1 day');
+    $scheduledDate = time();
     if ($order->getShippingMethod()->shipper_id) {
       $shipper = IsotopePackagingSlipShipperModel::findByPk($order->getShippingMethod()->shipper_id);
       if ($shipper->isotope_packaging_slip_scheduled_shipping_date && $shipper->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
