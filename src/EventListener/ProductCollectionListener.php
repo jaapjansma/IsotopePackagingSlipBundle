@@ -25,6 +25,7 @@ use Isotope\Model\OrderStatus;
 use Isotope\Model\ProductCollection;
 use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Event\Events;
+use Krabo\IsotopePackagingSlipBundle\Event\GenerateTrackTraceTokenEvent;
 use Krabo\IsotopePackagingSlipBundle\Event\PackagingSlipOrderEvent;
 use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
@@ -258,19 +259,31 @@ class ProductCollectionListener {
    */
   public function getOrderNotificationTokens(ProductCollection\Order $order, &$arrTokens) {
     $sql = "
-      SELECT `shipping_date`
+      SELECT `tl_isotope_packaging_slip`.`id`, `tl_isotope_packaging_slip`.`shipping_date`
       FROM `tl_isotope_packaging_slip`
       INNER JOIN `tl_isotope_packaging_slip_product_collection` ON `tl_isotope_packaging_slip_product_collection`.`pid` = `tl_isotope_packaging_slip`.`id`
       WHERE `tl_isotope_packaging_slip_product_collection`.`document_number` = ?
-      AND `shipping_date` != ''
       ORDER BY `tl_isotope_packaging_slip`.`tstamp` DESC
       LIMIT 0, 1
     ";
     $result = \Database::getInstance()->prepare($sql)->execute($order->document_number);
     if ($result) {
-      $shippingDate = new \DateTime();
-      $shippingDate->setTimestamp($result->shipping_date);
-      $arrTokens['packaging_slip_shipping_date'] = $shippingDate->format('d-m-Y');
+      if (!empty($result->shipping_date)) {
+        $shippingDate = new \DateTime();
+        $shippingDate->setTimestamp($result->shipping_date);
+        $arrTokens['packaging_slip_shipping_date'] = $shippingDate->format('d-m-Y');
+      }
+
+      $packagingSlip = IsotopePackagingSlipModel::findByPk($result->id);
+      if ($packagingSlip) {
+        $event = new GenerateTrackTraceTokenEvent($packagingSlip);
+        System::getContainer()
+          ->get('event_dispatcher')
+          ->dispatch($event, Events::GENERATE_TRACKTRACE_TOKEN);
+        if ($event->trackAndTrace) {
+          $arrTokens['packaging_slip_trackandtrace'] = $event->trackAndTrace;
+        }
+      }
     }
     return $arrTokens;
   }

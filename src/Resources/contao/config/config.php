@@ -50,6 +50,7 @@ $GLOBALS['ISO_HOOKS']['getOrderNotificationTokens'][] = [ProductCollectionListen
 $GLOBALS['BE_FFL']['IsoPackagingSlipProductLookup'] = 'Krabo\IsotopePackagingSlipBundle\Widget\ProductLookupWizard';
 
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope']['iso_order_status_change']['email_text'][] = 'packaging_slip_shipping_date';
+$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope']['iso_order_status_change']['email_text'][] = 'packaging_slip_trackandtrace';
 /**
  * Notification Center notification types
  */

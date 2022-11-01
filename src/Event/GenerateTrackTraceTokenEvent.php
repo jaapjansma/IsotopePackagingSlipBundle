@@ -18,16 +18,31 @@
 
 namespace Krabo\IsotopePackagingSlipBundle\Event;
 
-class Events {
+use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 
-  const STATUS_CHANGED_EVENT = 'krabo.isotope_packaging_slip.status_changed';
+class GenerateTrackTraceTokenEvent {
 
-  const PACKAGING_SLIP_CREATED_FROM_ORDER = 'krabo.isotope_packaging_slip.created_from_order';
+  /**
+   * @var \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel
+   */
+  private $packagingSlipModel;
 
-  const GENERATE_ADDRESS = 'krabo.isotope_packaging_slip.generate_address';
+  /**
+   * @var string
+   */
+  public $trackAndTrace = '';
 
-  const GENERATE_TRACKTRACE_TOKEN = 'krabo.isotope_packaging_slip.generate_tracktrace_token';
+  public function __construct(IsotopePackagingSlipModel $packagingSlipModel) {
+    $this->packagingSlipModel = $packagingSlipModel;
+  }
 
-  const CHECK_AVAILABILITY = 'krabo.isotope_packaging_slip.check_availability';
+  /**
+   * @return \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel
+   */
+  public function getPackagingSlip() {
+    return $this->packagingSlipModel;
+  }
+
+
 
 }
