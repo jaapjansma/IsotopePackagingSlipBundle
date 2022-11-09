@@ -76,7 +76,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip_shipper'] = array
   'palettes' => array
   (
     '__selector__'                => [],
-    'default'                     => 'name,handle_only_paid;isotope_packaging_slip_scheduled_picking_date;isotope_packaging_slip_scheduled_shipping_date'
+    'default'                     => 'name,handle_only_paid;isotope_packaging_slip_scheduled_picking_date;isotope_packaging_slip_scheduled_shipping_date,customer_can_provide_shipping_date'
   ),
 
   // Subpalettes
@@ -122,6 +122,11 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip_shipper'] = array
       'eval'                    => array('mandatory'=>false, 'rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
       'sql'                     => "varchar(10) NOT NULL default ''",
       'attributes'            => array( 'legend'=>'isostock_legend' ),
+    ),
+    'customer_can_provide_shipping_date' => array(
+      'inputType' => 'checkbox',
+      'eval' => ['tl_class' => 'w50 clr'],
+      'sql' => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => '']
     ),
   )
 );

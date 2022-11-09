@@ -18,12 +18,20 @@
 
 use Contao\Image;
 use Contao\StringUtil;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
 $GLOBALS['TL_DCA']['tl_iso_product_collection']['list']['operations']['packaging_slips'] = [
   'label'             => &$GLOBALS['TL_LANG']['tl_iso_product_collection']['packaging_slips'],
   'href'              => 'href=' . \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::getTable(),
   'icon'              => 'bundles/isotopepackagingslip/price-tag.png',
   'button_callback'   => ['tl_iso_product_collection_packaging_slip', 'packagingSlipButton'],
+];
+
+$GLOBALS['TL_DCA']['tl_iso_product_collection']['fields']['scheduled_shipping_date'] = [
+  'exclude'               => true,
+  'inputType'             => 'text',
+  'eval'                  => array('rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+  'sql'                   => 'int(10) NULL',
 ];
 
 $GLOBALS['TL_DCA']['tl_iso_product_collection']['fields']['combined_packaging_slip_id'] = array(
@@ -34,6 +42,10 @@ $GLOBALS['TL_DCA']['tl_iso_product_collection']['fields']['combined_packaging_sl
   'eval'          => array( 'mandatory'=>false, 'tl_class'=>'w50 clr' ),
   'sql'           => "varchar(64) NOT NULL default ''",
 );
+
+PaletteManipulator::create()
+  ->addField('scheduled_shipping_date', 'date_shipped')
+  ->applyToPalette('default', 'tl_iso_product_collection');
 
 class tl_iso_product_collection_packaging_slip {
 

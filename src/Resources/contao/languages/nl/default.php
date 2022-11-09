@@ -28,6 +28,7 @@ $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdDocumentNumber'] = 'Factuurnumme
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductNotAvailable'] = 'Een of meerdere producten zijn niet op voorraad. ';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'] = 'Order(s) zijn niet betaald. ';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipAmountToPaid'] = 'Te betalen: %s';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipScheduledShippingDate'] = 'Geplande verzenddatum: %s';
 $GLOBALS['TL_LANG']['MSC']['NumberOfPackageSlips'] = 'Aantal pakbonnen';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip'] = 'Isotope Pakbon';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_1'] = 'Isotope Pakbon - Voorbereiden voor verzending';

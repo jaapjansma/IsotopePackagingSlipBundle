@@ -27,6 +27,7 @@ use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Event\Events;
 use Krabo\IsotopePackagingSlipBundle\Event\GenerateTrackTraceTokenEvent;
 use Krabo\IsotopePackagingSlipBundle\Event\PackagingSlipOrderEvent;
+use Krabo\IsotopePackagingSlipBundle\Helper\IsotopeHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Helper\StockBookingHelper;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
@@ -211,20 +212,15 @@ class ProductCollectionListener {
    * @return int|mixed|null
    */
   protected function getScheduledShippingDate(Order $order) {
-    $scheduledDate = time();
+    $shipper = null;
     if ($order->getShippingMethod()->shipper_id) {
       $shipper = IsotopePackagingSlipShipperModel::findByPk($order->getShippingMethod()->shipper_id);
-      if ($shipper->isotope_packaging_slip_scheduled_shipping_date && $shipper->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
-        $scheduledDate = $shipper->isotope_packaging_slip_scheduled_shipping_date;
-      }
     }
-    foreach($order->getItems() as $objItem) {
-      $objProduct = $objItem->getProduct();
-      if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
-        $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
-      }
+    $earliestScheduledShippingDate = IsotopeHelper::getScheduledShippingDate($order, $shipper);
+    if ($order->scheduled_shipping_date && $order->scheduled_shipping_date > $earliestScheduledShippingDate) {
+      return $order->scheduled_shipping_date;
     }
-    return $scheduledDate;
+    return $earliestScheduledShippingDate;
   }
 
   /**
@@ -233,20 +229,11 @@ class ProductCollectionListener {
    * @return int|mixed|null
    */
   protected function getScheduledPickingDate(Order $order) {
-    $scheduledDate = time();
+    $shipper = null;
     if ($order->getShippingMethod()->shipper_id) {
       $shipper = IsotopePackagingSlipShipperModel::findByPk($order->getShippingMethod()->shipper_id);
-      if ($shipper->isotope_packaging_slip_scheduled_picking_date && $shipper->isotope_packaging_slip_scheduled_picking_date > $scheduledDate) {
-        $scheduledDate = $shipper->isotope_packaging_slip_scheduled_picking_date;
-      }
     }
-    foreach($order->getItems() as $objItem) {
-      $objProduct = $objItem->getProduct();
-      if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_picking_date && $objProduct->isotope_packaging_slip_scheduled_picking_date > $scheduledDate) {
-        $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_picking_date;
-      }
-    }
-    return $scheduledDate;
+    return IsotopeHelper::getScheduledPickingDate($order, $shipper);
   }
 
   /**

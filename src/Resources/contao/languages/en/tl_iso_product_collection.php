@@ -18,3 +18,4 @@
 
 $GLOBALS['TL_LANG']['tl_iso_config']['combined_packaging_slip_id'] = ['Combined with Packaging Slip', ''];
 $GLOBALS['TL_LANG']['tl_iso_product_collection']['packaging_slips'] = ['View packaging slips', 'View packaging slips (%s)'];
+$GLOBALS['TL_LANG']['tl_iso_product_collection']['scheduled_shipping_date'] = ['Scheduled Shipping Date', ''];

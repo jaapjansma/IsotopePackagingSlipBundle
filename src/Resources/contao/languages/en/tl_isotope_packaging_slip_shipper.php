@@ -21,3 +21,4 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['name'] = ['Shipper', '
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['handle_only_paid'] = ['Handle only when paid', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['isotope_packaging_slip_scheduled_picking_date'] = ['Next picking date', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['isotope_packaging_slip_scheduled_shipping_date'] = ['Next shipping date', ''];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip_shipper']['customer_can_provide_shipping_date'] = ['Customer can provide a shipping date', ''];

@@ -156,9 +156,13 @@ class CombinePackagingSlip extends Flat {
             foreach($objPackagingSlip->getOrders() as $order) {
               $orderDocumentNumbers[] = $order->document_number;
             }
+            $strScheduledShippingDate = '';
+            if ($objPackagingSlip->scheduled_shipping_date) {
+              $strScheduledShippingDate = sprintf($GLOBALS['TL_LANG']['MSC']['PackageSlipScheduledShippingDate'], date('d-m-Y', $objPackagingSlip->scheduled_shipping_date));
+            }
             $return['packaging_slip_' . $objPackagingSlip->id] = [
               'value' => 'packaging_slip_' . $objPackagingSlip->id,
-              'label' => '<div class="packaging_slip_number">' . implode("<br>", $orderDocumentNumbers) . '</div><br />' . $address,
+              'label' => '<div class="packaging_slip_number">' . implode("<br>", $orderDocumentNumbers) . '</div>'.$strScheduledShippingDate.'<br />' . $address,
               'default' => $default,
             ];
           } catch (\Exception $ex) {

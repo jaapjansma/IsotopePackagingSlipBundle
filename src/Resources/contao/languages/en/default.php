@@ -28,6 +28,7 @@ $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku'] = 'Article Number';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductNotAvailable'] = 'One or more products are not in stock. ';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'] = 'Order(s) are not paid. ';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipAmountToPaid'] = 'Amount to pay: %s';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipScheduledShippingDate'] = 'Scheduled shipping date: %s';
 $GLOBALS['TL_LANG']['MSC']['NumberOfPackageSlips'] = 'Number of package slips';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip'] = 'Isotope Packaging Slip';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_1'] = 'Isotope Packaging Slip - Prepare For Shipping';
