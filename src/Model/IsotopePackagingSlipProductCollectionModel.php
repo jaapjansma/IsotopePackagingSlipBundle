@@ -101,8 +101,6 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
       if ($objResult->document_number) {
         $order = Order::findOneBy('document_number', $objResult->document_number);
         $objProduct->setLanguage($order->language);
-        \Contao\System::loadLanguageFile('tl_isotope_packaging_slip', $order->language);
-        \Contao\System::loadLanguageFile('default', $order->language);
       }
       if (isset($arrProducts[$objProduct->product_id])) {
         $arrProducts[$objProduct->product_id]->quantity += $objProduct->quantity;
@@ -134,13 +132,9 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
    * @return \Isotope\Model\Product
    */
   public function getProduct() {
-    $oldLanguage = $GLOBALS['TL_LANGUAGE'];
-    if ($this->language) {
-      $GLOBALS['TL_LANGUAGE'] = $this->language;
-    }
-
     $product = Product::findByPk($this->product_id);
-    $GLOBALS['TL_LANGUAGE'] = $oldLanguage;
+    Registry::getInstance()->unregister($product);
+    $product = Product::findByPk($this->product_id);
     return $product;
   }
 

@@ -18,6 +18,7 @@
 
 namespace Krabo\IsotopePackagingSlipBundle\Backend;
 
+use Contao\CoreBundle\Translation\Translator;
 use Contao\Environment;
 use Contao\File;
 use Contao\FilesModel;
@@ -73,8 +74,20 @@ class PackagingSlipDocument extends \Backend {
     $pdf->writeHTML($this->generateProductListTemplate($ids));
     foreach($ids as $id) {
       $packagingSlip = IsotopePackagingSlipModel::findByPk($id);
+      $oldLanguage = $GLOBALS['TL_LANGUAGE'];
+      $oldLang = $GLOBALS['TL_LANG'];
+      $GLOBALS['TL_LANG'] = [];
+      foreach ($packagingSlip->getOrders() as $order) {
+        $GLOBALS['TL_LANGUAGE'] = $order->language;
+        break;
+      }
+      System::loadLanguageFile('tl_isotope_packaging_slip', $GLOBALS['TL_LANGUAGE'], TRUE);
+      System::loadLanguageFile('default', $GLOBALS['TL_LANGUAGE'], TRUE);
       $pdf->AddPage('P', '', '1', '', '', '10', '10', '10', '10');
-      $pdf->writeHTML($this->generateTemplate($packagingSlip));
+      $html = $this->generateTemplate($packagingSlip);
+      $pdf->writeHTML($html);
+      $GLOBALS['TL_LANGUAGE'] = $oldLanguage;
+      $GLOBALS['TL_LANG'] = $oldLang;
       $validOldStatusIds = [
         IsotopePackagingSlipModel::STATUS_OPEN,
         IsotopePackagingSlipModel::STATUS_ONHOLD

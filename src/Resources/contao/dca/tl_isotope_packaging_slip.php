@@ -517,6 +517,8 @@ class tl_isotope_packaging_slip {
       $objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
       $session = $objSessionBag->all();
       unset($session['search']['tl_isotope_packaging_slip']);
+      unset($session['filter']['tl_isotope_packaging_slip']);
+      unset($session['filter']['tl_isotope_packaging_slip_'.CURRENT_ID]);
       $objSessionBag->replace($session);
 
       // Retrieve ids of the package slips attached to the order.
