@@ -297,6 +297,7 @@ class IsotopePackagingSlipModel extends Model {
    */
   protected function preSave(array $arrSet)
   {
+    $arrSet['tstamp'] = time();
     $this->oldStatus = null;
     if ($this->id) {
       $objDatabase = Database::getInstance();
