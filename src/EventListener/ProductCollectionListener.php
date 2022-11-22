@@ -251,9 +251,10 @@ class ProductCollectionListener {
    */
   public function getOrderNotificationTokens(ProductCollection\Order $order, &$arrTokens) {
     $sql = "
-      SELECT `tl_isotope_packaging_slip`.`id`, `tl_isotope_packaging_slip`.`shipping_date`
+      SELECT `tl_isotope_packaging_slip`.`id`, `tl_isotope_packaging_slip`.`shipping_date`, `tl_isotope_packaging_slip`.`scheduled_shipping_date`, `tl_isotope_packaging_slip_shipper`.`name` as `shipper`
       FROM `tl_isotope_packaging_slip`
       INNER JOIN `tl_isotope_packaging_slip_product_collection` ON `tl_isotope_packaging_slip_product_collection`.`pid` = `tl_isotope_packaging_slip`.`id`
+      LEFT JOIN `tl_isotope_packaging_slip_shipper` ON `tl_isotope_packaging_slip_shipper`.`id` = `tl_isotope_packaging_slip`.`shipper_id`
       WHERE `tl_isotope_packaging_slip_product_collection`.`document_number` = ?
       ORDER BY `tl_isotope_packaging_slip`.`tstamp` DESC
       LIMIT 0, 1
@@ -264,6 +265,14 @@ class ProductCollectionListener {
         $shippingDate = new \DateTime();
         $shippingDate->setTimestamp($result->shipping_date);
         $arrTokens['packaging_slip_shipping_date'] = $shippingDate->format('d-m-Y');
+      }
+      if (!empty($result->scheduled_shipping_date)) {
+        $scheduledShippingDate = new \DateTime();
+        $scheduledShippingDate->setTimestamp($result->scheduled_shipping_date);
+        $arrTokens['packaging_slip_scheduled_shipping_date'] = $scheduledShippingDate->format('d-m-Y');
+      }
+      if (!empty($result->shipper)) {
+        $arrTokens['packaging_slip_shipper'] = $result->shipper;
       }
 
       $packagingSlip = IsotopePackagingSlipModel::findByPk($result->id);
