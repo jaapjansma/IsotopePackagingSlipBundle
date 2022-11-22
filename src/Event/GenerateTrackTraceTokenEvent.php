@@ -32,6 +32,8 @@ class GenerateTrackTraceTokenEvent {
    */
   public $trackAndTrace = '';
 
+  public $trackAndTraceCode = '';
+
   public function __construct(IsotopePackagingSlipModel $packagingSlipModel) {
     $this->packagingSlipModel = $packagingSlipModel;
   }

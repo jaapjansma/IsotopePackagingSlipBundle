@@ -295,6 +295,9 @@ class ProductCollectionListener {
         if ($event->trackAndTrace) {
           $arrTokens['packaging_slip_trackandtrace'] = $event->trackAndTrace;
         }
+        if ($event->trackAndTraceCode) {
+          $arrTokens['packaging_slip_trackandtrace_code'] = $event->trackAndTraceCode;
+        }
       }
     }
     return $arrTokens;

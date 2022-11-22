@@ -52,6 +52,7 @@ $GLOBALS['BE_FFL']['IsoPackagingSlipProductLookup'] = 'Krabo\IsotopePackagingSli
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope']['iso_order_status_change']['email_text'][] = 'packaging_slip_shipping_date';
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope']['iso_order_status_change']['email_text'][] = 'packaging_slip_scheduled_shipping_date';
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope']['iso_order_status_change']['email_text'][] = 'packaging_slip_trackandtrace';
+$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope']['iso_order_status_change']['email_text'][] = 'packaging_slip_trackandtrace_code';
 $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope']['iso_order_status_change']['email_text'][] = 'packaging_slip_shipper';
 /**
  * Notification Center notification types
