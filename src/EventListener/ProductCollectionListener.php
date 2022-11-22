@@ -259,6 +259,17 @@ class ProductCollectionListener {
       ORDER BY `tl_isotope_packaging_slip`.`tstamp` DESC
       LIMIT 0, 1
     ";
+    if ($order->scheduled_shipping_date) {
+      $scheduledShippingDate = new \DateTime();
+      $scheduledShippingDate->setTimestamp($order->scheduled_shipping_date);
+      $arrTokens['packaging_slip_scheduled_shipping_date'] = $scheduledShippingDate->format('d-m-Y');
+    }
+    if ($order->getShippingMethod()->shipper_id) {
+      $objShipper = IsotopePackagingSlipShipperModel::findByPk($order->getShippingMethod()->shipper_id);
+      if ($objShipper) {
+        $arrTokens['packaging_slip_shipper'] = $objShipper->name;
+      }
+    }
     $result = \Database::getInstance()->prepare($sql)->execute($order->document_number);
     if ($result) {
       if (!empty($result->shipping_date)) {
