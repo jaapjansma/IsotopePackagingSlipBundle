@@ -31,7 +31,7 @@ $GLOBALS['TL_DCA']['tl_iso_product_collection']['fields']['scheduled_shipping_da
   'exclude'               => true,
   'inputType'             => 'text',
   'eval'                  => array('rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
-  'sql'                   => 'int(10) NULL',
+  'sql'                   => "varchar(10) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_iso_product_collection']['fields']['combined_packaging_slip_id'] = array(
