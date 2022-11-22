@@ -92,7 +92,7 @@ class ProductCollectionListener {
         $packagingSlip->tstamp = time();
         $packagingSlip->date = time();
         $packagingSlip->scheduled_shipping_date = $this->getScheduledShippingDate($order);
-        $packagingSlip->scheduled_picking_date = $this->getScheduledPickingDate($order);
+        $packagingSlip->scheduled_picking_date = $this->getScheduledPickingDate($order, $packagingSlip->scheduled_shipping_date);
         $packagingSlip->status = '0';
         if ($order->member) {
           $packagingSlip->member = $order->member;
@@ -142,7 +142,7 @@ class ProductCollectionListener {
           $updatePackagingSlip = true;
         }
         $scheduledShippingDate = $this->getScheduledShippingDate($order);
-        $scheduledPickingDate = $this->getScheduledPickingDate($order);
+        $scheduledPickingDate = $this->getScheduledPickingDate($order, $scheduledShippingDate);
         if (!$packagingSlip->scheduled_shipping_date || $scheduledShippingDate > $packagingSlip->scheduled_shipping_date) {
           $packagingSlip->scheduled_shipping_date = $scheduledShippingDate;
           $updatePackagingSlip = true;
@@ -225,13 +225,18 @@ class ProductCollectionListener {
 
   /**
    * @param \Isotope\Model\ProductCollection\Order $order
+   * @param int $currentShippingDate
    *
    * @return int|mixed|null
    */
-  protected function getScheduledPickingDate(Order $order) {
+  protected function getScheduledPickingDate(Order $order, $currentShippingDate) {
     $shipper = null;
     if ($order->getShippingMethod()->shipper_id) {
       $shipper = IsotopePackagingSlipShipperModel::findByPk($order->getShippingMethod()->shipper_id);
+    }
+    $earliestScheduledShippingDate = IsotopeHelper::getScheduledShippingDate($order, $shipper);
+    if ($currentShippingDate > $earliestScheduledShippingDate) {
+      return $currentShippingDate;
     }
     return IsotopeHelper::getScheduledPickingDate($order, $shipper);
   }
