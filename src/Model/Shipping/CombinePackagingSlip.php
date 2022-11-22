@@ -38,7 +38,7 @@ class CombinePackagingSlip extends Flat {
     if (!empty($combined_packaging_slip_id)) {
       return parent::isAvailable();
     }
-    return FALSE;
+    return TRUE;
   }
 
   /**

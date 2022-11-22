@@ -80,6 +80,15 @@ class IsotopeHelper {
         $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
       }
     }
+    if ($productCollection->combined_packaging_slip_id) {
+      $packagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $productCollection->combined_packaging_slip_id);
+      foreach($packagingSlip->getProductsCombinedByProductId() as $objItem) {
+        $objProduct = $objItem->getProduct();
+        if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
+          $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
+        }
+      }
+    }
     return $scheduledDate;
   }
 
