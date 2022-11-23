@@ -250,6 +250,11 @@ class ProductCollectionListener {
    * @return mixed
    */
   public function getOrderNotificationTokens(ProductCollection\Order $order, &$arrTokens) {
+    $arrTokens['packaging_slip_trackandtrace'] = '';
+    $arrTokens['packaging_slip_trackandtrace_code'] = '';
+    $arrTokens['packaging_slip_scheduled_shipping_date'] = '';
+    $arrTokens['packaging_slip_shipper'] = '';
+    $arrTokens['packaging_slip_shipping_date'] = '';
     $sql = "
       SELECT `tl_isotope_packaging_slip`.`id`, `tl_isotope_packaging_slip`.`shipping_date`, `tl_isotope_packaging_slip`.`scheduled_shipping_date`, `tl_isotope_packaging_slip_shipper`.`name` as `shipper`
       FROM `tl_isotope_packaging_slip`
