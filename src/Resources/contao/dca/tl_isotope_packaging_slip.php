@@ -476,7 +476,7 @@ class tl_isotope_packaging_slip {
     $document_number_key = array_search('document_number', $fields, true);
     if (!empty($arrData['check_availability'])) {
       $today = strtotime('today 23:59');
-      if (empty($arrData['scheduled_picking_date']) || $arrData['scheduled_picking_date'] < $today) {
+      if (empty($arrData['scheduled_picking_date']) || $arrData['scheduled_picking_date'] <= $today) {
         $toCheckIcon = Contao\Image::getHtml('important.gif', $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0], 'title="' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0] . '"');
         $labels[$document_number_key] = $toCheckIcon . '&nbsp;' . $labels[$document_number_key];
       }

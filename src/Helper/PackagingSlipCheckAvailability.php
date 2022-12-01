@@ -53,6 +53,7 @@ class PackagingSlipCheckAvailability {
   public static function checkProductAvailability(int $maximumNumberOfProductsToCheck=25) {
     $db = System::importStatic('Database');
     $today = new DateTime();
+    $today->setTime(23,59);
     $productSql = "
         SELECT `packaging_slip_product`.`product_id`, `packaging_slip`.`credit_account` 
         FROM `tl_isotope_packaging_slip_product_collection` `packaging_slip_product`
