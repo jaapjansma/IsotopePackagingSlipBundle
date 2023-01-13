@@ -226,9 +226,13 @@ class StockBookingHelper {
    * @return void
    */
   public static function clearBookingLines() {
-    \Database::getInstance()
-      ->prepare("DELETE FROM `tl_isotope_stock_booking_line` WHERE `pid` NOT IN (SELECT `id` FROM `tl_isotope_stock_booking`)")
-      ->execute();
+    static $onlyRunOnce = false;
+    if (!$onlyRunOnce) {
+      \Database::getInstance()
+        ->prepare("DELETE FROM `tl_isotope_stock_booking_line` WHERE `pid` NOT IN (SELECT `id` FROM `tl_isotope_stock_booking`)")
+        ->execute();
+      $onlyRunOnce = true;
+    }
   }
 
   /**
@@ -240,11 +244,25 @@ class StockBookingHelper {
    */
   public static function generateProductListForPackagingSlips(array $ids) {
     $return = [];
+    $productIds = [];
     foreach($ids as $id) {
       $packagingSlipModel = IsotopePackagingSlipModel::findByPk($id);
-      $account = AccountModel::findByPk($packagingSlipModel->credit_account);
-      if (!isset($return[$account->id])) {
-        $return[$account->id] = [
+      foreach($packagingSlipModel->getProductsCombinedByProductId() as $item) {
+        $product = $item->getProduct();
+        if ($product && !in_array($product->id, $productIds)) {
+          $productIds[] = $product->id;
+        }
+      }
+    }
+
+    if (count($productIds)) {
+      ProductHelper::loadStockInfoForProducts($productIds);
+    }
+    foreach($ids as $id) {
+      $packagingSlipModel = IsotopePackagingSlipModel::findByPk($id);
+      if (!isset($return[$packagingSlipModel->credit_account])) {
+        $account = AccountModel::findByPk($packagingSlipModel->credit_account);
+        $return[$packagingSlipModel->credit_account] = [
           'label' => $account->title,
           'products' => [],
         ];
@@ -254,18 +272,18 @@ class StockBookingHelper {
         if (!$product) {
           continue;
         }
-        if (!isset($return[$account->id]['products'][$product->id])) {
-          $return[$account->id]['products'][$product->id] = [
+        if (!isset($return[$packagingSlipModel->credit_account]['products'][$product->id])) {
+          $return[$packagingSlipModel->credit_account]['products'][$product->id] = [
             'quantity' => $item->quantity,
-            'available' => ProductHelper::getProductCountPerAccount($product->id, $account->id),
+            'available' => ProductHelper::getProductCountPerAccount($product->id, $packagingSlipModel->credit_account),
             'sku' => $product->sku,
             'label' => $product->getName(),
             'package_slip_ids' => [$id],
           ];
         } else {
-          $return[$account->id]['products'][$product->id]['quantity'] += $item->quantity;
-          if (!in_array($id, $return[$account->id]['products'][$product->id]['package_slip_ids'])) {
-            $return[$account->id]['products'][$product->id]['package_slip_ids'][] = $id;
+          $return[$packagingSlipModel->credit_account]['products'][$product->id]['quantity'] += $item->quantity;
+          if (!in_array($id, $return[$packagingSlipModel->credit_account]['products'][$product->id]['package_slip_ids'])) {
+            $return[$packagingSlipModel->credit_account]['products'][$product->id]['package_slip_ids'][] = $id;
           }
         }
       }
