@@ -36,6 +36,7 @@ use Isotope\Model\Shipping;
 use Isotope\Template;
 use Krabo\IsotopePackagingSlipBundle\Event\Events;
 use Krabo\IsotopePackagingSlipBundle\Event\GenerateAddressEvent;
+use Krabo\IsotopePackagingSlipBundle\Event\GenerateTrackTraceTokenEvent;
 use Krabo\IsotopePackagingSlipBundle\Event\StatusChangedEvent;
 use Krabo\IsotopePackagingSlipBundle\Helper\AddressHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\IsotopeHelper;
@@ -65,6 +66,16 @@ class IsotopePackagingSlipModel extends Model {
   const STATUS_CANCELLED = -2;
 
   private $products;
+
+  /**
+   * @var string
+   */
+  private $trackAndTrace = '';
+
+  /**
+   * @var string
+   */
+  private $trackAndTraceCode = '';
 
   /**
    * Construct the model
@@ -142,6 +153,33 @@ class IsotopePackagingSlipModel extends Model {
       $this->generateDocumentNumber($prefix, $config->orderDigits);
     }
     return $this->document_number;
+  }
+
+  protected function loadTrackAndTrace() {
+    if (empty($this->trackAndTrace) && empty($this->trackAndTraceCode)) {
+      $this->trackAndTrace = '';
+      $this->trackAndTraceCode = '';
+      $event = new GenerateTrackTraceTokenEvent($this);
+      System::getContainer()
+        ->get('event_dispatcher')
+        ->dispatch($event, Events::GENERATE_TRACKTRACE_TOKEN);
+      if ($event->trackAndTrace) {
+        $this->trackAndTrace = $event->trackAndTrace;
+      }
+      if ($event->trackAndTraceCode) {
+        $this->trackAndTraceCode = $event->trackAndTraceCode;
+      }
+    }
+  }
+
+  public function getTrackAndTraceLink(): string {
+    $this->loadTrackAndTrace();
+    return $this->trackAndTrace;
+  }
+
+  public function getTrackAndTraceCode(): string {
+    $this->loadTrackAndTrace();
+    return $this->trackAndTraceCode;
   }
 
   /**

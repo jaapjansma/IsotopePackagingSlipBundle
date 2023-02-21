@@ -25,7 +25,6 @@ use Isotope\Model\OrderStatus;
 use Isotope\Model\ProductCollection;
 use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Event\Events;
-use Krabo\IsotopePackagingSlipBundle\Event\GenerateTrackTraceTokenEvent;
 use Krabo\IsotopePackagingSlipBundle\Event\PackagingSlipOrderEvent;
 use Krabo\IsotopePackagingSlipBundle\Helper\IsotopeHelper;
 use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
@@ -296,17 +295,11 @@ class ProductCollectionListener {
       }
 
       $packagingSlip = IsotopePackagingSlipModel::findByPk($result->id);
-      if ($packagingSlip) {
-        $event = new GenerateTrackTraceTokenEvent($packagingSlip);
-        System::getContainer()
-          ->get('event_dispatcher')
-          ->dispatch($event, Events::GENERATE_TRACKTRACE_TOKEN);
-        if ($event->trackAndTrace) {
-          $arrTokens['packaging_slip_trackandtrace'] = $event->trackAndTrace;
-        }
-        if ($event->trackAndTraceCode) {
-          $arrTokens['packaging_slip_trackandtrace_code'] = $event->trackAndTraceCode;
-        }
+      if ($packagingSlip && $packagingSlip->getTrackAndTraceLink()) {
+        $arrTokens['packaging_slip_trackandtrace'] = $packagingSlip->getTrackAndTraceLink();
+      }
+      if ($packagingSlip && $packagingSlip->getTrackAndTraceCode()) {
+        $arrTokens['packaging_slip_trackandtrace_code'] = $packagingSlip->getTrackAndTraceCode();
       }
     }
     return $arrTokens;
