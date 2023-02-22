@@ -20,6 +20,7 @@ use Contao\Environment;
 use Contao\Input;
 use Contao\StringUtil;
 use Contao\System;
+use Isotope\Isotope;
 use Isotope\Model\Config;
 use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
@@ -173,7 +174,9 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
         'searchFields'              => array('firstname', 'lastname', 'username', 'email'),
         'sqlWhere'                  => '',
         'searchLabel'               => 'Search members',
+        'customContentTpl'          => 'be_widget_tablelookupwizard_content_package_slip',
       ),
+      'save_callback'          => [['tl_isotope_packaging_slip', 'saveMember']],
     ),
     'status' => array
     (
@@ -441,6 +444,8 @@ class tl_isotope_packaging_slip {
 
   protected $currentStatus;
 
+  protected $blnMemberChanged = false;
+
   public function labelCallback($arrData, string $label, \Contao\DataContainer $dc, $labels) {
     /** @var \Symfony\Component\Routing\RouterInterface $router */
     $router = \Contao\System::getContainer()->get('router');
@@ -482,6 +487,13 @@ class tl_isotope_packaging_slip {
       }
     }
     return $labels;
+  }
+
+  public function saveMember($value, \Contao\DataContainer $dc) {
+    if ($value && $value != $dc->member) {
+      $this->blnMemberChanged = TRUE;
+    }
+    return $value;
   }
 
   public function onLoad(\Contao\DataContainer $dc) {
@@ -566,6 +578,47 @@ class tl_isotope_packaging_slip {
     }
     if ($dc->activeRecord->status == IsotopePackagingSlipModel::STATUS_OPEN) {
       PackagingSlipCheckAvailability::resetAvailabilityStatus([$dc->id]);
+    }
+
+    if ($this->blnMemberChanged) {
+      /** @var \Contao\Model\Collection $addresses */
+      $addresses = \Isotope\Model\Address::findBy([
+        'pid=?',
+        'ptable=?'
+      ], [$dc->activeRecord->member, 'tl_member'], ['order' => 'id ASC, isDefaultShipping DESC']);
+      if ($addresses) {
+        $address = $addresses->first();
+        $packagingSlip->firstname = $address->firstname;
+        $packagingSlip->lastname = $address->lastname;
+        $packagingSlip->company = $address->company;
+        $packagingSlip->email = $address->email;
+        $packagingSlip->phone = $address->phone;
+        $packagingSlip->housenumber = $address->housenumber;
+        $packagingSlip->street_1 = $address->street_1;
+        $packagingSlip->street_2 = $address->street_2;
+        $packagingSlip->street_3 = $address->street_3;
+        $packagingSlip->postal = $address->postal;
+        $packagingSlip->city = $address->city;
+        $packagingSlip->country = $address->country;
+        $packagingSlip->save();
+      } else {
+        $member = \Contao\MemberModel::findByPk($dc->activeRecord->member);
+        if ($member) {
+          $packagingSlip->firstname = $member->firstname ?? '';
+          $packagingSlip->lastname = $member->lastname ?? '';
+          $packagingSlip->company = $member->company ?? '';
+          $packagingSlip->email = $member->email ?? '';
+          $packagingSlip->phone = $member->phone ?? '';
+          $packagingSlip->housenumber = $member->housenumber ?? '';
+          $packagingSlip->street_1 = $member->street_1 ?? '';
+          $packagingSlip->street_2 = $member->street_2 ?? '';
+          $packagingSlip->street_3 = $member->street_3 ?? '';
+          $packagingSlip->postal = $member->postal ?? '';
+          $packagingSlip->city = $member->city ?? '';
+          $packagingSlip->country = $member->country ?? '';
+        }
+        $packagingSlip->save();
+      }
     }
   }
 
