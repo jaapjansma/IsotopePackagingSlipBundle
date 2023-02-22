@@ -182,6 +182,25 @@ class IsotopePackagingSlipModel extends Model {
     return $this->trackAndTraceCode;
   }
 
+  public function getScheduledShippingDateFormatted(): string {
+    if ($this->scheduled_shipping_date) {
+      return Format::dcaValue('tl_isotope_packaging_slip', 'scheduled_shipping_date', $this->scheduled_shipping_date);
+    }
+    return '';
+  }
+
+  public function isAllowedToChangeShippingDate(): bool {
+    if ($this->status != static::STATUS_OPEN || !$this->shipper_id) {
+      return false;
+    }
+
+    $objShipper = IsotopePackagingSlipShipperModel::findByPk($this->shipper_id);
+    if (!$objShipper || !$objShipper->customer_can_provide_shipping_date) {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * Checks whether an order already exists on a packaging slip.
    *

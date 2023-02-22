@@ -21,6 +21,7 @@ namespace Krabo\IsotopePackagingSlipBundle\Helper;
 use Isotope\Model\Config;
 use Isotope\Model\ProductCollection;
 use Isotope\Model\ProductCollection\Order;
+use JvH\IsotopeMyOrdersBundle\Helper\PackagingSlip;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipShipperModel;
 
@@ -87,6 +88,30 @@ class IsotopeHelper {
         if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
           $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
         }
+      }
+    }
+    return $scheduledDate;
+  }
+
+  /**
+   * @param \Isotope\Model\ProductCollection\ProductCollection $order
+   * @param \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipShipperModel $shipper=null
+   *
+   * @return int|mixed|null
+   */
+  public static function getScheduledShippingDateForPackagingSlip(IsotopePackagingSlipModel $packagingSlip) {
+    $scheduledDate = time();
+    $shipper = null;
+    if ($packagingSlip->shipper_id) {
+      $shipper = IsotopePackagingSlipShipperModel::findByPk($packagingSlip->shipper_id);
+    }
+    if ($shipper && $shipper->isotope_packaging_slip_scheduled_shipping_date && $shipper->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
+      $scheduledDate = $shipper->isotope_packaging_slip_scheduled_shipping_date;
+    }
+    foreach($packagingSlip->getProductsCombinedByProductId() as $objItem) {
+      $objProduct = $objItem->getProduct();
+      if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
+        $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
       }
     }
     return $scheduledDate;
