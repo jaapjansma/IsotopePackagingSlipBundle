@@ -144,11 +144,10 @@ class ProductCollectionListener {
         $scheduledPickingDate = $this->getScheduledPickingDate($order);
         if (!$packagingSlip->scheduled_shipping_date || $scheduledShippingDate != $packagingSlip->scheduled_shipping_date) {
           $packagingSlip->scheduled_shipping_date = $scheduledShippingDate;
-          $updatePackagingSlip = true;
-        }
-        if (!$packagingSlip->scheduled_picking_date || $scheduledPickingDate != $packagingSlip->scheduled_picking_date) {
-          $packagingSlip->scheduled_picking_date = $scheduledPickingDate;
-          $updatePackagingSlip = true;
+          $updatePackagingSlip = TRUE;
+          if (!$packagingSlip->scheduled_picking_date || $scheduledPickingDate != $packagingSlip->scheduled_picking_date) {
+            $packagingSlip->scheduled_picking_date = $scheduledPickingDate;
+          }
         }
         if ($updatePackagingSlip) {
           $packagingSlip->save();
