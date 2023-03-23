@@ -175,7 +175,7 @@ class PackagingSlipCheckAvailability {
       LEFT JOIN `tl_isotope_packaging_slip_shipper` ON `tl_isotope_packaging_slip_shipper`.`id` = `tl_isotope_packaging_slip`.`shipper_id`
       WHERE `tl_isotope_packaging_slip`.`id` NOT IN (SELECT `pid` FROM `tl_isotope_packaging_slip_product_collection` WHERE `is_available` IN ('0', '-1'))
       AND `status` = '0' AND `check_availability` = '1' 
-      AND (`scheduled_picking_date` IS NULL OR DATE(`scheduled_picking_date`) <= CURRENT_DATE())
+      AND (`scheduled_picking_date` IS NULL OR DATE(FROM_UNIXTIME(`scheduled_picking_date`)) <= CURRENT_DATE())
       ORDER BY `tl_isotope_packaging_slip`.`id` ASC 
       LIMIT 0, ?
     ";
