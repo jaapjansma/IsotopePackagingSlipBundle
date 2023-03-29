@@ -59,7 +59,7 @@ class StockBookingHelper {
     $booking = new BookingModel();
     $booking->description = $packagingSlipModel->getDocumentNumber();
     $booking->date = time();
-    $booking->period = $period->id;
+    $booking->period_id = $period->id;
     $booking->product_id = $product->getId();
     $booking->type = $bookingType;
     $booking->packaging_slip_id = $packagingSlipModel->id;
@@ -107,7 +107,7 @@ class StockBookingHelper {
     $booking = new BookingModel();
     $booking->description = $packagingSlipModel->getDocumentNumber();
     $booking->date = time();
-    $booking->period = $period->id;
+    $booking->period_id = $period->id;
     $booking->product_id = $product->product_id;
     $booking->type = $bookingType;
     $booking->packaging_slip_id = $packagingSlipModel->id;
