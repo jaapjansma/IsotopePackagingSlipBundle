@@ -491,7 +491,10 @@ class tl_isotope_packaging_slip {
 
   public function saveMember($value, \Contao\DataContainer $dc) {
     if ($value && $value != $dc->member) {
-      $this->blnMemberChanged = TRUE;
+      // Do not update address data from member when a change to the member has happened.
+      // There is an issue with sometimes loading / updating unwanted address data.
+      // Ideally that issue should be addressed. However we need to find a way to reproduce it.
+      //$this->blnMemberChanged = TRUE;
     }
     return $value;
   }
