@@ -57,7 +57,7 @@ class IsotopeHelper {
     }
     foreach($productCollection->getItems() as $objItem) {
       $objProduct = $objItem->getProduct();
-      if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_picking_date && $objProduct->isotope_packaging_slip_scheduled_picking_date > $scheduledDate) {
+      if ($objProduct && $objProduct->isotope_packaging_slip_scheduled_picking_date && $objProduct->isotope_packaging_slip_scheduled_picking_date > $scheduledDate) {
         $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_picking_date;
       }
     }
@@ -77,7 +77,7 @@ class IsotopeHelper {
     }
     foreach($productCollection->getItems() as $objItem) {
       $objProduct = $objItem->getProduct();
-      if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
+      if ($objProduct && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
         $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
       }
     }
@@ -85,7 +85,7 @@ class IsotopeHelper {
       $packagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $productCollection->combined_packaging_slip_id);
       foreach($packagingSlip->getProductsCombinedByProductId() as $objItem) {
         $objProduct = $objItem->getProduct();
-        if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
+        if ($objProduct && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
           $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
         }
       }
@@ -110,7 +110,7 @@ class IsotopeHelper {
     }
     foreach($packagingSlip->getProductsCombinedByProductId() as $objItem) {
       $objProduct = $objItem->getProduct();
-      if ($objProduct && $objProduct->isostock_preorder && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
+      if ($objProduct && $objProduct->isotope_packaging_slip_scheduled_shipping_date && $objProduct->isotope_packaging_slip_scheduled_shipping_date > $scheduledDate) {
         $scheduledDate = $objProduct->isotope_packaging_slip_scheduled_shipping_date;
       }
     }
