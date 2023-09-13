@@ -55,6 +55,20 @@ class ProductCollectionListener {
   }
 
   /**
+   * Copy the combined packaging slip from the source to the new cart.
+   *
+   * @param \Isotope\Model\ProductCollection\Order $draftOrder
+   * @param \Isotope\Model\ProductCollection $cart
+   * @param $arrItemIds
+   *
+   * @return void
+   */
+  public function updateDraftOrder(Order $draftOrder, ProductCollection $cart, $arrItemIds) {
+    $draftOrder->combined_packaging_slip_id = $cart->combined_packaging_slip_id;
+    $draftOrder->save();
+  }
+
+  /**
    * @param \Isotope\Model\ProductCollection\Order $order
    * @param \Isotope\Model\OrderStatus $newStatus
    * @param $changes

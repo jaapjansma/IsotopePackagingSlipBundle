@@ -43,6 +43,7 @@ $GLOBALS['TL_MODELS']['tl_isotope_packaging_slip_product_collection'] = IsotopeP
 $GLOBALS['ISO_HOOKS']['preOrderStatusUpdate'][] = [ProductCollectionListener::class, 'preOrderStatusUpdate'];
 $GLOBALS['ISO_HOOKS']['postOrderStatusUpdate'][] = [ProductCollectionListener::class, 'postOrderStatusUpdate'];
 $GLOBALS['ISO_HOOKS']['createFromProductCollection'][] = [ProductCollectionListener::class, 'createFromProductCollection'];
+$GLOBALS['ISO_HOOKS']['updateDraftOrder'][] = [ProductCollectionListener::class, 'updateDraftOrder'];
 $GLOBALS['ISO_HOOKS']['getOrderNotificationTokens'][] = [ProductCollectionListener::class, 'getOrderNotificationTokens'];
 
 \Isotope\Model\Shipping::registerModelType('combine_packaging_slip', 'Krabo\IsotopePackagingSlipBundle\Model\Shipping\CombinePackagingSlip');
