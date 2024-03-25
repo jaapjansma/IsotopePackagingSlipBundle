@@ -36,3 +36,4 @@ $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_3'] = 'Isotope Packaging Slip - Kan opgehaald worden';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_4'] = 'Isotope Packaging Slip - Afgeleverd';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_5'] = 'Isotope Packaging Slip - Afgehaald';
+$GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_mail'] = 'Isotope Pakbon - E-mail';

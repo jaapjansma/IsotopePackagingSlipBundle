@@ -20,9 +20,6 @@ use Contao\Environment;
 use Contao\Input;
 use Contao\StringUtil;
 use Contao\System;
-use Isotope\Isotope;
-use Isotope\Model\Config;
-use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Model\Registry;
@@ -505,6 +502,10 @@ class tl_isotope_packaging_slip {
       {
         $dc->redirect(str_replace('act=select', 'key=print_documents', Environment::get('request')));
       }
+        if (isset($_POST['sendEmail']))
+        {
+            $dc->redirect(str_replace('act=select', 'key=send_email', Environment::get('request')));
+        }
       if (isset($_POST['checkAvailability']))
       {
         PackagingSlipCheckAvailability::checkAvailability();
@@ -647,6 +648,7 @@ class tl_isotope_packaging_slip {
   public function selectButtonsCallback($arrButtons, \Contao\DataContainer $dc) {
     unset($arrButtons['copy']);
     unset($arrButtons['override']);
+    $arrButtons['sendEmail'] = '<button type="submit" name="sendEmail" id="sendEmail" class="tl_submit">' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email'][0] . '</button>';
     $arrButtons['checkAvailability'] = '<button type="submit" name="checkAvailability" id="checkAvailability" class="tl_submit">' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0] . '</button>';
     $arrButtons['printDocument'] = '<button type="submit" name="printDocument" id="printDocument" class="tl_submit">' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['print_document'][0] . '</button>';
     return $arrButtons;

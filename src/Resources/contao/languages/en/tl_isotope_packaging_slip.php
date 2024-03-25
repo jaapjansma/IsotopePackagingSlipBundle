@@ -18,6 +18,13 @@
 
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['deleteConfirm'] = 'Are you sure you want to delete this packaging slip?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['print_document'] = ['Print packaging slip', 'Print packaging slip'];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['email_in_queue'] = '%s emails in queue';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email'] = ['Send Email', 'Send Email'];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_mail_headline'] = 'Send email (%s)';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email_subject_nl'] = 'Subject (Dutch)';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email_subject_en'] = 'Subject (English)';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email_message_nl'] = 'Message (Dutch)';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email_message_en'] = 'Message (English)';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'] = ['Check availability', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_shipping_date'] = ['Scheduled Shipping Date', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_picking_date'] = ['Scheduled Packaging Date', ''];

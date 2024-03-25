@@ -18,6 +18,13 @@
 
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['deleteConfirm'] = 'Weet je zeker dat je deze pakbon wilt verwijderen?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['print_document'] = ['Print pakbon', 'Print pakbon'];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['email_in_queue'] = '%s e-mails in wachtrij';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email'] = ['Verstuur E-mail', 'Verstuur E-mail'];
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_mail_headline'] = 'Verstuur e-mail (%s)';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email_subject_nl'] = 'Onderwerp (Nederlands)';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email_subject_en'] = 'Onderwerp (Engels)';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email_message_nl'] = 'Bericht (Nederlands)';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email_message_en'] = 'Bericht (Engels)';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'] = ['Controleer beschikbaarheid', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_shipping_date'] = ['Geplande Verzenddatum', ''];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_picking_date'] = ['Geplande Inpakdatum', ''];
