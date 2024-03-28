@@ -51,6 +51,7 @@ class PackagingSlipCheckAvailability {
    * @return void
    */
   public static function checkProductAvailability(int $maximumNumberOfProductsToCheck=25) {
+    /** @var Database $db */
     $db = System::importStatic('Database');
     $today = new DateTime();
     $today->setTime(23,59);
@@ -59,11 +60,11 @@ class PackagingSlipCheckAvailability {
         FROM `tl_isotope_packaging_slip_product_collection` `packaging_slip_product`
         INNER JOIN `tl_isotope_packaging_slip` `packaging_slip` ON `packaging_slip_product`.`pid` = `packaging_slip`.`id`
         WHERE  `packaging_slip`.`status` = '0' AND `packaging_slip`.`check_availability` = '1' 
-        AND (`packaging_slip`.`scheduled_picking_date` = '' OR `packaging_slip`.`scheduled_picking_date` <= ?)
+        AND (`packaging_slip`.`scheduled_picking_date` = '' OR `packaging_slip`.`scheduled_picking_date` <= " . $today->getTimestamp() . ")
         AND `packaging_slip_product`.`is_available` = '0'
         GROUP BY `product_id`, `packaging_slip`.`credit_account`
         ORDER BY `product_id` ASC, `credit_account` ASC
-        LIMIT 0, ?";
+        LIMIT 0, " . $maximumNumberOfProductsToCheck;
     $productSumSql = "
         SELECT `packaging_slip_product`.`product_id`, SUM(`packaging_slip_product`.`quantity`) AS `quantity`, `packaging_slip`.`credit_account` 
         FROM `tl_isotope_packaging_slip_product_collection` `packaging_slip_product`
@@ -81,7 +82,7 @@ class PackagingSlipCheckAvailability {
         SET `packaging_slip_product`.`is_available` = ?
         WHERE `packaging_slip_product`.`product_id` = ? AND `packaging_slip`.`credit_account` = ? 
         AND `packaging_slip`.`status` = '0' AND `packaging_slip`.`check_availability` = '1' AND (`packaging_slip`.`scheduled_picking_date` = '' OR `packaging_slip`.`scheduled_picking_date` <= ?)";
-    $objResult = $db->prepare($productSql)->execute($today->getTimestamp(), $maximumNumberOfProductsToCheck);
+    $objResult = $db->prepare($productSql)->execute();
     while ($objResult->next()) {
       $objQuantity = $db->prepare($productSumSql)->execute($today->getTimestamp(), $objResult->product_id, $objResult->credit_account);
       $stock = ProductHelper::getProductCountPerAccount($objResult->product_id, $objResult->credit_account);
@@ -177,10 +178,9 @@ class PackagingSlipCheckAvailability {
       AND `status` = '0' AND `check_availability` = '1' 
       AND (`scheduled_picking_date` IS NULL OR DATE(FROM_UNIXTIME(`scheduled_picking_date`)) <= CURRENT_DATE())
       ORDER BY `tl_isotope_packaging_slip`.`id` ASC 
-      LIMIT 0, ?
-    ";
+      LIMIT 0, " . $maximumNumberOfPackagingSlipsToCheck;
 
-    $objResult = $db->prepare($packagingSlipSql)->execute($maximumNumberOfPackagingSlipsToCheck);
+    $objResult = $db->prepare($packagingSlipSql)->execute();
     while($objResult->next()) {
       $event = new CheckAvailabilityEvent();
       $event->packagingSlipId = $objResult->id;
@@ -200,6 +200,31 @@ class PackagingSlipCheckAvailability {
       $updateSql = "UPDATE `tl_isotope_packaging_slip` SET `check_availability` = '0', `is_available` = ?, `availability_notes` = ? WHERE `id` = ?";
       $db->prepare($updateSql)->execute($event->isAvailable, $event->notes, $objResult->id);
     }
+  }
+
+  public static function checkForPaidOrders(int $maximumNumberOfPackagingSlipsToCheck=50) {
+      $db = System::importStatic('Database');
+      $packagingSlipSql = "
+            SELECT `tl_isotope_packaging_slip`.`id`
+            FROM `tl_isotope_packaging_slip`
+            WHERE `status` = '0' AND `check_availability` = '0' AND `is_available` = '-1'
+            ORDER BY `tl_isotope_packaging_slip`.`tstamp` ASC
+            LIMIT 0, " . $maximumNumberOfPackagingSlipsToCheck;
+
+      $objResult = $db->prepare($packagingSlipSql)->execute();
+      while($objResult->next()) {
+          $ordersArePaid = true;
+          $packagingSlip = IsotopePackagingSlipModel::findByPk($objResult->id);
+          foreach($packagingSlip->getOrders() as $order) {
+              if (!$order->isPaid()) {
+                  $ordersArePaid = false;
+              }
+          }
+          if ($ordersArePaid) {
+              $updateSql = "UPDATE `tl_isotope_packaging_slip` SET `check_availability` = '1', `is_available` = '0', `tstamp` = " . time() ." WHERE `id` = " . $objResult->id;
+              $db->prepare($updateSql)->execute();
+          }
+      }
   }
 
 }

@@ -21,6 +21,7 @@ namespace Krabo\IsotopePackagingSlipBundle\Controller;
 use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\Database;
 use Contao\System;
+use Krabo\IsotopePackagingSlipBundle\Helper\PackagingSlipCheckAvailability;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopeStockBundle\Helper\BookingHelper;
 use Krabo\IsotopeStockBundle\Model\BookingModel;
@@ -56,6 +57,19 @@ class ReportController extends AbstractController {
     $this->tokenManager = $tokenManager;
     $this->csrfTokenName = System::getContainer()
       ->getParameter('contao.csrf_token_name');
+  }
+
+    /**
+     * @Route("/contao/tl_isotope_packaging_slip/check_availability",
+     *     name="tl_isotope_packaging_slip_check_availability",
+     *     defaults={"_scope": "backend", "_token_check": true}
+     * )
+     */
+  public function checkAvailability(Request $request) {
+      PackagingSlipCheckAvailability::checkProductAvailability();
+      PackagingSlipCheckAvailability::checkPackagingSlips();
+      PackagingSlipCheckAvailability::checkForPaidOrders();
+      return new Response('Done');
   }
 
   /**
