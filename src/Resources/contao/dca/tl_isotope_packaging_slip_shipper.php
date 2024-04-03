@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+\Contao\System::loadLanguageFile('tl_isotope_packaging_slip_shipper');
+
 $GLOBALS['TL_DCA']['tl_isotope_packaging_slip_shipper'] = array
 (
   // Config
