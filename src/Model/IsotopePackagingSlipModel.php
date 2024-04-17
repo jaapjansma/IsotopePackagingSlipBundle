@@ -236,10 +236,13 @@ class IsotopePackagingSlipModel extends Model {
    */
   public function generateAddress()
   {
+    if (!isset($GLOBALS['ISO_ADR']) || !\is_array($GLOBALS['ISO_ADR'])) {
+      \System::loadLanguageFile('addresses');
+    }
     // We need a country to format the address, use default country if none is available
     $strCountry = $this->country ?: Isotope::getConfig()->country;
     // Use generic format if no country specific format is available
-    $strFormat = $GLOBALS['ISO_ADR'][$strCountry] ?: $GLOBALS['ISO_ADR']['generic'];
+    $strFormat = $GLOBALS['ISO_ADR'][$strCountry] ?? $GLOBALS['ISO_ADR']['generic'];
     $arrTokens  = AddressHelper::getAddressTokens($this);
     $strAddress = \StringUtil::parseSimpleTokens($strFormat, $arrTokens);
     $event = new GenerateAddressEvent($this, $strAddress);
