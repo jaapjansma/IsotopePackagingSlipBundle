@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['viewReport'] = ['View Report', 'Used for order picking'];
 $GLOBALS['TL_LANG']['MOD']['tl_isotope_packaging_slip'] = ['Packaging Slip', 'Manage packaging slips'];
 $GLOBALS['TL_LANG']['IMD']['packaging_slip_shipper'] = ['Shipper', 'List of possible shipping companies'];
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductLookup']['SearchLabel'] = 'Search Product and Orders';

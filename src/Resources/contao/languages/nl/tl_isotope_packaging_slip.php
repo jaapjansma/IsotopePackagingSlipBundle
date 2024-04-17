@@ -75,7 +75,6 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['is_available_options']['-1'] =
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['is_available_options']['1'] = 'Beschikbaar';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_picking_date_start'] = 'Geplande inpakdatum (vanaf)';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_picking_date_end'] = 'Geplande inpakdatum (tot en met)';
-$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['viewReport'] = ['Bekijk rapport', 'Bekijk rapport tbv inpakken'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity'] = 'Aantal pakbonnen';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity_1'] = 'Pakbonnen met 1 product';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity_2'] = 'Pakbonnen met 2 producten';

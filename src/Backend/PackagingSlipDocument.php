@@ -110,7 +110,7 @@ class PackagingSlipDocument extends \Backend {
   protected function prepareFileName($strName)
   {
     // Replace simple tokens
-    $strName = $this->sanitizeFileName(StringUtil::recursiveReplaceTokensAndTags($strName, StringUtil::NO_TAGS | StringUtil::NO_BREAKS | StringUtil::NO_ENTITIES));
+    $strName = $this->sanitizeFileName(StringUtil::recursiveReplaceTokensAndTags($strName, [], StringUtil::NO_TAGS | StringUtil::NO_BREAKS | StringUtil::NO_ENTITIES));
     return $strName;
   }
 

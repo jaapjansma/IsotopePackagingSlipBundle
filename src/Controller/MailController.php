@@ -41,7 +41,6 @@ class MailController {
         while($row = $rows->fetchAssoc()) {
             $packagingSlipModel = IsotopePackagingSlipModel::findByPk($row['pid']);
             $arrTokens = $packagingSlipModel->getNotificationTokens();
-            $arrTokens['recipient_email'] = 'jaap@jaapjansma.nl';
             $language = $GLOBALS['TL_LANGUAGE'];
             if ($packagingSlipModel->member) {
                 $objMember = MemberModel::findOneBy('id', $packagingSlipModel->member);
@@ -51,7 +50,7 @@ class MailController {
             }
             $arrTokens['subject'] = $row['subject_nl'];
             $arrTokens['message'] = $row['msg_nl'];
-            if ($GLOBALS['TL_LANGUAGE'] != 'nl') {
+            if ($GLOBALS['TL_LANGUAGE'] != 'nl' && $GLOBALS['TL_LANGUAGE'] != 'nl_NL') {
                 $arrTokens['subject'] = $row['subject_en'];
                 $arrTokens['message'] = $row['msg_en'];
             }

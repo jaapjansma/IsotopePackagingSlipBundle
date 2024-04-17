@@ -30,6 +30,13 @@ use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollection
 
 class ProductLookupWizard extends \TableLookupWizard {
 
+  protected $customTpl = 'be_widget_tablelookupwizard';
+
+  /**
+   * @var string
+   */
+  protected $customContentTpl = 'be_widget_tablelookupwizard_content';
+
   public function __construct($arrAttributes = NULL) {
     parent::__construct($arrAttributes);
     $this->searchFields = [
@@ -272,25 +279,150 @@ class ProductLookupWizard extends \TableLookupWizard {
     } else {
       $arrNew = StringUtil::deserialize($this->value);
     }
-    $arrNew = array_unique($arrNew);
-    $products = [];
-    $packagingSlip = IsotopePackagingSlipModel::findByPk($this->activeRecord->id);
-    foreach($arrNew as $strKey) {
-      [$product_id, $document_number] = explode("_", $strKey, 2);
-      $value = $request->request->get('product_id_value_' . $strKey);
-      if ($value == '') {
-        $value = 0.00;
+    if (is_array($arrNew)) {
+      $arrNew = array_unique($arrNew);
+      $products = [];
+      $packagingSlip = IsotopePackagingSlipModel::findByPk($this->activeRecord->id);
+      foreach ($arrNew as $strKey) {
+        [$product_id, $document_number] = explode("_", $strKey, 2);
+        $value = $request->request->get('product_id_value_' . $strKey);
+        if ($value == '') {
+          $value = 0.00;
+        }
+        $product = new IsotopePackagingSlipProductCollectionModel();
+        $product->pid = $packagingSlip->pid;
+        $product->product_id = $product_id;
+        $product->quantity = $request->request->get('product_id_quantity_' . $strKey);
+        $product->document_number = $request->request->get('product_id_document_number_' . $strKey);
+        $product->value = $value;
+        $products[] = $product;
       }
-      $product = new IsotopePackagingSlipProductCollectionModel();
-      $product->pid = $packagingSlip->pid;
-      $product->product_id = $product_id;
-      $product->quantity = $request->request->get('product_id_quantity_' . $strKey);
-      $product->document_number = $request->request->get('product_id_document_number_' . $strKey);
-      $product->value = $value;
-      $products[] = $product;
+      IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products, false);
     }
-    IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products, false);
     return '';
+  }
+
+  /**
+   * Generate the widget and return it as string
+   * @return  string
+   */
+  public function generate()
+  {
+    $blnNoAjax          = \Input::get('noajax');
+    $arrIds             = deserialize($this->varValue, true);
+
+    if ($arrIds[0] == '') {
+      $arrIds = array(0);
+    } else {
+      $this->blnHasValues = true;
+    }
+
+    $this->blnIsAjaxRequest = \Input::get('tableLookupWizard') == $this->strId;
+
+    // Ensure search and list fields have correct aliases
+    $this->ensureColumnAliases($this->arrSearchFields);;
+    $this->ensureColumnAliases($this->arrListFields);
+
+    // Ajax call
+    if ($this->blnIsAjaxRequest) {
+      // Clean buffer
+      while (ob_end_clean());
+
+      $this->prepareSelect();
+      $this->prepareJoins();
+      $this->prepareWhere();
+      $this->prepareOrderBy();
+      $this->prepareGroupBy();
+
+      $strBuffer = $this->getBody();
+      $response = new \Haste\Http\Response\JsonResponse(array
+      (
+        'content'   => $strBuffer,
+        'token'     => REQUEST_TOKEN,
+      ));
+
+      $response->send();
+    }
+
+    $GLOBALS['TL_CSS'][] = 'system/modules/tablelookupwizard/assets/tablelookup.min.css';
+
+    if (!$blnNoAjax) {
+      $GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/tablelookupwizard/assets/tablelookup.min.js';
+    }
+
+    $this->prepareSelect();
+    $this->prepareJoins();
+
+    // Add preselect to WHERE statement
+    $this->arrWhereProcedure[] = $this->foreignTable . '.id IN (' . implode(',', $arrIds) . ')';
+
+    $this->prepareWhere();
+    $this->prepareOrderBy();
+    $this->prepareGroupBy();
+
+    $objTemplate = new \BackendTemplate($this->customTpl);
+    $objTemplate->noAjax            = $blnNoAjax;
+    $objTemplate->strId             = $this->strId;
+    $objTemplate->fieldType         = $this->fieldType;
+    $objTemplate->fallbackEnabled   = $this->blnEnableFallback;
+    $objTemplate->noAjaxUrl         = $this->addToUrl('noajax=1');
+    $objTemplate->listFields        = $this->arrListFields;
+    $objTemplate->colspan           = count($this->arrListFields) + (int) $this->blnEnableSorting;
+    $objTemplate->searchLabel       = $this->searchLabel == '' ? $GLOBALS['TL_LANG']['MSC']['searchLabel'] : $this->searchLabel;
+    $objTemplate->columnLabels      = $this->getColumnLabels();
+    $objTemplate->hasValues         = $this->blnHasValues;
+    $objTemplate->enableSorting     = $this->blnEnableSorting;
+    $objTemplate->body              = $this->getBody();
+
+    return $objTemplate->parse();
+  }
+
+  /**
+   * Renders the table body
+   * @return  string
+   */
+  public function getBody()
+  {
+    $objTemplate    = new \BackendTemplate($this->customContentTpl);
+    $arrResults     = array();
+    $blnQuery       = true;
+
+    if ($this->blnIsAjaxRequest && !\Input::get('keywords')) {
+      $blnQuery = false;
+    }
+
+    if ($blnQuery) {
+      $arrResults = $this->getResults();
+
+      \Haste\Generator\RowClass::withKey('rowClass')
+        ->addCustom('row')
+        ->addCount('row_')
+        ->addFirstLast('row_')
+        ->addEvenOdd('row_')
+        ->applyTo($arrResults);
+    }
+
+    if (!empty($arrResults)) {
+      $objTemplate->hasResults = true;
+    }
+
+    // Determine the results message based on keywords availability
+    if (strlen(\Input::get('keywords'))) {
+      $noResultsMessage = sprintf($GLOBALS['TL_LANG']['MSC']['tlwNoResults'], \Input::get('keywords'));
+    } else {
+      $noResultsMessage = $GLOBALS['TL_LANG']['MSC']['tlwNoValue'];
+    }
+
+    $objTemplate->results           = $arrResults;
+    $objTemplate->colspan           = count($this->arrListFields) + 1 + (int) $this->blnEnableSorting;
+    $objTemplate->noResultsMessage  = $noResultsMessage;
+    $objTemplate->fieldType         = $this->fieldType;
+    $objTemplate->isAjax            = $this->blnIsAjaxRequest;
+    $objTemplate->strId             = $this->strId;
+    $objTemplate->enableSorting     = $this->blnEnableSorting;
+    $objTemplate->dragHandleIcon    = 'system/themes/' . \Backend::getTheme() . '/images/drag.gif';
+
+    return $objTemplate->parse();
   }
 
 }

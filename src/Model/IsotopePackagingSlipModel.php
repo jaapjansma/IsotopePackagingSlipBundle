@@ -86,7 +86,7 @@ class IsotopePackagingSlipModel extends Model {
   {
     parent::__construct($objResult);
 
-    if (!\is_array($GLOBALS['ISO_ADR'])) {
+    if (!isset($GLOBALS['ISO_ADR']) || !\is_array($GLOBALS['ISO_ADR'])) {
       \System::loadLanguageFile('addresses');
     }
   }

@@ -16,7 +16,7 @@ class Plugin implements BundlePluginInterface, RoutingPluginInterface
     {
         return [
             BundleConfig::create('Krabo\IsotopePackagingSlipBundle\IsotopePackagingSlipBundle')
-                ->setLoadAfter(['isotope', 'Krabo\IsotopeStockBundle\IsotopeStockBundle']),
+                ->setLoadAfter(['isotope', 'notification_center', 'Krabo\IsotopeStockBundle\IsotopeStockBundle']),
         ];
     }
 

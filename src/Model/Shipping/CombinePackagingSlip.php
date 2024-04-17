@@ -88,7 +88,7 @@ class CombinePackagingSlip extends Flat {
     }
 
     if ($this->protected) {
-      $arrGroups = deserialize($this->groups);
+      $arrGroups = \StringUtil::deserialize($this->groups, true);
 
       if (!\is_array($arrGroups)
         || empty($arrGroups)
@@ -103,7 +103,7 @@ class CombinePackagingSlip extends Flat {
     ) {
       return false;
     }
-    $arrCountries = deserialize($this->countries);
+    $arrCountries = \StringUtil::deserialize($this->countries, true);
     if (\is_array($arrCountries) && !empty($arrCountries)) {
       if (!\in_array($packagingSlipModel->country, $arrCountries, true)) {
         return false;

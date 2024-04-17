@@ -74,7 +74,6 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['is_available_options']['-1'] =
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['is_available_options']['1'] = 'Available';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_picking_date_start'] = 'From Scheduled Picking Date';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['scheduled_picking_date_end'] = 'Up to Scheduled Picking Date';
-$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['viewReport'] = ['View Report', 'Used for order picking'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity'] = 'Total Packaging Slips';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity_1'] = 'Packaging Slips with 1 product';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity_2'] = 'Packaging Slips with 2 products';
