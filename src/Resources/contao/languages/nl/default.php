@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['deleteConfirm'] = 'Weet je zeker dat je deze pakbon wilt verwijderen?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['viewReport'] = ['Bekijk rapport', 'Bekijk rapport tbv inpakken'];
 $GLOBALS['TL_LANG']['MOD']['tl_isotope_packaging_slip'] = ['Pakbon', 'Beheer pakbonnen'];
 $GLOBALS['TL_LANG']['IMD']['packaging_slip_shipper'] = ['Vervoerder', 'Lijst met mogelijke vervoerdersbedrijven'];

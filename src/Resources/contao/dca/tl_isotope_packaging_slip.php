@@ -26,6 +26,7 @@ use Model\Registry;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
 
+\Contao\System::loadLanguageFile('tl_isotope_packaging_slip');
 \Contao\System::loadLanguageFile(\Isotope\Model\ProductCollection::getTable());
 \Contao\Controller::loadDataContainer(\Isotope\Model\ProductCollection::getTable());
 
@@ -437,227 +438,234 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
   )
 );
 
-class tl_isotope_packaging_slip {
+if (!class_exists('tl_isotope_packaging_slip')) {
+  class tl_isotope_packaging_slip
+  {
 
-  protected $currentStatus;
+    protected $currentStatus;
 
-  protected $blnMemberChanged = false;
+    protected $blnMemberChanged = false;
 
-  public function labelCallback($arrData, string $label, \Contao\DataContainer $dc, $labels) {
-    /** @var \Symfony\Component\Routing\RouterInterface $router */
-    $router = \Contao\System::getContainer()->get('router');
-    $fields = $GLOBALS['TL_DCA'][$dc->table]['list']['label']['fields'];
-    $shipping_id_key = array_search('shipping_id', $fields, true);
-    if ($labels[$shipping_id_key]) {
-      $shippingMethod = \Isotope\Model\Shipping::findByPk($labels[$shipping_id_key]);
-      if ($shippingMethod) {
-        $labels[$shipping_id_key] = $shippingMethod->name;
+    public function labelCallback($arrData, string $label, \Contao\DataContainer $dc, $labels)
+    {
+      /** @var \Symfony\Component\Routing\RouterInterface $router */
+      $router = \Contao\System::getContainer()->get('router');
+      $fields = $GLOBALS['TL_DCA'][$dc->table]['list']['label']['fields'];
+      $shipping_id_key = array_search('shipping_id', $fields, true);
+      if ($labels[$shipping_id_key]) {
+        $shippingMethod = \Isotope\Model\Shipping::findByPk($labels[$shipping_id_key]);
+        if ($shippingMethod) {
+          $labels[$shipping_id_key] = $shippingMethod->name;
+        }
       }
-    }
-    $shipper_id_key = array_search('shipper_id', $fields, true);
-    if ($labels[$shipper_id_key]) {
-      $shipper = \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipShipperModel::findByPk($labels[$shipper_id_key]);
-      if ($shipper) {
-        $labels[$shipper_id_key] = $shipper->name;
+      $shipper_id_key = array_search('shipper_id', $fields, true);
+      if ($labels[$shipper_id_key]) {
+        $shipper = \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipShipperModel::findByPk($labels[$shipper_id_key]);
+        if ($shipper) {
+          $labels[$shipper_id_key] = $shipper->name;
+        }
       }
-    }
-    $order_id_key = array_search('order_id', $fields, true);
-    $order = \Database::getInstance()->prepare("
+      $order_id_key = array_search('order_id', $fields, true);
+      $order = \Database::getInstance()->prepare("
         SELECT `o`.`document_number`, `o`.`id` 
         FROM `tl_isotope_packaging_slip_product_collection` `p`
         INNER JOIN `tl_iso_product_collection` `o` ON `o`.`type` = 'order' AND `o`.`document_number` = `p`.`document_number`                                       
         WHERE `p`.`pid`= ? AND `p`.`document_number` != '' 
         GROUP BY `o`.`id`")->execute($arrData['id']);
-    $orders = [];
-    while($order->next()) {
-      $order_url = $router->generate('contao_backend', ['act' => 'edit', 'do' => 'iso_orders', 'id' => $order->id, 'rt' => REQUEST_TOKEN]);
-      $orders[] = '<a href="' . $order_url . '">' . $order->document_number . '</a>';
-    }
-
-    if (count($orders)) {
-      $labels[$order_id_key] = implode(", ", $orders);
-    }
-    $name_id_key = array_search('name', $fields, true);
-    $labels[$name_id_key] =trim($arrData['firstname'] . ' '.$arrData['lastname']);
-    $document_number_key = array_search('document_number', $fields, true);
-    if (!empty($arrData['check_availability'])) {
-      $today = strtotime('today 23:59');
-      if (empty($arrData['scheduled_picking_date']) || $arrData['scheduled_picking_date'] <= $today) {
-        $toCheckIcon = Contao\Image::getHtml('important.gif', $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0], 'title="' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0] . '"');
-        $labels[$document_number_key] = $toCheckIcon . '&nbsp;' . $labels[$document_number_key];
+      $orders = [];
+      while ($order->next()) {
+        $order_url = $router->generate('contao_backend', ['act' => 'edit', 'do' => 'iso_orders', 'id' => $order->id, 'rt' => REQUEST_TOKEN]);
+        $orders[] = '<a href="' . $order_url . '">' . $order->document_number . '</a>';
       }
-    }
-    return $labels;
-  }
 
-  public function saveMember($value, \Contao\DataContainer $dc) {
-    if ($value && $value != $dc->member) {
-      // Do not update address data from member when a change to the member has happened.
-      // There is an issue with sometimes loading / updating unwanted address data.
-      // Ideally that issue should be addressed. However we need to find a way to reproduce it.
-      //$this->blnMemberChanged = TRUE;
-    }
-    return $value;
-  }
-
-  public function onLoad(\Contao\DataContainer $dc) {
-    if (Input::post('FORM_SUBMIT') == 'tl_select') {
-      if (isset($_POST['printDocument']))
-      {
-        $dc->redirect(str_replace('act=select', 'key=print_documents', Environment::get('request')));
+      if (count($orders)) {
+        $labels[$order_id_key] = implode(", ", $orders);
       }
-        if (isset($_POST['sendEmail']))
-        {
-            $dc->redirect(str_replace('act=select', 'key=send_email', Environment::get('request')));
+      $name_id_key = array_search('name', $fields, true);
+      $labels[$name_id_key] = trim($arrData['firstname'] . ' ' . $arrData['lastname']);
+      $document_number_key = array_search('document_number', $fields, true);
+      if (!empty($arrData['check_availability'])) {
+        $today = strtotime('today 23:59');
+        if (empty($arrData['scheduled_picking_date']) || $arrData['scheduled_picking_date'] <= $today) {
+          $toCheckIcon = Contao\Image::getHtml('important.gif', $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0], 'title="' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0] . '"');
+          $labels[$document_number_key] = $toCheckIcon . '&nbsp;' . $labels[$document_number_key];
         }
-      if (isset($_POST['checkAvailability']))
-      {
-        PackagingSlipCheckAvailability::checkAvailability();
-        $dc->redirect(Environment::get('request'));
       }
+      return $labels;
     }
 
-    /** @var AttributeBagInterface $objSessionBag */
-    $objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
-    $session = $objSessionBag->all();
-    if (isset($session['product_search']) && isset($session['product_search'][$dc->strTable]) && isset($session['product_search'][$dc->strTable]['value'])) {
-      $objResult = \Database::getInstance()->prepare("
+    public function saveMember($value, \Contao\DataContainer $dc)
+    {
+      if ($value && $value != $dc->member) {
+        // Do not update address data from member when a change to the member has happened.
+        // There is an issue with sometimes loading / updating unwanted address data.
+        // Ideally that issue should be addressed. However we need to find a way to reproduce it.
+        //$this->blnMemberChanged = TRUE;
+      }
+      return $value;
+    }
+
+    public function onLoad(\Contao\DataContainer $dc)
+    {
+      if (Input::post('FORM_SUBMIT') == 'tl_select') {
+        if (isset($_POST['printDocument'])) {
+          $dc->redirect(str_replace('act=select', 'key=print_documents', Environment::get('request')));
+        }
+        if (isset($_POST['sendEmail'])) {
+          $dc->redirect(str_replace('act=select', 'key=send_email', Environment::get('request')));
+        }
+        if (isset($_POST['checkAvailability'])) {
+          PackagingSlipCheckAvailability::checkAvailability();
+          $dc->redirect(Environment::get('request'));
+        }
+      }
+
+      /** @var AttributeBagInterface $objSessionBag */
+      $objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
+      $session = $objSessionBag->all();
+      if (isset($session['product_search']) && isset($session['product_search'][$dc->strTable]) && isset($session['product_search'][$dc->strTable]['value'])) {
+        $objResult = \Database::getInstance()->prepare("
         SELECT `tl_isotope_packaging_slip_product_collection`.`pid` 
         FROM `tl_isotope_packaging_slip_product_collection` 
         INNER JOIN `tl_iso_product` ON `tl_isotope_packaging_slip_product_collection`.`product_id` = `tl_iso_product`.`id`
         WHERE `tl_iso_product`.`sku` = ?
         GROUP BY `tl_isotope_packaging_slip_product_collection`.`pid`")->execute($session['product_search'][$dc->strTable]['value']);
-      $dc->root = $objResult->fetchEach('pid');
+        $dc->root = $objResult->fetchEach('pid');
+      }
+
+      $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
+      if ($packagingSlip) {
+        $this->currentStatus = $packagingSlip->status;
+      }
+      if (Input::get('order_id') && $dc instanceof \Contao\DC_Table) {
+        /** @var AttributeBagInterface $objSessionBag */
+        $objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
+        $session = $objSessionBag->all();
+        unset($session['search']['tl_isotope_packaging_slip']);
+        unset($session['filter']['tl_isotope_packaging_slip']);
+        unset($session['filter']['tl_isotope_packaging_slip_' . CURRENT_ID]);
+        $objSessionBag->replace($session);
+
+        // Retrieve ids of the package slips attached to the order.
+        $ids = [];
+        $order = \Isotope\Model\ProductCollection\Order::findByPk(Input::get('order_id'));
+        $packagingSlips = \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::findPackagingSlipsByOrder($order);
+        foreach ($packagingSlips as $packagingSlip) {
+          $ids[] = $packagingSlip->id;
+        }
+        $dc->root = $ids;
+      }
     }
 
-    $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
-    if ($packagingSlip) {
-      $this->currentStatus = $packagingSlip->status;
-    }
-    if (Input::get('order_id') && $dc instanceof \Contao\DC_Table) {
+    public function productSearchPanel(\Contao\DataContainer $dc)
+    {
       /** @var AttributeBagInterface $objSessionBag */
       $objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
       $session = $objSessionBag->all();
-      unset($session['search']['tl_isotope_packaging_slip']);
-      unset($session['filter']['tl_isotope_packaging_slip']);
-      unset($session['filter']['tl_isotope_packaging_slip_'.CURRENT_ID]);
-      $objSessionBag->replace($session);
+      // Store search value in the current session
+      if (Input::post('FORM_SUBMIT') == 'tl_filters') {
+        $strKeyword = ltrim(Input::postRaw('product_search'), '*');
+        $session['product_search'][$dc->strTable]['value'] = $strKeyword;
 
-      // Retrieve ids of the package slips attached to the order.
-      $ids = [];
-      $order = \Isotope\Model\ProductCollection\Order::findByPk(Input::get('order_id'));
-      $packagingSlips = \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::findPackagingSlipsByOrder($order);
-      foreach ($packagingSlips as $packagingSlip) {
-        $ids[] = $packagingSlip->id;
+        $objSessionBag->replace($session);
       }
-      $dc->root = $ids;
-    }
-  }
 
-  public function productSearchPanel(\Contao\DataContainer $dc) {
-    /** @var AttributeBagInterface $objSessionBag */
-    $objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
-    $session = $objSessionBag->all();
-    // Store search value in the current session
-    if (Input::post('FORM_SUBMIT') == 'tl_filters')
-    {
-      $strKeyword = ltrim(Input::postRaw('product_search'), '*');
-      $session['product_search'][$dc->strTable]['value'] = $strKeyword;
-
-      $objSessionBag->replace($session);
-    }
-
-    return '
+      return '
 <div class="tl_search tl_subpanel" style="width: 100%;">
 <strong>' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['product_search'] . ':</strong>
 <input type="search" name="product_search" class="tl_text" value="' . StringUtil::specialchars($session['product_search'][$dc->strTable]['value']) . '">
 </div>';
-  }
-
-  public function onSubmit(\Contao\DataContainer $dc) {
-    $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
-
-    if ($this->currentStatus === null) {
-      $this->currentStatus = $packagingSlip->status;
     }
 
-    // Zorg ervoor dat er een document nummer is.
-    $packagingSlip->getDocumentNumber();
-    if ($dc->activeRecord->status != $this->currentStatus) {
-      $packagingSlip->triggerStatusChangedEvent($this->currentStatus, $dc->activeRecord->status);
-    }
-    if ($dc->activeRecord->status == IsotopePackagingSlipModel::STATUS_OPEN) {
-      PackagingSlipCheckAvailability::resetAvailabilityStatus([$dc->id]);
-    }
+    public function onSubmit(\Contao\DataContainer $dc)
+    {
+      $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
 
-    if ($this->blnMemberChanged) {
-      /** @var \Contao\Model\Collection $addresses */
-      $addresses = \Isotope\Model\Address::findBy([
-        'pid=?',
-        'ptable=?'
-      ], [$dc->activeRecord->member, 'tl_member'], ['order' => 'id ASC, isDefaultShipping DESC']);
-      if ($addresses) {
-        $address = $addresses->first();
-        $packagingSlip->firstname = $address->firstname;
-        $packagingSlip->lastname = $address->lastname;
-        $packagingSlip->company = $address->company;
-        $packagingSlip->email = $address->email;
-        $packagingSlip->phone = $address->phone;
-        $packagingSlip->housenumber = $address->housenumber;
-        $packagingSlip->street_1 = $address->street_1;
-        $packagingSlip->street_2 = $address->street_2;
-        $packagingSlip->street_3 = $address->street_3;
-        $packagingSlip->postal = $address->postal;
-        $packagingSlip->city = $address->city;
-        $packagingSlip->country = $address->country;
-        $packagingSlip->save();
-      } else {
-        $member = \Contao\MemberModel::findByPk($dc->activeRecord->member);
-        if ($member) {
-          $packagingSlip->firstname = $member->firstname ?? '';
-          $packagingSlip->lastname = $member->lastname ?? '';
-          $packagingSlip->company = $member->company ?? '';
-          $packagingSlip->email = $member->email ?? '';
-          $packagingSlip->phone = $member->phone ?? '';
-          $packagingSlip->housenumber = $member->housenumber ?? '';
-          $packagingSlip->street_1 = $member->street_1 ?? '';
-          $packagingSlip->street_2 = $member->street_2 ?? '';
-          $packagingSlip->street_3 = $member->street_3 ?? '';
-          $packagingSlip->postal = $member->postal ?? '';
-          $packagingSlip->city = $member->city ?? '';
-          $packagingSlip->country = $member->country ?? '';
+      if ($this->currentStatus === null) {
+        $this->currentStatus = $packagingSlip->status;
+      }
+
+      // Zorg ervoor dat er een document nummer is.
+      $packagingSlip->getDocumentNumber();
+      if ($dc->activeRecord->status != $this->currentStatus) {
+        $packagingSlip->triggerStatusChangedEvent($this->currentStatus, $dc->activeRecord->status);
+      }
+      if ($dc->activeRecord->status == IsotopePackagingSlipModel::STATUS_OPEN) {
+        PackagingSlipCheckAvailability::resetAvailabilityStatus([$dc->id]);
+      }
+
+      if ($this->blnMemberChanged) {
+        /** @var \Contao\Model\Collection $addresses */
+        $addresses = \Isotope\Model\Address::findBy([
+          'pid=?',
+          'ptable=?'
+        ], [$dc->activeRecord->member, 'tl_member'], ['order' => 'id ASC, isDefaultShipping DESC']);
+        if ($addresses) {
+          $address = $addresses->first();
+          $packagingSlip->firstname = $address->firstname;
+          $packagingSlip->lastname = $address->lastname;
+          $packagingSlip->company = $address->company;
+          $packagingSlip->email = $address->email;
+          $packagingSlip->phone = $address->phone;
+          $packagingSlip->housenumber = $address->housenumber;
+          $packagingSlip->street_1 = $address->street_1;
+          $packagingSlip->street_2 = $address->street_2;
+          $packagingSlip->street_3 = $address->street_3;
+          $packagingSlip->postal = $address->postal;
+          $packagingSlip->city = $address->city;
+          $packagingSlip->country = $address->country;
+          $packagingSlip->save();
+        } else {
+          $member = \Contao\MemberModel::findByPk($dc->activeRecord->member);
+          if ($member) {
+            $packagingSlip->firstname = $member->firstname ?? '';
+            $packagingSlip->lastname = $member->lastname ?? '';
+            $packagingSlip->company = $member->company ?? '';
+            $packagingSlip->email = $member->email ?? '';
+            $packagingSlip->phone = $member->phone ?? '';
+            $packagingSlip->housenumber = $member->housenumber ?? '';
+            $packagingSlip->street_1 = $member->street_1 ?? '';
+            $packagingSlip->street_2 = $member->street_2 ?? '';
+            $packagingSlip->street_3 = $member->street_3 ?? '';
+            $packagingSlip->postal = $member->postal ?? '';
+            $packagingSlip->city = $member->city ?? '';
+            $packagingSlip->country = $member->country ?? '';
+          }
+          $packagingSlip->save();
         }
-        $packagingSlip->save();
       }
     }
-  }
 
-  public function onDelete(\Contao\DataContainer $dc, $id) {
-    $db = \Database::getInstance();
-    $db->prepare("DELETE FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid` = ?")->execute($id);
-  }
+    public function onDelete(\Contao\DataContainer $dc, $id)
+    {
+      $db = \Database::getInstance();
+      $db->prepare("DELETE FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid` = ?")->execute($id);
+    }
 
-  public function onCopy($newId, \Contao\DataContainer $dc) {
-    $oldId = $dc->id;
-    $products = IsotopePackagingSlipProductCollectionModel::findBy('pid', $oldId);
-    if ($products) {
-      foreach($products as $product) {
-        Registry::getInstance()->reset();
-        $newProduct = clone $product;
-        unset($newProduct->id);
-        $newProduct->pid = $newId;
-        $newProduct->save();
+    public function onCopy($newId, \Contao\DataContainer $dc)
+    {
+      $oldId = $dc->id;
+      $products = IsotopePackagingSlipProductCollectionModel::findBy('pid', $oldId);
+      if ($products) {
+        foreach ($products as $product) {
+          Registry::getInstance()->reset();
+          $newProduct = clone $product;
+          unset($newProduct->id);
+          $newProduct->pid = $newId;
+          $newProduct->save();
+        }
       }
     }
-  }
 
-  public function selectButtonsCallback($arrButtons, \Contao\DataContainer $dc) {
-    unset($arrButtons['copy']);
-    unset($arrButtons['override']);
-    $arrButtons['sendEmail'] = '<button type="submit" name="sendEmail" id="sendEmail" class="tl_submit">' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email'][0] . '</button>';
-    $arrButtons['checkAvailability'] = '<button type="submit" name="checkAvailability" id="checkAvailability" class="tl_submit">' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0] . '</button>';
-    $arrButtons['printDocument'] = '<button type="submit" name="printDocument" id="printDocument" class="tl_submit">' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['print_document'][0] . '</button>';
-    return $arrButtons;
-  }
+    public function selectButtonsCallback($arrButtons, \Contao\DataContainer $dc)
+    {
+      unset($arrButtons['copy']);
+      unset($arrButtons['override']);
+      $arrButtons['sendEmail'] = '<button type="submit" name="sendEmail" id="sendEmail" class="tl_submit">' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email'][0] . '</button>';
+      $arrButtons['checkAvailability'] = '<button type="submit" name="checkAvailability" id="checkAvailability" class="tl_submit">' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['check_availability'][0] . '</button>';
+      $arrButtons['printDocument'] = '<button type="submit" name="printDocument" id="printDocument" class="tl_submit">' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['print_document'][0] . '</button>';
+      return $arrButtons;
+    }
 
+  }
 }

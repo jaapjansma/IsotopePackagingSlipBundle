@@ -16,7 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['deleteConfirm'] = 'Weet je zeker dat je deze pakbon wilt verwijderen?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['print_document'] = ['Print pakbon', 'Print pakbon'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['email_in_queue'] = '%s e-mails in wachtrij';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email'] = ['Verstuur E-mail', 'Verstuur E-mail'];

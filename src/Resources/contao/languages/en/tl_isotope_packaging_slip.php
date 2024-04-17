@@ -16,7 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['deleteConfirm'] = 'Are you sure you want to delete this packaging slip?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['print_document'] = ['Print packaging slip', 'Print packaging slip'];
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['email_in_queue'] = '%s emails in queue';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['send_email'] = ['Send Email', 'Send Email'];
