@@ -18,6 +18,7 @@
 
 namespace Krabo\IsotopePackagingSlipBundle\Widget;
 
+use Contao\DC_Table;
 use Contao\Model\Collection;
 use Contao\Model\Registry;
 use Contao\StringUtil;
@@ -274,31 +275,28 @@ class ProductLookupWizard extends \TableLookupWizard {
      */
     $request = $requestStack->getCurrentRequest();
 
-    if ($this->csv != '') {
-      $arrNew = explode($this->csv, $this->value);
-    } else {
-      $arrNew = StringUtil::deserialize($this->value);
+    $arrNew = $request->request->get($this->strId);
+    if (!is_array($arrNew)) {
+      $arrNew = [];
     }
-    if (is_array($arrNew)) {
-      $arrNew = array_unique($arrNew);
-      $products = [];
-      $packagingSlip = IsotopePackagingSlipModel::findByPk($this->activeRecord->id);
-      foreach ($arrNew as $strKey) {
-        [$product_id, $document_number] = explode("_", $strKey, 2);
-        $value = $request->request->get('product_id_value_' . $strKey);
-        if ($value == '') {
-          $value = 0.00;
-        }
-        $product = new IsotopePackagingSlipProductCollectionModel();
-        $product->pid = $packagingSlip->pid;
-        $product->product_id = $product_id;
-        $product->quantity = $request->request->get('product_id_quantity_' . $strKey);
-        $product->document_number = $request->request->get('product_id_document_number_' . $strKey);
-        $product->value = $value;
-        $products[] = $product;
+    $arrNew = array_unique($arrNew);
+    $products = [];
+    $packagingSlip = IsotopePackagingSlipModel::findByPk($this->objDca->id);
+    foreach ($arrNew as $strKey) {
+      [$product_id, $document_number] = explode("_", $strKey, 2);
+      $value = $request->request->get('product_id_value_' . $strKey);
+      if ($value == '') {
+        $value = 0.00;
       }
-      IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products, false);
+      $product = new IsotopePackagingSlipProductCollectionModel();
+      $product->pid = $packagingSlip->id;
+      $product->product_id = $product_id;
+      $product->quantity = $request->request->get('product_id_quantity_' . $strKey);
+      $product->document_number = $request->request->get('product_id_document_number_' . $strKey);
+      $product->value = $value;
+      $products[] = $product;
     }
+    IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products, false);
     return '';
   }
 
