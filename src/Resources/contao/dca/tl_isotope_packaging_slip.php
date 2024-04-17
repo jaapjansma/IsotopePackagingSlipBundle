@@ -450,12 +450,16 @@ class tl_isotope_packaging_slip {
     $shipping_id_key = array_search('shipping_id', $fields, true);
     if ($labels[$shipping_id_key]) {
       $shippingMethod = \Isotope\Model\Shipping::findByPk($labels[$shipping_id_key]);
-      $labels[$shipping_id_key] = $shippingMethod->name;
+      if ($shippingMethod) {
+        $labels[$shipping_id_key] = $shippingMethod->name;
+      }
     }
     $shipper_id_key = array_search('shipper_id', $fields, true);
     if ($labels[$shipper_id_key]) {
       $shipper = \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipShipperModel::findByPk($labels[$shipper_id_key]);
-      $labels[$shipper_id_key] = $shipper->name;
+      if ($shipper) {
+        $labels[$shipper_id_key] = $shipper->name;
+      }
     }
     $order_id_key = array_search('order_id', $fields, true);
     $order = \Database::getInstance()->prepare("
@@ -527,7 +531,9 @@ class tl_isotope_packaging_slip {
     }
 
     $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
-    $this->currentStatus = $packagingSlip->status;
+    if ($packagingSlip) {
+      $this->currentStatus = $packagingSlip->status;
+    }
     if (Input::get('order_id') && $dc instanceof \Contao\DC_Table) {
       /** @var AttributeBagInterface $objSessionBag */
       $objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
