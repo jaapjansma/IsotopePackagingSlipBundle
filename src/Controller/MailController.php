@@ -44,9 +44,13 @@ class MailController {
             $language = $GLOBALS['TL_LANGUAGE'];
             if ($packagingSlipModel->member) {
                 $objMember = MemberModel::findOneBy('id', $packagingSlipModel->member);
-                if ($objMember) {
-                    $GLOBALS['TL_LANGUAGE'] = $objMember->language;
+                if ($objMember && !empty($objMember->language)) {
+                  $GLOBALS['TL_LANGUAGE'] = $objMember->language;
+                } else {
+                  $GLOBALS['TL_LANGUAGE'] = $packagingSlipModel->config_id == 1 ? 'nl_NL' : '';
                 }
+            } else {
+              $GLOBALS['TL_LANGUAGE'] = $packagingSlipModel->config_id == 1 ? 'nl_NL' : '';
             }
             $arrTokens['subject'] = $row['subject_nl'];
             $arrTokens['message'] = $row['msg_nl'];
