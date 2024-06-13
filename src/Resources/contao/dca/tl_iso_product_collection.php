@@ -20,6 +20,9 @@ use Contao\Image;
 use Contao\StringUtil;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
+$GLOBALS['TL_DCA']['tl_iso_product_collection']['config']['sql']['keys']['document_number'] = 'index';
+$GLOBALS['TL_DCA']['tl_iso_product_collection']['config']['sql']['keys']['type,document_number'] = 'index';
+
 $GLOBALS['TL_DCA']['tl_iso_product_collection']['list']['operations']['packaging_slips'] = [
   'label'             => &$GLOBALS['TL_LANG']['tl_iso_product_collection']['packaging_slips'],
   'href'              => 'href=' . \Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel::getTable(),

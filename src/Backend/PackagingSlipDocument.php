@@ -42,15 +42,22 @@ class PackagingSlipDocument extends \Backend {
    * @param \DataContainer $dc
    *
    * @throws \Exception
-   * @return string
    */
   public function printDocument(\DataContainer $dc) {
     $packagingSlip = IsotopePackagingSlipModel::findByPk($dc->id);
     $ids[] = $dc->id;
     $pdf = $this->createPdf($ids);
-    $pdf->Output($this->prepareFileName($packagingSlip->getDocumentNumber()) . '.pdf', 'D');
+    $fileName = $this->prepareFileName('pakbon-' . $packagingSlip->getDocumentNumber().'-'.date('Y-m-d H:i')) . '.pdf';
+    $pdf->Output($this->getDestination().'/' . $fileName, 'F');
+    $this->downloadPdf($this->getDestination().'/' . $fileName);
   }
-
+  /**
+   * Pass an order to the document
+   *
+   * @param \DataContainer $dc
+   *
+   * @throws \Exception
+   */
   public function printMultipleDocuments(\Contao\DataContainer $dc) {
     /** @var Session $objSession */
     $objSession = System::getContainer()->get('session');
@@ -58,7 +65,28 @@ class PackagingSlipDocument extends \Backend {
     $session = $objSession->all();
     $ids = $session['CURRENT']['IDS'];
     $pdf = $this->createPdf($ids);
-    $pdf->Output($this->prepareFileName('packaging_slip') . '.pdf', 'D');
+    $fileName = $this->prepareFileName('meerdere-pakbonnen-'.date('Y-m-d H:i')) . '.pdf';
+    $pdf->Output($this->getDestination().'/' . $fileName, 'F');
+    $this->downloadPdf($this->getDestination().'/' . $fileName);
+  }
+
+  protected function downloadPdf(string $file) {
+    if (file_exists($file)) {
+      header('Content-Description: File Transfer');
+      header('Content-Type: application/octet-stream');
+      header('Content-Disposition: attachment; filename="'.basename($file).'"');
+      header('Expires: 0');
+      header('Cache-Control: must-revalidate');
+      header('Pragma: public');
+      header('Content-Length: ' . filesize($file));
+      readfile($file);
+      exit;
+    }
+  }
+
+  protected function getDestination(): string {
+    $strRootDir = System::getContainer()->getParameter('kernel.project_dir');
+    return $strRootDir . '/' . 'files/pakbonnen';
   }
 
   /**
@@ -181,6 +209,8 @@ class PackagingSlipDocument extends \Backend {
     // Set document information
     $pdf->SetCreator(\defined('PDF_CREATOR') ? PDF_CREATOR : 'Contao Open Source CMS');
     $pdf->SetAuthor(\defined('PDF_AUTHOR') ? PDF_AUTHOR : Environment::get('url'));
+    $pdf->useSubstitutions = false;
+    $pdf->simpleTables = true;
     return $pdf;
   }
 

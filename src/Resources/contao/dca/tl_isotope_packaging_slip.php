@@ -466,13 +466,13 @@ if (!class_exists('tl_isotope_packaging_slip')) {
         }
       }
       $order_id_key = array_search('order_id', $fields, true);
+      $orders = [];
       $order = \Database::getInstance()->prepare("
         SELECT `o`.`document_number`, `o`.`id` 
         FROM `tl_isotope_packaging_slip_product_collection` `p`
         INNER JOIN `tl_iso_product_collection` `o` ON `o`.`type` = 'order' AND `o`.`document_number` = `p`.`document_number`                                       
         WHERE `p`.`pid`= ? AND `p`.`document_number` != '' 
         GROUP BY `o`.`id`")->execute($arrData['id']);
-      $orders = [];
       while ($order->next()) {
         $order_url = $router->generate('contao_backend', ['act' => 'edit', 'do' => 'iso_orders', 'id' => $order->id, 'rt' => REQUEST_TOKEN]);
         $orders[] = '<a href="' . $order_url . '">' . $order->document_number . '</a>';
