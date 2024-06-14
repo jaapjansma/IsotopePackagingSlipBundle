@@ -26,6 +26,7 @@ use Contao\MemberModel;
 use Contao\System;
 use Dflydev\DotAccessData\Data;
 use Doctrine\DBAL\Connection;
+use Isotope\Model\ProductCollection\Order;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 
 class MailController {
@@ -42,16 +43,25 @@ class MailController {
             $packagingSlipModel = IsotopePackagingSlipModel::findByPk($row['pid']);
             $arrTokens = $packagingSlipModel->getNotificationTokens();
             $language = $GLOBALS['TL_LANGUAGE'];
+            $emailLanguage = null;
             if ($packagingSlipModel->member) {
                 $objMember = MemberModel::findOneBy('id', $packagingSlipModel->member);
                 if ($objMember && !empty($objMember->language)) {
-                  $GLOBALS['TL_LANGUAGE'] = $objMember->language;
-                } else {
-                  $GLOBALS['TL_LANGUAGE'] = $packagingSlipModel->config_id == 2 ? 'nl_NL' : '';
+                  $emailLanguage = $objMember->language;
                 }
-            } else {
-              $GLOBALS['TL_LANGUAGE'] = $packagingSlipModel->config_id == 2 ? 'nl_NL' : '';
             }
+            if ($emailLanguage === null) {
+              foreach($packagingSlipModel->getOrders() as $objOrder) {
+                if (!empty($objOrder->language)) {
+                  $emailLanguage = $objOrder->language;
+                  break;
+                }
+              }
+            }
+            if ($emailLanguage === null) {
+              $emailLanguage = 'nl_NL';
+            }
+            $GLOBALS['TL_LANGUAGE'] = $emailLanguage;
             $arrTokens['subject'] = $row['subject_nl'];
             $arrTokens['message'] = $row['msg_nl'];
             if ($GLOBALS['TL_LANGUAGE'] != 'nl' && $GLOBALS['TL_LANGUAGE'] != 'nl_NL') {
