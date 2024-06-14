@@ -47,10 +47,10 @@ class MailController {
                 if ($objMember && !empty($objMember->language)) {
                   $GLOBALS['TL_LANGUAGE'] = $objMember->language;
                 } else {
-                  $GLOBALS['TL_LANGUAGE'] = $packagingSlipModel->config_id == 1 ? 'nl_NL' : '';
+                  $GLOBALS['TL_LANGUAGE'] = $packagingSlipModel->config_id == 2 ? 'nl_NL' : '';
                 }
             } else {
-              $GLOBALS['TL_LANGUAGE'] = $packagingSlipModel->config_id == 1 ? 'nl_NL' : '';
+              $GLOBALS['TL_LANGUAGE'] = $packagingSlipModel->config_id == 2 ? 'nl_NL' : '';
             }
             $arrTokens['subject'] = $row['subject_nl'];
             $arrTokens['message'] = $row['msg_nl'];
