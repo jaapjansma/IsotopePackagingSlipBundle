@@ -117,11 +117,13 @@ class StockBookingHelper {
     }
     $booking->save();
     $debitBookingLine = new BookingLineModel();
+    $debitBookingLine->credit = 0;
     $debitBookingLine->debit = $product->quantity;
     $debitBookingLine->account = $debit_account;
     $debitBookingLine->pid = $booking->id;
     $debitBookingLine->save();
     $creditBookingLine = new BookingLineModel();
+    $creditBookingLine->debit = 0;
     $creditBookingLine->credit = $product->quantity;
     $creditBookingLine->account = $credit_account;
     $creditBookingLine->pid = $booking->id;

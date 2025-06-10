@@ -24,6 +24,8 @@ class Events {
 
   const PACKAGING_SLIP_CREATED_FROM_ORDER = 'krabo.isotope_packaging_slip.created_from_order';
 
+  const PACKAGING_SLIP_PRODUCTS_FROM_ORDER = 'krabo.isotope_packaging_slip.products_from_order';
+
   const GENERATE_ADDRESS = 'krabo.isotope_packaging_slip.generate_address';
 
   const GENERATE_TRACKTRACE_TOKEN = 'krabo.isotope_packaging_slip.generate_tracktrace_token';

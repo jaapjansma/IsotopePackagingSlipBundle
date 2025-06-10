@@ -33,9 +33,12 @@ class PackagingSlipOrderEvent {
    */
   private $order;
 
-  public function __construct(IsotopePackagingSlipModel $packagingSlipModel, Order $order) {
+  public $products = [];
+
+  public function __construct(IsotopePackagingSlipModel $packagingSlipModel, Order $order, array $products=[]) {
     $this->packagingSlipModel = $packagingSlipModel;
     $this->order = $order;
+    $this->products = $products;
   }
 
   /**

@@ -95,7 +95,6 @@ class ProductCollectionListener {
     if ($order->isLocked() && $order->isCheckoutComplete() && !IsotopePackagingSlipModel::doesOrderExists($order)) {
       $orderSettings = unserialize($order->settings);
       if (empty($order->combined_packaging_slip_id)) {
-        $eventName = Events::PACKAGING_SLIP_CREATED_FROM_ORDER;
         $config = Config::findByPk($order->config_id);
         $prefix = $order->getConfig()->packagingSlipPrefix;
         if (empty($prefix)) {
@@ -143,10 +142,10 @@ class ProductCollectionListener {
         $packagingSlip->generateDocumentNumber($prefix, $orderDigits);
 
         $products = $this->addProductsFromOrder($packagingSlip, $order);
-        IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
-
-        $event = new PackagingSlipOrderEvent($packagingSlip, $order);
-        System::getContainer()->get('event_dispatcher')->dispatch($event, $eventName);
+        $event = new PackagingSlipOrderEvent($packagingSlip, $order, $products);
+        System::getContainer()->get('event_dispatcher')->dispatch($event, Events::PACKAGING_SLIP_PRODUCTS_FROM_ORDER);
+        IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $event->products);
+        System::getContainer()->get('event_dispatcher')->dispatch($event, Events::PACKAGING_SLIP_CREATED_FROM_ORDER);
       } else {
         $updatePackagingSlip = false;
         $packagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $order->combined_packaging_slip_id);
@@ -168,7 +167,9 @@ class ProductCollectionListener {
         }
 
         $products = $this->addProductsFromOrder($packagingSlip, $order);
-        IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $products);
+        $event = new PackagingSlipOrderEvent($packagingSlip, $order, $products);
+        System::getContainer()->get('event_dispatcher')->dispatch($event, Events::PACKAGING_SLIP_PRODUCTS_FROM_ORDER);
+        IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $event->products);
       }
     } elseif ($order->isLocked() && $order->isCheckoutComplete() && $this->currentOrderPaidStatus !== null && $this->currentOrderPaidStatus != $order->isPaid()) {
       $packagingSlips = IsotopePackagingSlipModel::findPackagingSlipsByOrder($order);
@@ -208,7 +209,7 @@ class ProductCollectionListener {
     ")->execute($order->id);
     while ($objResults->next()) {
       $product = new IsotopePackagingSlipProductCollectionModel();
-      $product->pid = $packagingSlip->pid;
+      $product->pid = $packagingSlip->id;
       $product->product_id = $objResults->product_id;
       $product->quantity = $objResults->quantity;
       $product->document_number = $order->document_number;
