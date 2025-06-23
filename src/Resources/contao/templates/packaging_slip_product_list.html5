@@ -12,7 +12,7 @@
     <?php foreach($store['products'] as $product) { ?>
         <tr>
             <td style="width: 10%;"><?php echo $product['sku']; ?></td>
-            <td><?php echo $product['label']; ?></td>
+            <td><?php echo $product['label']; ?><?php if (strlen($product->options)): ?><br /><?=nl2br($product->options); ?><?php endif; ?></td>
             <td style="width: 10%; text-align: right;"><?php echo $product['quantity']; ?></td>
             <td style="width: 10%; text-align: right;"><?php echo $product['available']; ?></td>
         </tr>

@@ -34,6 +34,7 @@ use Model\Registry;
  * @property int $quantity
  * @property float $value
  * @property string $document_number
+ * @property string $options
  */
 class IsotopePackagingSlipProductCollectionModel extends Model {
 
@@ -98,15 +99,16 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
     {
       $objProduct = new IsotopePackagingSlipProductCollectionModel();
       $objProduct->setRow($objResult->row());
+      $key = $objProduct->product_id . ':' . md5($objProduct->options);
       if ($objResult->document_number) {
         $order = Order::findOneBy('document_number', $objResult->document_number);
         $objProduct->setLanguage($order->language);
       }
-      if (isset($arrProducts[$objProduct->product_id])) {
-        $arrProducts[$objProduct->product_id]->quantity += $objProduct->quantity;
-        $arrProducts[$objProduct->product_id]->value += $objProduct->value;
+      if (isset($arrProducts[$key])) {
+        $arrProducts[$key]->quantity += $objProduct->quantity;
+        $arrProducts[$key]->value += $objProduct->value;
       } else {
-        $arrProducts[$objProduct->product_id] = $objProduct;
+        $arrProducts[$key] = $objProduct;
       }
     }
     return $arrProducts;

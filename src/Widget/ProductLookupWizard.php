@@ -26,6 +26,7 @@ use Isotope\Model\Product;
 use Isotope\Model\ProductType;
 use Isotope\Model\ProductCollection;
 use Isotope\Model\ProductCollectionItem;
+use Krabo\IsotopePackagingSlipBundle\Helper\IsotopeHelper;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipProductCollectionModel;
 
@@ -116,15 +117,25 @@ class ProductLookupWizard extends \TableLookupWizard {
           $arrResults[$strKeyWithoutOrder]['rawData']['quantity'] = 1;
           $arrResults[$strKeyWithoutOrder]['rawData']['value'] = '';
           $arrResults[$strKeyWithoutOrder]['rawData']['document_number'] = '';
+          $arrResults[$strKeyWithoutOrder]['rawData']['options'] = '';
         }
 
         $strKey = $arrRow[$this->foreignTable . '_id'] . '_' . $arrRow['tl_iso_product_collection_document_number'];
         if ($strKey != $strKeyWithoutOrder) {
+          $options = '';
+          if (!empty($arrRow['tl_iso_product_collection_item_id'])) {
+            $item = ProductCollectionItem::findByPk($arrRow['tl_iso_product_collection_item_id']);
+            if ($item) {
+              $options = IsotopeHelper::generateOptions($item);
+            }
+          }
+
           $arrResults[$strKey]['rowId'] = $arrRow[$this->foreignTable . '_id'];
           $arrResults[$strKey]['rawData'] = $arrRow;
           $arrResults[$strKey]['rawData']['quantity'] = $arrRow['tl_iso_product_collection_item_quantity'];
           $arrResults[$strKey]['rawData']['value'] = $arrRow['tl_iso_product_collection_item_quantity'] * $arrRow['tl_iso_product_collection_item_tax_free_price'];
           $arrResults[$strKey]['rawData']['document_number'] = $arrRow['tl_iso_product_collection_document_number'];
+          $arrResults[$strKey]['rawData']['options'] = $options;
         }
 
         foreach ($this->arrListFields as $strField) {
@@ -141,7 +152,8 @@ class ProductLookupWizard extends \TableLookupWizard {
     } else {
       $objResults = \Database::getInstance()->prepare("
         SELECT 
-            tl_isotope_packaging_slip_product_collection.product_id as product_id,   
+            tl_isotope_packaging_slip_product_collection.product_id as product_id,
+            tl_isotope_packaging_slip_product_collection.options as options,
             SUM(tl_isotope_packaging_slip_product_collection.quantity) as quantity,
             SUM(tl_isotope_packaging_slip_product_collection.value) as `value`,
             tl_isotope_packaging_slip_product_collection.document_number as document_number,
@@ -154,7 +166,7 @@ class ProductLookupWizard extends \TableLookupWizard {
         LEFT JOIN `tl_iso_product_collection` ON tl_iso_product_collection.document_number = tl_isotope_packaging_slip_product_collection.document_number AND LENGTH(tl_iso_product_collection.document_number) > 0
         LEFT JOIN `tl_iso_product_collection_item` ON tl_iso_product_collection_item.product_id = tl_iso_product.id AND `tl_iso_product_collection`.`id` = `tl_iso_product_collection_item`.`pid` 
         WHERE `tl_isotope_packaging_slip_product_collection`.`pid` = ?
-        GROUP BY `tl_isotope_packaging_slip_product_collection`.`product_id`, `tl_isotope_packaging_slip_product_collection`.`document_number`")
+        GROUP BY `tl_isotope_packaging_slip_product_collection`.`product_id`, `tl_isotope_packaging_slip_product_collection`.`document_number`, `tl_isotope_packaging_slip_product_collection`.`options`")
         ->execute($this->activeRecord->id);
       while ($objResults->next()) {
         $arrRow = $objResults->row();
@@ -293,6 +305,7 @@ class ProductLookupWizard extends \TableLookupWizard {
       $product->product_id = $product_id;
       $product->quantity = $request->request->get('product_id_quantity_' . $strKey);
       $product->document_number = $request->request->get('product_id_document_number_' . $strKey);
+      $product->options = $request->request->get('product_id_options_' . $strKey);
       $product->value = $value;
       $products[] = $product;
     }

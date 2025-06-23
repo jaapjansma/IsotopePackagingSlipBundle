@@ -23,6 +23,7 @@ $GLOBALS['TL_LANG']['IMD']['packaging_slip_shipper'] = ['Vervoerder', 'Lijst met
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductLookup']['SearchLabel'] = 'Zoek producten en bestellingen';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantityInStock'] = 'Voorraad';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity'] = 'Aantal';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdOptions'] = 'Opties';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName'] = 'Product';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku'] = 'Artikelnummer';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdValue'] = 'Waarde';

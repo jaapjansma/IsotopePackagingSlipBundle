@@ -46,7 +46,7 @@
                 <?php $totalQuantity += $product->quantity; ?>
                 <tr>
                     <td style="width: 10%;"><?php echo $product->getProduct()->getSku(); ?></td>
-                    <td><?php echo $product->getProduct()->getName(); ?></td>
+                    <td><?php echo $product->getProduct()->getName(); ?><?php if (strlen($product->options)): ?><br /><?=nl2br($product->options); ?><?php endif; ?></td>
                     <td style="width: 10%; text-align: right;"><?php echo $product->quantity; ?></td>
                 </tr>
             <?php } ?>

@@ -26,6 +26,7 @@ $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantityInStock'] = 'In stock';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdValue'] = 'Value';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdDocumentNumber'] = 'Order number';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName'] = 'Product';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdOptions'] = 'Options';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdSku'] = 'Article Number';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductNotAvailable'] = 'One or more products are not in stock. ';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'] = 'Order(s) are not paid. ';

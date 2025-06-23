@@ -1,6 +1,6 @@
 <?php if ($this->hasResults): ?>
 <?php foreach ($this->results as $strKey => $arrResult): ?>
-    <tr data-row class="<?php echo $arrResult['rowClass']; ?><?php if ($this->isAjax):?> found<?php endif; ?><?php if ($arrResult['isChecked']): ?> selected<?php endif; ?>" data-id="<?php echo $strKey; ?>">
+    <tr data-row class="<?php echo $arrResult['rowClass']; ?><?php if ($this->isAjax):?> found<?php endif; ?><?php if ($arrResult['isChecked']): ?> selected<?php endif; ?>" data-id="<?php echo $strKey; ?>" style="vertical-align: top">
         <?php $i = 1; ?>
         <?php foreach ($arrResult['formattedData'] as $k => $varData): ?>
             <td class="col_<?php echo $i++; ?>" data-<?php echo standardize($k) ?>>
@@ -9,13 +9,16 @@
             </td>
         <?php endforeach; ?>
         <td class="col_<?php echo $i++; ?>">
-            <input type="text" name="product_id_quantity_<?php echo $strKey; ?>" value="<?php echo $arrResult['rawData']['quantity']; ?>" />
+            <input type="text" name="product_id_quantity_<?php echo $strKey; ?>" value="<?php echo $arrResult['rawData']['quantity']; ?>" style="width: 50px; text-align: right" />
         </td>
         <td class="col_<?php echo $i++; ?>">
-            <input type="text" name="product_id_document_number_<?php echo $strKey; ?>" value="<?php echo $arrResult['rawData']['document_number']; ?>" />
+                    <textarea name="product_id_options_<?php echo $strKey; ?>" style="width: 350px; height: 50px;"><?php echo $arrResult['rawData']['options']; ?></textarea>
+                </td>
+        <td class="col_<?php echo $i++; ?>">
+            <input type="text" name="product_id_document_number_<?php echo $strKey; ?>" value="<?php echo $arrResult['rawData']['document_number']; ?>" style="width: 100px;" />
         </td>
         <td class="col_<?php echo $i++; ?>">
-            <input type="text" name="product_id_value_<?php echo $strKey; ?>" value="<?php echo $arrResult['rawData']['value']; ?>" />
+            <input type="text" name="product_id_value_<?php echo $strKey; ?>" value="<?php echo $arrResult['rawData']['value']; ?>" style="width: 100px; text-align: right" />
         </td>
         <td class="operations">
             <a href="#" onclick="this.parentNode.parentNode.destroy(); return false;"><img src="system/themes/flexible/icons/delete.svg" width="14" height="16" alt="" class="delete-row"<?php if ($this->isAjax): ?> style="display:none"<?php endif; ?>></a>

@@ -6,9 +6,10 @@
             <?php foreach($this->columnLabels as $k => $arrColumnLabel): ?>
             <th class="head_<?php echo $k; ?> tl_folder_tlist <?php echo $arrColumnLabel['rowClass']; ?>"><?php echo $arrColumnLabel['label']; ?></th>
             <?php endforeach; ?>
-            <th class="tl_folder_tlist"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity']; ?></th>
-            <th class="tl_folder_tlist"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdDocumentNumber']; ?></th>
-            <th class="tl_folder_tlist"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdValue']; ?></th>
+            <th class="tl_folder_tlist" style="width: 50px;"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity']; ?></th>
+            <th class="tl_folder_tlist" style="width: 350px;"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdOptions']; ?></th>
+            <th class="tl_folder_tlist" style="width: 100px;"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdDocumentNumber']; ?></th>
+            <th class="tl_folder_tlist" style="width: 100px;"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdValue']; ?></th>
             <th class="tl_folder_tlist">&nbsp;</th>
         </tr>
     </thead>

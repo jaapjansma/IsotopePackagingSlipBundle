@@ -277,6 +277,7 @@ class StockBookingHelper {
         if (!isset($return[$packagingSlipModel->credit_account]['products'][$product->id])) {
           $return[$packagingSlipModel->credit_account]['products'][$product->id] = [
             'quantity' => $item->quantity,
+            'options' => $item->options,
             'available' => ProductHelper::getProductCountPerAccount($product->id, $packagingSlipModel->credit_account),
             'sku' => $product->sku,
             'label' => $product->getName(),

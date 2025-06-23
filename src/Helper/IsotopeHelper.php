@@ -18,9 +18,11 @@
 
 namespace Krabo\IsotopePackagingSlipBundle\Helper;
 
+use Isotope\Interfaces\IsotopeAttribute;
 use Isotope\Model\Config;
 use Isotope\Model\ProductCollection;
 use Isotope\Model\ProductCollection\Order;
+use Isotope\Model\ProductCollectionItem;
 use JvH\IsotopeMyOrdersBundle\Helper\PackagingSlip;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipModel;
 use Krabo\IsotopePackagingSlipBundle\Model\IsotopePackagingSlipShipperModel;
@@ -115,6 +117,23 @@ class IsotopeHelper {
       }
     }
     return $scheduledDate;
+  }
+
+  public static function generateOptions(ProductCollectionItem $item): string {
+    $options = [];
+    foreach($item->getOptions() as $strAttribute => $value) {
+      $options[] = self::generateAttribute($strAttribute, $value, ['html'=>false, 'item'=>$item]);
+    }
+    return implode("\n", $options);
+  }
+
+  public static function generateAttribute($strAttribute,$value, array $options = array())
+  {
+    $objAttribute = $GLOBALS['TL_DCA']['tl_iso_product']['attributes'][$strAttribute];
+    if (!($objAttribute instanceof IsotopeAttribute)) {
+      return '';
+    }
+    return $objAttribute->getLabel() . ': ' . $objAttribute->generateValue($value, $options);
   }
 
 }

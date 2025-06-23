@@ -20,10 +20,12 @@ namespace Krabo\IsotopePackagingSlipBundle\EventListener;
 
 use Contao\MemberModel;
 use Contao\System;
+use Isotope\Interfaces\IsotopeAttribute;
 use Isotope\Model\Config;
 use Isotope\Model\OrderStatus;
 use Isotope\Model\ProductCollection;
 use Isotope\Model\ProductCollection\Order;
+use Isotope\Model\ProductCollectionItem;
 use Krabo\IsotopePackagingSlipBundle\Event\Events;
 use Krabo\IsotopePackagingSlipBundle\Event\PackagingSlipOrderEvent;
 use Krabo\IsotopePackagingSlipBundle\Helper\IsotopeHelper;
@@ -201,9 +203,9 @@ class ProductCollectionListener {
     if ($productCollection) {
       $arrProducts = $productCollection->getModels();
     }
-    $db = \Database::getInstance();
+    /*$db = \Database::getInstance();
     $objResults = $db->prepare("
-        SELECT `product_id`, `quantity`, `price` 
+        SELECT `product_id`, `quantity`, `price`, `configuration`
         FROM `tl_iso_product_collection_item` 
         WHERE `pid` = ?
     ")->execute($order->id);
@@ -214,6 +216,16 @@ class ProductCollectionListener {
       $product->quantity = $objResults->quantity;
       $product->document_number = $order->document_number;
       $product->value = $objResults->quantity * $objResults->price;
+      $arrProducts[] = $product;
+    }*/
+    foreach($order->getItems() as $item) {
+      $product = new IsotopePackagingSlipProductCollectionModel();
+      $product->pid = $packagingSlip->id;
+      $product->product_id = $item->product_id;
+      $product->quantity = $item->quantity;
+      $product->document_number = $order->document_number;
+      $product->value = $item->getTotalPrice();
+      $product->options = IsotopeHelper::generateOptions($item);
       $arrProducts[] = $product;
     }
     return $arrProducts;
