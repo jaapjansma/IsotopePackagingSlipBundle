@@ -96,7 +96,7 @@ class ProductCollectionListener {
   public function postOrderStatusUpdate(Order $order, $intOldStatus, OrderStatus $objNewStatus) {
     if ($order->isLocked() && $order->isCheckoutComplete() && !IsotopePackagingSlipModel::doesOrderExists($order)) {
       $orderSettings = unserialize($order->settings);
-      if (empty($order->combined_packaging_slip_id)) {
+      if (empty($order->combined_packaging_slip_id) && $order->hasShipping()) {
         $config = Config::findByPk($order->config_id);
         $prefix = $order->getConfig()->packagingSlipPrefix;
         if (empty($prefix)) {
@@ -148,7 +148,7 @@ class ProductCollectionListener {
         System::getContainer()->get('event_dispatcher')->dispatch($event, Events::PACKAGING_SLIP_PRODUCTS_FROM_ORDER);
         IsotopePackagingSlipProductCollectionModel::saveProducts($packagingSlip, $event->products);
         System::getContainer()->get('event_dispatcher')->dispatch($event, Events::PACKAGING_SLIP_CREATED_FROM_ORDER);
-      } else {
+      } elseif (!empty($order->combined_packaging_slip_id)) {
         $updatePackagingSlip = false;
         $packagingSlip = IsotopePackagingSlipModel::findOneBy('document_number', $order->combined_packaging_slip_id);
         if (!empty($orderSettings['email_data']['form_opmerking'])) {
