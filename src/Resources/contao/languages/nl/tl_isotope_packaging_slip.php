@@ -80,3 +80,4 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity_2'] = 'Pakbonn
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity_3'] = 'Pakbonnen met 3 producten';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity_4'] = 'Pakbonnen met 3 of meer producten';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['product_search'] = 'Zoek op artikelnummer';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['order_search'] = 'Zoek op bestelling';

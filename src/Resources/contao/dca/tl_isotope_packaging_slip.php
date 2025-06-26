@@ -72,8 +72,9 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'mode'                    => 2,
       'fields'                  => array('document_number'),
       'flag'                    => 11,
-      'panelLayout'             => 'sort,limit,product_search,search,filter',
+      'panelLayout'             => 'sort,limit,order_search,product_search,search,filter',
       'panel_callback'          => [
+        'order_search'        => ['tl_isotope_packaging_slip', 'orderSearchPanel'],
         'product_search'        => ['tl_isotope_packaging_slip', 'productSearchPanel'],
       ]
     ),
@@ -523,7 +524,15 @@ if (!class_exists('tl_isotope_packaging_slip')) {
       /** @var AttributeBagInterface $objSessionBag */
       $objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
       $session = $objSessionBag->all();
-      if (isset($session['product_search']) && isset($session['product_search'][$dc->strTable]) && isset($session['product_search'][$dc->strTable]['value'])) {
+      if (isset($session['order_search']) && isset($session['order_search'][$dc->strTable]) && isset($session['order_search'][$dc->strTable]['value']) && strlen($session['order_search'][$dc->strTable]['value'])) {
+        $objResult = \Database::getInstance()->prepare("
+        SELECT `tl_isotope_packaging_slip_product_collection`.`pid` 
+        FROM `tl_isotope_packaging_slip_product_collection` 
+        WHERE `tl_isotope_packaging_slip_product_collection`.`document_number` LIKE ?
+        GROUP BY `tl_isotope_packaging_slip_product_collection`.`pid`")->execute('%'.$session['order_search'][$dc->strTable]['value'].'%');
+        $dc->root = $objResult->fetchEach('pid');
+      }
+      if (isset($session['product_search']) && isset($session['product_search'][$dc->strTable]) && isset($session['product_search'][$dc->strTable]['value']) && strlen($session['product_search'][$dc->strTable]['value'])) {
         $objResult = \Database::getInstance()->prepare("
         SELECT `tl_isotope_packaging_slip_product_collection`.`pid` 
         FROM `tl_isotope_packaging_slip_product_collection` 
@@ -574,6 +583,26 @@ if (!class_exists('tl_isotope_packaging_slip')) {
 <div class="tl_search tl_subpanel" style="width: 100%;">
 <strong>' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['product_search'] . ':</strong>
 <input type="search" name="product_search" class="tl_text" value="' . StringUtil::specialchars($session['product_search'][$dc->strTable]['value']) . '">
+</div>';
+    }
+
+    public function orderSearchPanel(\Contao\DataContainer $dc)
+    {
+      /** @var AttributeBagInterface $objSessionBag */
+      $objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
+      $session = $objSessionBag->all();
+      // Store search value in the current session
+      if (Input::post('FORM_SUBMIT') == 'tl_filters') {
+        $strKeyword = ltrim(Input::postRaw('order_search'), '*');
+        $session['order_search'][$dc->strTable]['value'] = $strKeyword;
+
+        $objSessionBag->replace($session);
+      }
+
+      return '
+<div class="tl_search tl_subpanel" style="width: 100%;">
+<strong>' . $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['order_search'] . ':</strong>
+<input type="search" name="order_search" class="tl_text" value="' . StringUtil::specialchars($session['order_search'][$dc->strTable]['value']) . '">
 </div>';
     }
 

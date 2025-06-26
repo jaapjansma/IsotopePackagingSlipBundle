@@ -79,3 +79,4 @@ $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity_2'] = 'Packagi
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity_3'] = 'Packaging Slips with 3 products';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['report_quantity_4'] = 'Packaging Slips with 3 or more products';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['product_search'] = 'Search productnumber';
+$GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['order_search'] = 'Search order';
