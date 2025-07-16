@@ -21,6 +21,8 @@ namespace Krabo\IsotopePackagingSlipBundle\Helper;
 use Contao\CoreBundle\Controller\AbstractController;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
+use Contao\Email;
+use Contao\MemberModel;
 use Contao\System;
 use DateTime;
 use Krabo\IsotopePackagingSlipBundle\Event\CheckAvailabilityEvent;
@@ -185,7 +187,6 @@ class PackagingSlipCheckAvailability {
       $event = new CheckAvailabilityEvent();
       $event->packagingSlipId = $objResult->id;
       $event->isAvailable = '1';
-      $isPaid = true;
       if ($objResult->handle_only_paid) {
         $packagingSlip = IsotopePackagingSlipModel::findByPk($objResult->id);
         foreach($packagingSlip->getOrders() as $order) {
@@ -193,6 +194,22 @@ class PackagingSlipCheckAvailability {
             $event->isAvailable = '-1';
             $event->notes = $GLOBALS['TL_LANG']['MSC']['PackageSlipOrderNotPaid'];
             break;
+          }
+        }
+      }
+      if ($event->isAvailable != '-1' && $packagingSlip->member) {
+        $member = MemberModel::findByPk($packagingSlip->member);
+        if ($member->isotope_packaging_slip_on_hold) {
+          $event->isAvailable = '-1';
+          $event->notes .= $GLOBALS['TL_LANG']['MSC']['packaging_slip_account_on_hold'];
+          $objNotificationCollection = \NotificationCenter\Model\Notification::findByType('isotope_packaging_slip_status_on_hold');
+          $arrTokens = $packagingSlip->getNotificationTokens();
+          if (NULL !== $objNotificationCollection) {
+            $objNotificationCollection->reset();
+            while ($objNotificationCollection->next()) {
+              $objNotification = $objNotificationCollection->current();
+              $objNotification->send($arrTokens);
+            }
           }
         }
       }

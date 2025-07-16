@@ -110,10 +110,6 @@ class ProductCollectionListener {
         $packagingSlip->status = '0';
         if ($order->member) {
           $packagingSlip->member = $order->member;
-          $objMember = MemberModel::findByPk($order->member);
-          if ($objMember->isotope_packaging_slip_on_hold) {
-            $packagingSlip->status = '-1';
-          }
         }
         $packagingSlip->firstname = $order->getShippingAddress()->firstname;
         $packagingSlip->lastname = $order->getShippingAddress()->lastname;

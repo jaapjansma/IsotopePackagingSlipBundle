@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+$GLOBALS['TL_LANG']['MSC']['packaging_slip_account_on_hold'] = 'Account on hold';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['deleteConfirm'] = 'Weet je zeker dat je deze pakbon wilt verwijderen?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['viewReport'] = ['Bekijk rapport', 'Bekijk rapport tbv inpakken'];
 $GLOBALS['TL_LANG']['MOD']['tl_isotope_packaging_slip'] = ['Pakbon', 'Beheer pakbonnen'];
@@ -39,4 +40,5 @@ $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_3'] = 'Isotope Packaging Slip - Kan opgehaald worden';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_4'] = 'Isotope Packaging Slip - Afgeleverd';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_5'] = 'Isotope Packaging Slip - Afgehaald';
+$GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_on_hold'] = 'Isotope Packaging Slip - On Hold';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_mail'] = 'Isotope Pakbon - E-mail';

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+$GLOBALS['TL_LANG']['MSC']['packaging_slip_account_on_hold'] = 'Account on hold';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['deleteConfirm'] = 'Are you sure you want to delete this packaging slip?';
 $GLOBALS['TL_LANG']['tl_isotope_packaging_slip']['viewReport'] = ['View Report', 'Used for order picking'];
 $GLOBALS['TL_LANG']['MOD']['tl_isotope_packaging_slip'] = ['Packaging Slip', 'Manage packaging slips'];
@@ -39,4 +40,5 @@ $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_3'] = 'Isotope Packaging Slip - Ready for Pick up';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_4'] = 'Isotope Packaging Slip - Delivered';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_5'] = 'Isotope Packaging Slip - Picked up';
+$GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_status_on_hold'] = 'Isotope Packaging Slip - On Hold';
 $GLOBALS['TL_LANG']['tl_nc_notification']['type']['isotope_packaging_slip_mail'] = 'Isotope Packaging Slip - Email';
