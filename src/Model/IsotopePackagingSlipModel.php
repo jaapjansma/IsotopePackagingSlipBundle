@@ -459,6 +459,12 @@ class IsotopePackagingSlipModel extends Model {
     foreach ($this->row() as $k => $v) {
       $arrTokens['packaging_slip_' . $k] = $v;
     }
+    if ($this->member) {
+      $member = MemberModel::findByPk($this->member);
+      foreach ($member->row() as $k => $v) {
+        $arrTokens['member_' . $k] = $v;
+      }
+    }
     if (!empty($arrTokens['shipping_date'])) {
       $shippingDate = new \DateTime();
       $shippingDate->setTimestamp($arrTokens['shipping_date']);
