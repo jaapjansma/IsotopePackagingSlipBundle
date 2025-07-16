@@ -122,7 +122,9 @@ class IsotopeHelper {
   public static function generateOptions(ProductCollectionItem $item): string {
     $options = [];
     foreach($item->getOptions() as $strAttribute => $value) {
-      $options[] = self::generateAttribute($strAttribute, $value, ['html'=>false, 'item'=>$item]);
+      if ($value) {
+        $options[] = self::generateAttribute($strAttribute, $value, ['html' => false, 'item' => $item]);
+      }
     }
     return implode("\n", $options);
   }
@@ -133,7 +135,11 @@ class IsotopeHelper {
     if (!($objAttribute instanceof IsotopeAttribute)) {
       return '';
     }
-    return $objAttribute->getLabel() . ': ' . $objAttribute->generateValue($value, $options);
+    $generatedValue = $objAttribute->generateValue($value, $options);
+    $re = '/(\(€.*\))/m';
+    $subst = "";
+    $generatedValue = trim(preg_replace($re, $subst, $generatedValue));
+    return $objAttribute->getLabel() . ': ' . $generatedValue;
   }
 
 }
