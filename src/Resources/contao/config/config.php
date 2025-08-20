@@ -121,6 +121,7 @@ $GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['isotope_packaging_slip']['
   'notes',
   'id',
   'document_number',
+  'order_notes',
   'document',
   'shipping_id', // Shipping method ID
   'shipping_label', // Shipping method label

@@ -24,6 +24,9 @@ $GLOBALS['TL_DCA']['tl_member']['fields']['isotope_packaging_slip_on_hold'] = ar
   'eval'                    => array('doNotCopy'=>true),
   'sql'                     => "char(1) NOT NULL default ''",
   'default'                 => '0',
+  'save_callback'           => [
+    ['Krabo\IsotopePackagingSlipBundle\Helper\MemberHelper', 'onSaveCallBack'],
+  ]
 );
 
 PaletteManipulator::create()

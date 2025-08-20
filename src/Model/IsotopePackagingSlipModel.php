@@ -448,6 +448,7 @@ class IsotopePackagingSlipModel extends Model {
     $arrTokens['recipient_email'] = $this->getEmailRecipient();
     $arrTokens['order_id']        = $this->id;
     $arrTokens['document']        = TemplateHelper::generatePackagingSlipHTML($this, 'packaging_slip_document_compact');
+    $arrTokens['order_notes']     = $this->getOrderNotes();
     // Add shipping method info
     $objShipping = Shipping::findByPk($this->shipping_id);
     $arrTokens['shipping_id']        = $objShipping->getId();
@@ -471,6 +472,14 @@ class IsotopePackagingSlipModel extends Model {
       $arrTokens['shipping_date'] = $shippingDate->format(Date::getNumericDateFormat());
     }
     return $arrTokens;
+  }
+
+  public function getOrderNotes() {
+    $return = '';
+    foreach($this->getOrders() as $order) {
+      $return .= ' ' . $order->notes;
+    }
+    return trim($return);
   }
 
   /**
