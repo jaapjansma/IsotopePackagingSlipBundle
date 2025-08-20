@@ -18,3 +18,4 @@
 
 $GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_scheduled_shipping_date'] = ['Product Verwachte Verzenddatum', 'Stel de verwachte verzenddatum in (gebruik dit voor pre order producten).'];
 $GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_scheduled_picking_date'] = ['Product Verwachte Inpakdatum', 'Stel de verwachte inpakdatum in (gebruik dit voor pre order producten).'];
+$GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_position'] = ['Positie op pakbon', 'Laat leeg om de waarde van het producttype te gebruiken. Een hoger nummer betekent dat het product van dit type lager op de pakbon verschijnt.'];

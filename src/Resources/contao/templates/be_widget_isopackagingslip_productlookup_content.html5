@@ -20,6 +20,9 @@
         <td class="col_<?php echo $i++; ?>">
             <input type="text" name="product_id_value_<?php echo $strKey; ?>" value="<?php echo $arrResult['rawData']['value']; ?>" style="width: 100px; text-align: right" />
         </td>
+        <td class="col_<?php echo $i++; ?>">
+            <input type="text" name="product_id_weight_<?php echo $strKey; ?>" value="<?php echo $arrResult['rawData']['weight']; ?>" style="width: 50px; text-align: right" />
+        </td>
         <td class="operations">
             <a href="#" onclick="this.parentNode.parentNode.destroy(); return false;"><img src="system/themes/flexible/icons/delete.svg" width="14" height="16" alt="" class="delete-row"<?php if ($this->isAjax): ?> style="display:none"<?php endif; ?>></a>
         </td>

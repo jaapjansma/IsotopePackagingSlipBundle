@@ -53,7 +53,7 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
    * Save orders into this packaging slip.
    *
    * @param IsotopePackagingSlipModel $packagingSlip
-   * @param PackagingSlipProductModel[] $products
+   * @param IsotopePackagingSlipProductCollectionModel[] $products
    * @param bool $resetAvailabilityStatus
    *
    * @return void
@@ -66,9 +66,10 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
     foreach($products as $product) {
       // Make sure the product gets inserted by clearing the registry
       Registry::getInstance()->unregister($product);
-      $newProduct = clone $product;
       $product->pid = $packagingSlip->id;
       $product->tstamp = time();
+      $weight = static::getWeightForIsoProduct($product->product_id);
+      $product->weight = $weight;
 
       StockBookingHelper::createSalesBookingFromPackagingSlipAndProduct($packagingSlip, $product);
       $product->save();
@@ -90,28 +91,53 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
 
     $strTable = static::$strTable;
     $db = \Database::getInstance();
-    $objStmnt = $db->prepare("SELECT * FROM `" . $strTable . "` WHERE `pid` = ? ORDER BY `product_id`");
+    $objStmnt = $db->prepare("SELECT * FROM `" . $strTable . "` WHERE `pid` = ? ORDER BY `weight`");
     $objResult = $objStmnt->execute($packagingSlip->id);
 
+    $arrWeightedProducts = array();
     $arrProducts = array();
 
     while ($objResult->next())
     {
       $objProduct = new IsotopePackagingSlipProductCollectionModel();
       $objProduct->setRow($objResult->row());
-      $key = $objProduct->product_id . ':' . md5($objProduct->options);
+      $key = $objResult->weight . '_' . $objProduct->product_id . ':' . md5($objProduct->options);
       if ($objResult->document_number) {
         $order = Order::findOneBy('document_number', $objResult->document_number);
         $objProduct->setLanguage($order->language);
       }
-      if (isset($arrProducts[$key])) {
-        $arrProducts[$key]->quantity += $objProduct->quantity;
-        $arrProducts[$key]->value += $objProduct->value;
+      if (isset($arrWeightedProducts[$objResult->weight][$key])) {
+        $arrWeightedProducts[$objResult->weight][$key]->quantity += $objProduct->quantity;
+        $arrWeightedProducts[$objResult->weight][$key]->value += $objProduct->value;
       } else {
-        $arrProducts[$key] = $objProduct;
+        $arrWeightedProducts[$objResult->weight][$key] = $objProduct;
+      }
+    }
+    foreach ($arrWeightedProducts as $weight => $arrWeightedProduct) {
+      foreach ($arrWeightedProduct as $key => $product) {
+        $arrProducts[$key] = $product;
       }
     }
     return $arrProducts;
+  }
+
+  public static function getWeightForIsoProduct(int $isoProductId): ?int {
+    $weight = 0;
+    $isoProduct = null;
+    if ($isoProductId > 0) {
+      $isoProduct = Product::findByPk($isoProductId);
+    }
+    if ($isoProduct) {
+      if (strlen($isoProduct->isotope_packaging_slip_position) && is_numeric($isoProduct->isotope_packaging_slip_position)) {
+        $weight = $isoProduct->isotope_packaging_slip_position;
+      } else {
+        $productType = $isoProduct->getType();
+        if ($productType && strlen($productType->isotope_packaging_slip_position) && is_numeric($productType->isotope_packaging_slip_position)) {
+          $weight = $productType->isotope_packaging_slip_position;
+        }
+      }
+    }
+    return $weight;
   }
 
   /**

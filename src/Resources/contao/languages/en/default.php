@@ -25,6 +25,7 @@ $GLOBALS['TL_LANG']['MSC']['PackageSlipProductLookup']['SearchLabel'] = 'Search 
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantity'] = 'Quantity';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdQuantityInStock'] = 'In stock';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdValue'] = 'Value';
+$GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdWeight'] = 'Position';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdDocumentNumber'] = 'Order number';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdName'] = 'Product';
 $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdOptions'] = 'Options';

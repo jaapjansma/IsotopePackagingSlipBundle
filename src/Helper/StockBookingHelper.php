@@ -113,7 +113,9 @@ class StockBookingHelper {
     $booking->packaging_slip_id = $packagingSlipModel->id;
     if ($documentNumber) {
       $order = Order::findOneBy('document_number', $documentNumber);
-      $booking->order_id = $order->id;
+      if ($order) {
+        $booking->order_id = $order->id;
+      }
     }
     $booking->save();
     $debitBookingLine = new BookingLineModel();
@@ -149,10 +151,12 @@ class StockBookingHelper {
         ->execute($packagingSlipModel->id, $product_id, $bookingType);
     } else {
       $order = Order::findOneBy('document_number', $document_number);
-      $orderId = $order->id;
-      \Database::getInstance()
-        ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `product_id` = ? AND `type` = ? AND `order_id` = ?")
-        ->execute($packagingSlipModel->id, $product_id, $bookingType, $order->id);
+      if ($order) {
+        $orderId = $order->id;
+        \Database::getInstance()
+          ->prepare("DELETE FROM `tl_isotope_stock_booking` WHERE `packaging_slip_id` = ? AND `product_id` = ? AND `type` = ? AND `order_id` = ?")
+          ->execute($packagingSlipModel->id, $product_id, $bookingType, $order->id);
+      }
     }
 
     $event = new ClearBookingEvent($product_id, $bookingType, $orderId, ['packaging_slip_id' => $packagingSlipModel->id]);

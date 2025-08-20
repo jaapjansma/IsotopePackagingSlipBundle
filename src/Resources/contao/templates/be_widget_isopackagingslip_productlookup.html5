@@ -10,6 +10,7 @@
             <th class="tl_folder_tlist" style="width: 350px;"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdOptions']; ?></th>
             <th class="tl_folder_tlist" style="width: 100px;"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdDocumentNumber']; ?></th>
             <th class="tl_folder_tlist" style="width: 100px;"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdValue']; ?></th>
+            <th class="tl_folder_tlist" style="width: 50px;"><?php echo $GLOBALS['TL_LANG']['MSC']['PackageSlipProductIdWeight']; ?></th>
             <th class="tl_folder_tlist">&nbsp;</th>
         </tr>
     </thead>

@@ -82,5 +82,8 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip_product_collection'] = [
       'sql'                     => "int(10) signed NOT NULL default 0",
       'default'                 => '0',
     ),
+    'weight' => [
+      'sql' => "int(10) unsigned NOT NULL default '0'",
+    ],
   ],
 ];

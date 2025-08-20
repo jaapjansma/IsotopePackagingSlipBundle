@@ -18,3 +18,4 @@
 
 $GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_scheduled_shipping_date'] = ['Product Scheduled Shipping Date', 'Set the scheduled shipping date (use this for pre-order products).'];
 $GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_scheduled_picking_date'] = ['Product Scheduled Packaging Date', 'Set the scheduled packaging date (use this for pre-order products).'];
+$GLOBALS['TL_LANG']['tl_iso_product']['isotope_packaging_slip_position'] = ['Packaging Slip Position', 'Levae empty to use the value from the product type. An higher number means products of this type appear lower on the packaging slip.'];
