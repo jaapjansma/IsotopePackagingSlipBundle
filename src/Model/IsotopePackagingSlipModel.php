@@ -482,7 +482,14 @@ class IsotopePackagingSlipModel extends Model {
   public function getOrderNotes() {
     $return = '';
     foreach($this->getOrders() as $order) {
-      $return .= ' ' . $order->notes;
+      $settings = $order->settings;
+      if (!is_array($settings)) {
+        $settings = unserialize($settings);
+      }
+      if (isset($settings['email_data']['form_opmerking'])) {
+        $return .= ' '.$settings['email_data']['form_opmerking'];
+        $return = trim($return);
+      }
     }
     return trim($return);
   }
