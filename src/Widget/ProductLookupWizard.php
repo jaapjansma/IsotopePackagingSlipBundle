@@ -127,6 +127,7 @@ class ProductLookupWizard extends \TableLookupWizard {
               $options = IsotopeHelper::generateOptions($item);
             }
           }
+          $strKey .= '_' . md5($options);
 
           $arrResults[$strKey]['rowId'] = $arrRow[$this->foreignTable . '_id'];
           $arrResults[$strKey]['rawData'] = $arrRow;
@@ -163,15 +164,14 @@ class ProductLookupWizard extends \TableLookupWizard {
         FROM `tl_isotope_packaging_slip_product_collection`
         INNER JOIN `tl_iso_product` ON tl_iso_product.id = tl_isotope_packaging_slip_product_collection.product_id AND tl_iso_product.pid = 0
         LEFT JOIN `tl_iso_producttype` ON tl_iso_producttype.id = tl_iso_product.type
-        LEFT JOIN `tl_iso_product_collection` ON tl_iso_product_collection.document_number = tl_isotope_packaging_slip_product_collection.document_number AND LENGTH(tl_iso_product_collection.document_number) > 0
-        LEFT JOIN `tl_iso_product_collection_item` ON tl_iso_product_collection_item.product_id = tl_iso_product.id AND `tl_iso_product_collection`.`id` = `tl_iso_product_collection_item`.`pid` 
+        LEFT JOIN `tl_iso_product_collection` ON tl_iso_product_collection.document_number = tl_isotope_packaging_slip_product_collection.document_number AND LENGTH(tl_iso_product_collection.document_number) > 0 
         WHERE `tl_isotope_packaging_slip_product_collection`.`pid` = ?
         GROUP BY `tl_isotope_packaging_slip_product_collection`.`product_id`, `tl_isotope_packaging_slip_product_collection`.`document_number`, `tl_isotope_packaging_slip_product_collection`.`options`
         ORDER BY `weight` ASC")
         ->execute($this->activeRecord->id);
       while ($objResults->next()) {
         $arrRow = $objResults->row();
-        $strKey = $arrRow['product_id'].'_'.$arrRow['document_number'];
+        $strKey = $arrRow['product_id'].'_'.$arrRow['document_number']. '_'.md5($arrRow['options']);
         $arrResults[$strKey]['rowId'] = $arrRow['product_id'];
         $arrResults[$strKey]['rawData'] = $arrRow;
         $arrResults[$strKey]['isChecked'] = true;

@@ -199,22 +199,10 @@ class ProductCollectionListener {
     if ($productCollection) {
       $arrProducts = $productCollection->getModels();
     }
-    /*$db = \Database::getInstance();
-    $objResults = $db->prepare("
-        SELECT `product_id`, `quantity`, `price`, `configuration`
-        FROM `tl_iso_product_collection_item` 
-        WHERE `pid` = ?
-    ")->execute($order->id);
-    while ($objResults->next()) {
-      $product = new IsotopePackagingSlipProductCollectionModel();
-      $product->pid = $packagingSlip->id;
-      $product->product_id = $objResults->product_id;
-      $product->quantity = $objResults->quantity;
-      $product->document_number = $order->document_number;
-      $product->value = $objResults->quantity * $objResults->price;
-      $arrProducts[] = $product;
-    }*/
     foreach($order->getItems() as $item) {
+      if ($item->getProduct()->isExemptFromShipping()) {
+        continue;
+      }
       $product = new IsotopePackagingSlipProductCollectionModel();
       $product->pid = $packagingSlip->id;
       $product->product_id = $item->product_id;
