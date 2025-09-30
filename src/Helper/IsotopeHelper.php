@@ -139,7 +139,7 @@ class IsotopeHelper {
     $re = '/(\(€.*\))/m';
     $subst = "";
     $generatedValue = trim(preg_replace($re, $subst, $generatedValue));
-    return $objAttribute->getLabel() . ': ' . $generatedValue;
+    return $generatedValue;
   }
 
 }
