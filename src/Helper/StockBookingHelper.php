@@ -54,7 +54,6 @@ class StockBookingHelper {
     }
 
     $bookingType = BookingModel::DELIVERY_TYPE;
-    self::clearBookingForPackagingSlipAndProduct($packagingSlipModel, $product->getId(), $bookingType, $documentNumber);
     $period = PeriodModel::getFirstActivePeriod();
     $booking = new BookingModel();
     $booking->description = $packagingSlipModel->getDocumentNumber();

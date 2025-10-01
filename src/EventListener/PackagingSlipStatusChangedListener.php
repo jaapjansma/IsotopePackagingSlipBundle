@@ -83,6 +83,10 @@ class PackagingSlipStatusChangedListener implements EventSubscriberInterface {
    */
   private function updateDeliveryStock(IsotopePackagingSlipModel $packagingSlipModel) {
     $result = \Database::getInstance()->prepare("SELECT `product_id`, `quantity`, `document_number` FROM `tl_isotope_packaging_slip_product_collection` WHERE `pid`= ?")->execute($packagingSlipModel->id);
+    while ($result->next()) {
+      StockBookingHelper::clearBookingForPackagingSlipAndProduct($packagingSlipModel, $result->product_id, BookingModel::DELIVERY_TYPE, $result->document_number);
+    }
+    $result->reset();
     while($result->next()) {
       $product = Product::findByPk($result->product_id);
       if ($product) {
