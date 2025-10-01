@@ -102,7 +102,6 @@ class StockBookingHelper {
     if ($product->getProduct()->isostock_preorder) {
       $credit_account = $config->isotopestock_preorder_credit_account;
     }
-    self::clearBookingForPackagingSlipAndProduct($packagingSlipModel, $product->product_id, $bookingType, $documentNumber);
     $period = PeriodModel::getFirstActivePeriod();
     $booking = new BookingModel();
     $booking->description = $packagingSlipModel->getDocumentNumber();

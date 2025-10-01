@@ -64,6 +64,9 @@ class IsotopePackagingSlipProductCollectionModel extends Model {
     $objStmnt->execute($packagingSlip->id);
     StockBookingHelper::clearBookingForPackagingSlip($packagingSlip, BookingModel::SALES_TYPE);
     foreach($products as $product) {
+      StockBookingHelper::clearBookingForPackagingSlipAndProduct($packagingSlip, $product->product_id, BookingModel::SALES_TYPE, $product->document_number);
+    }
+    foreach($products as $product) {
       // Make sure the product gets inserted by clearing the registry
       Registry::getInstance()->unregister($product);
       $product->pid = $packagingSlip->id;
