@@ -355,7 +355,7 @@ $GLOBALS['TL_DCA']['tl_isotope_packaging_slip'] = array
       'exclude'               => true,
       'search'                => true,
       'inputType'             => 'text',
-      'eval'                  => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
+      'eval'                  => array('mandatory'=>false, 'maxlength'=>255, 'tl_class'=>'w50'),
       'sql'                   => "varchar(255) NOT NULL default ''",
     ),
     'street_3' => array
